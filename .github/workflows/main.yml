@@ -20,9 +20,9 @@ jobs:
           target: 'desktop'
           dir: '${{ github.workspace }}/qt/'
           #modules:
-          cache: 'true'
-          cache-key-prefix: 'install-qt-action'
-          setup-python: 'false'
+          #cache: 'true'
+          #cache-key-prefix: 'install-qt-action'
+          #setup-python: 'false'
       - name: Get repository code
         uses: actions/checkout@v3
 #  build:
