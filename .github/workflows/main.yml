@@ -19,11 +19,11 @@ jobs:
           version: ${{ env.QT_VERSION }}
           host: 'linux'
           target: 'desktop'
-          dir: ${{ runner.temp }}
+          dir: '${{ env.SOURCE_DIR }}/example/'
           cache: 'true'
           cache-key-prefix: 'install-qt-action'
-          #setup-python: 'false'
+          setup-python: 'false'
       - name: (3) Create build directory
-        run: mkdir ${{ runner.temp }}\build
+        run: mkdir ${{ env.SOURCE_DIR }}\build
 #  build:
 #    needs: [dependecies]
