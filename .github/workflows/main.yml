@@ -3,20 +3,27 @@ on:
   push:
     branches:
       - master
+env:
+  SOURCE_DIR: ${{ github.workspace }}
+  QT_VERSION: 5.15.2
+  ARTIFACT_NAME: PopovDs_9304_GraduateWork
 jobs:
-  dependecies:
+  build:
     runs-on: ubuntu-20.04
     steps:
-      - name: Install Qt
+      - name: (1) Get repository code
+        uses: actions/checkout@v3
+      - name: (2) Install Qt
         uses: jurplel/install-qt-action@v3
         with:
-          version: '5.15.2'
+          version: ${{ env.QT_VERSION }}
           host: 'linux'
           target: 'desktop'
-          dir: '${{ github.workspace }}/qt/'
+          dir: ${{ runner.temp }}
           cache: 'true'
           cache-key-prefix: 'install-qt-action'
-      - name: Get repository code
-        uses: actions/checkout@v3
+          setup-python: 'false'
+      - name: (3) Create build directory
+        run: mkdir 
 #  build:
 #    needs: [dependecies]
