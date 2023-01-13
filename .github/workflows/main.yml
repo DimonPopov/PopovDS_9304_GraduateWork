@@ -6,7 +6,7 @@ on:
 env:
   SOURCE_DIR: ${{ github.workspace }}
   QT_VERSION: '5.15.2'
-  ARTIFACT: test
+  ARTIFACT_NAME: test
 jobs:
   Ubuntu:
     runs-on: ubuntu-20.04
@@ -19,7 +19,7 @@ jobs:
           target: 'desktop'
           dir: '${{ env.SOURCE_DIR }}/qt/'
           cache: 'true'
-          cache-key-prefix: 'install-qt-action'
+          cache-key-prefix: 'qt-ubuntu-cache'
           setup-python: 'false'
       - name: (2) Checkout repo
         uses: actions/checkout@v3
@@ -33,13 +33,13 @@ jobs:
       - name: (1) Install Qt
         uses: jurplel/install-qt-action@v3
         with:
-          version: '5.15.2'
+          version: ${{ env.QT_VERSION }}
           host: 'windows'
           target: 'desktop'
           arch: 'win64_msvc2019_64'
           dir: '${{ env.SOURCE_DIR }}/qt/'
           cache: 'true'
-          cache-key-prefix: 'install-qt-action'
+          cache-key-prefix: 'qt-windows-cache'
           setup-python: 'false'
       - name: (2) Checkout repo
         uses: actions/checkout@v3
@@ -47,5 +47,5 @@ jobs:
         run: mkdir ${{ env.SOURCE_DIR }}/build
       - name: (4) Build
         run: |
-          qmake -r ${{ env.SOURCE_DIR }}\GraduateWork.pro
+          ${{ Qt5_DIR }}/qmake -r ${{ env.SOURCE_DIR }}\GraduateWork.pro
           windeployqt GraduateWork.exe
