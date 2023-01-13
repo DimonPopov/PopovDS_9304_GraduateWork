@@ -12,6 +12,8 @@ jobs:
         #os: [ubuntu-18.04, windows-2019, macos-10.15]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Update
+        run: apt-get update -y
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
