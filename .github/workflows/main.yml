@@ -7,9 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-      - name: (1) Get repository code
-        uses: actions/checkout@v3
-      - name: (2) Install Qt
+      - name: (1) Install Qt
         uses: jurplel/install-qt-action@v3
 #        with:
 #          version: '5.15.2'
@@ -19,6 +17,8 @@ jobs:
 #          cache: 'true'
 #          cache-key-prefix: 'install-qt-action'
 #          setup-python: 'false'
+      - name: (2) Get repository code
+        uses: actions/checkout@v3
       - name: (3) Create build directory
         run: mkdir ${{ github.workspace }}/build
 #  build:
