@@ -9,3 +9,11 @@ jobs:
     steps:
       - name: (1) Install Qt
         uses: jurplel/install-qt-action@v3
+        with:
+          version: '5.15.2'
+          host: 'linux'
+          target: 'desktop'
+          dir: '${{ github.workspace }}/qt/'
+          cache: 'true'
+          cache-key-prefix: 'install-qt-action'
+          setup-python: 'false'
