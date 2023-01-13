@@ -17,3 +17,9 @@ jobs:
           cache: 'true'
           cache-key-prefix: 'install-qt-action'
           setup-python: 'false'
+      - name: (2) Checkout repo
+        uses: actions/checkout@v3
+      - name: (3) Create build directory
+        run: mkdir ${{ github.workspace }}/build
+      - name: (4) Build
+        run: echo Hello!
