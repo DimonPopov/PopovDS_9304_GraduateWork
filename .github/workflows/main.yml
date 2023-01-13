@@ -13,11 +13,9 @@ jobs:
           version: '5.15.2'
           host: 'linux'
           target: 'desktop'
-#          dir: '${{ github.workspace }}/qt/'
-#          #modules:
+          dir: '${{ github.workspace }}/qt/'
           cache: 'true'
           cache-key-prefix: 'install-qt-action'
-#          #setup-python: 'false'
       - name: Get repository code
         uses: actions/checkout@v3
 #  build:
