@@ -4,7 +4,7 @@ on:
     branches:
       - master
 jobs:
-  build:
+  Ubuntu:
     runs-on: ubuntu-20.04
     steps:
       - name: (1) Install Qt
@@ -12,6 +12,25 @@ jobs:
         with:
           version: '5.15.2'
           host: 'linux'
+          target: 'desktop'
+          dir: '${{ github.workspace }}/qt/'
+          cache: 'true'
+          cache-key-prefix: 'install-qt-action'
+          setup-python: 'false'
+      - name: (2) Checkout repo
+        uses: actions/checkout@v3
+      - name: (3) Create build directory
+        run: mkdir ${{ github.workspace }}/build
+      - name: (4) Build
+        run: echo Hello!
+  Windows:
+    runs-on: windows-2019
+    steps:
+      - name: (1) Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '5.15.2'
+          host: 'windows'
           target: 'desktop'
           dir: '${{ github.workspace }}/qt/'
           cache: 'true'
