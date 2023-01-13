@@ -8,6 +8,25 @@ env:
   QT_VERSION: '5.15.2'
   ARTIFACT_NAME: test
 jobs:
+  Ubuntu:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: (1) Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: 'linux'
+          target: 'desktop'
+          dir: '${{ env.SOURCE_DIR }}/qt/'
+          cache: 'true'
+          cache-key-prefix: 'qt-ubuntu-cache'
+          setup-python: 'false'
+      - name: (2) Checkout repo
+        uses: actions/checkout@v3
+      - name: (3) Create build directory
+        run: mkdir ${{ env.SOURCE_DIR }}/build
+      - name: (4) Build
+        run: echo Hello!
   Windows:
     runs-on: windows-2019
     steps:
