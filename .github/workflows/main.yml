@@ -20,6 +20,6 @@ jobs:
           cache-key-prefix: 'install-qt-action'
           setup-python: 'false'
       - name: (3) Create build directory
-        run: mkdir ${{ env.SOURCE_DIR }}\build
+        run: mkdir ${{ github.workspace }}/build
 #  build:
 #    needs: [dependecies]
