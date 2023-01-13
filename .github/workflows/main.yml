@@ -22,8 +22,8 @@ jobs:
           dir: ${{ runner.temp }}
           cache: 'true'
           cache-key-prefix: 'install-qt-action'
-          setup-python: 'false'
+          #setup-python: 'false'
       - name: (3) Create build directory
-        run: mkdir 
+        run: mkdir ${{ runner.temp }}\build
 #  build:
 #    needs: [dependecies]
