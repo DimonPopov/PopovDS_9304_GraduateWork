@@ -5,19 +5,14 @@ on:
       - master
 jobs:
   dependecies:
-    strategy:
-      matrix:
-        qt-version: [5.15.2]
-        os: [ubuntu-20.04]
-        #os: [ubuntu-18.04, windows-2019, macos-10.15]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-20.04
     steps:
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
-#        with:
-#          version: ${{ matrix.qt-version }}
-#          host: 'linux'
-#          target: 'desktop'
+        with:
+          version: '5.15.2'
+          host: 'linux'
+          target: 'desktop'
 #          dir: '${{ github.workspace }}/qt/'
 #          #modules:
 #          cache: 'true'
