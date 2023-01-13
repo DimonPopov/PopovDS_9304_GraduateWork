@@ -46,6 +46,6 @@ jobs:
       - name: (3) Create build directory
         run: mkdir ${{ env.SOURCE_DIR }}/build
       - name: (4) Build
-        run: echo ${{ env.SOURCE_DIR }}
+        run: ls ${{ env.SOURCE_DIR }}/qt/Qt/${{ env.QT_VERSION }}
 #          %Qt5_DIR%/qmake -r ${{ env.SOURCE_DIR }}\GraduateWork.pro
 #          windeployqt GraduateWork.exe
