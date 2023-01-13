@@ -1,0 +1,29 @@
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - master
+jobs:
+  dependecies:
+    strategy:
+      matrix:
+        qt-version: [5.15.2]
+        os: [ubuntu-18.04]
+        #os: [ubuntu-18.04, windows-2019, macos-10.15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ matrix.qt-version }}
+          host: 'linux'
+          target: 'desktop'
+          dir: '${{ github.workspace }}/qt/'
+          #modules:
+          cache: 'true'
+          cache-key-prefix: 'install-qt-action'
+          setup-python: 'false'
+      - name: Get repository code
+        uses: actions/checkout@v3
+#  build:
+#    needs: [dependecies]
