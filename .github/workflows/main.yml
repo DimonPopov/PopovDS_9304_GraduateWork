@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: update
         run: sudo apt-get update --fix-missing
+      - name: upgrade
+        run: sudo apt-get upgrade -y
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
