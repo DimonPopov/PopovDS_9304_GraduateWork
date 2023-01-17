@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui datavisualization
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,16 +10,18 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    surfacegraph.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    surfacegraph.h
 
 FORMS += \
     mainwindow.ui
 
 #TRANSLATIONS += \
-#    GraduateWork_ru_RU.ts
+#    :/tr/GraduateWork_ru_RU.ts
 
 CONFIG += lrelease
 CONFIG += embed_translations
