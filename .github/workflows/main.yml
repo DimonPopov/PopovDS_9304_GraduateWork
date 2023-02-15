@@ -9,7 +9,8 @@ jobs:
   build-ubuntu:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: (2) Checkout repo
+      uses: actions/checkout@v3
     - name: Install Qt 5.15.2 on Ubuntu
       uses: jurplel/install-qt@v3
       with:
@@ -22,7 +23,8 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: (2) Checkout repo
+      uses: actions/checkout@v3
     - name: Install Qt 5.15.2 on Windows
       uses: jurplel/install-qt@v3
       with:
