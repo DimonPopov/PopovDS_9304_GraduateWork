@@ -21,6 +21,7 @@ jobs:
           host: 'linux'
           target: 'desktop'
           dir: '${{ env.SOURCE_DIR }}/qt/'
+          modules: 'datavisualization'
           cache: 'true'
           cache-key-prefix: 'qt-ubuntu-cache'
           setup-python: 'false'
