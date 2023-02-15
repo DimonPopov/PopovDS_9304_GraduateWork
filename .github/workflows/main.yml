@@ -26,7 +26,7 @@ jobs:
       - name: (3) Create build directory
         run: mkdir ${{ env.SOURCE_DIR }}/build
       - name: (4) Build
-        run: ls ../../
+        run: /home/runner/work/PopovDS_9304_GraduateWork/PopovDS_9304_GraduateWork/qt/Qt/5.15.2/gcc_64/bin/qmake -h
   Windows:
     runs-on: windows-2019
     steps:
