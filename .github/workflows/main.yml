@@ -26,7 +26,7 @@ jobs:
       - name: (3) Create build directory
         run: mkdir ${{ env.SOURCE_DIR }}/build
       - name: (4) Build
-        run: /${{ env.SOURCE_DIR }}/qt/${{ env.QT_VERSION }}/gcc_64/bin/qmake -h
+        run: ls /${{ env.SOURCE_DIR }}/qt #/${{ env.QT_VERSION }}/gcc_64/bin/qmake -h
   Windows:
     runs-on: windows-2019
     steps:
