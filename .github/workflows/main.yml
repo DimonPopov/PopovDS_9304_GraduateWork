@@ -1,52 +1,36 @@
-name: Build and Deploy
+name: Build App
 on:
   push:
-    branches:
-      - master
-env:
-  SOURCE_DIR: ${{ github.workspace }}
-  QT_VERSION: '5.15.2'
-  ARTIFACT_NAME: test
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
 jobs:
-  Ubuntu:
-    runs-on: ubuntu-20.04
+  build-ubuntu:
+    runs-on: ubuntu-latest
     steps:
-      - name: (1) Install Qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: ${{ env.QT_VERSION }}
-          host: 'linux'
-          target: 'desktop'
-          dir: '${{ env.SOURCE_DIR }}/qt/'
-          cache: 'true'
-          cache-key-prefix: 'qt-ubuntu-cache'
-          setup-python: 'false'
-      - name: (2) Checkout repo
-        uses: actions/checkout@v3
-      - name: (3) Create build directory
-        run: mkdir ${{ env.SOURCE_DIR }}/build
-      - name: (4) Build
-        run: echo Hello!
-  Windows:
-    runs-on: windows-2019
+    - uses: actions/checkout@v3
+    - name: Install Qt 5.15.2 on Ubuntu
+      uses: jurplel/install-qt@v3
+      with:
+        version: '5.15.2'
+        target: Desktop
+        distro: 'ubuntu-20.04'
+    - name: Build App on Ubuntu
+      run: qmake && make
+
+  build-windows:
+    runs-on: windows-latest
     steps:
-      - name: (1) Install Qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: ${{ env.QT_VERSION }}
-          host: 'windows'
-          target: 'desktop'
-          arch: 'win64_msvc2019_64'
-          dir: '${{ env.SOURCE_DIR }}/qt/'
-          cache: 'true'
-          cache-key-prefix: 'qt-windows-cache'
-          setup-python: 'false'
-      - name: (2) Checkout repo
-        uses: actions/checkout@v3
-      - name: (3) Create build directory
-        run: mkdir ${{ env.SOURCE_DIR }}/build
-      - name: (4) Build
-        run: dir %Qt5_DIR%/
+    - uses: actions/checkout@v3
+    - name: Install Qt 5.15.2 on Windows
+      uses: jurplel/install-qt@v3
+      with:
+        version: '5.15.2'
+        target: Desktop
+        distro: 'windows'
+    - name: Build App on Windows
+      run: qmake && nmake
 
 #          %Qt5_DIR%/qmake -r ${{ env.SOURCE_DIR }}\GraduateWork.pro
 #          windeployqt GraduateWork.exe
