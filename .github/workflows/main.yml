@@ -9,7 +9,7 @@ jobs:
     steps:
     - name: (2) Checkout repo
       uses: actions/checkout@v3
-    - name: Install Qt 5.15.2 on Ubuntu
+    - name: (3) Install Qt
       uses: jurplel/install-qt-action@v3
       with:
         version: ${{ env.QT_VERSION }}
@@ -18,7 +18,7 @@ jobs:
         dir: '${{ env.SOURCE_DIR }}/qt/'
         cache: 'true'
         cache-key-prefix: 'qt-ubuntu-cache'
-        setup-python: 'false'
+        setup-python: 'true'
     - name: Build App on Ubuntu
       run: qmake && make
 
@@ -27,7 +27,7 @@ jobs:
     steps:
     - name: (2) Checkout repo
       uses: actions/checkout@v3
-    - name: Install Qt 5.15.2 on Windows
+    - name: (3) Install Qt
       uses: jurplel/install-qt-action@v3
       with:
         version: ${{ env.QT_VERSION }}
@@ -37,7 +37,7 @@ jobs:
         dir: '${{ env.SOURCE_DIR }}/qt/'
         cache: 'true'
         cache-key-prefix: 'qt-windows-cache'
-        setup-python: 'false'
+        setup-python: 'true'
     - name: Build App on Windows
       run: qmake && nmake
       
