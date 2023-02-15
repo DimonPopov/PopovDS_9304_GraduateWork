@@ -44,9 +44,9 @@ public slots:
 
 private:
     Q3DSurface *m_graph;
-    QHeightMapSurfaceDataProxy *m_heightMapProxy;
+//    QHeightMapSurfaceDataProxy *m_heightMapProxy;
     QSurfaceDataProxy *m_sqrtSinProxy;
-    QSurface3DSeries *m_heightMapSeries;
+//    QSurface3DSeries *m_heightMapSeries;
     QSurface3DSeries *m_sqrtSinSeries;
 
     QSlider *m_axisMinSliderX;
@@ -57,12 +57,13 @@ private:
     float m_rangeMinZ;
     float m_stepX;
     float m_stepZ;
-    int m_heightMapWidth;
-    int m_heightMapHeight;
+//    int m_heightMapWidth;
+//    int m_heightMapHeight;
 
     void setAxisXRange(float min, float max);
     void setAxisZRange(float min, float max);
     void fillSqrtSinProxy();
+    void initTestData();
 };
 
 #endif // SURFACEGRAPH_H
