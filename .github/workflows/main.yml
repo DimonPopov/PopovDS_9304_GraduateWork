@@ -31,6 +31,3 @@ jobs:
         distro: 'windows'
     - name: Build App on Windows
       run: qmake && nmake
-
-#          %Qt5_DIR%/qmake -r ${{ env.SOURCE_DIR }}\GraduateWork.pro
-#          windeployqt GraduateWork.exe
