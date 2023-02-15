@@ -25,6 +25,8 @@ jobs:
           cache: 'true'
           cache-key-prefix: 'qt-ubuntu-cache'
           setup-python: 'false'
+      - name: inr
+        run: sudo apt-get install qtdeclarative5-qtquick2-plugin qtdeclarative5-controls-plugin qtdeclarative5-datavisualization-plugin
       - name: (3) Create build directory
         run: mkdir ${{ env.SOURCE_DIR }}/build
       - name: (4) Build
