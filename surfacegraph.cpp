@@ -66,6 +66,7 @@ void SurfaceGraph::fillSqrtSinProxy()
         *dataArray << newRow;
     }
 
+
     m_sqrtSinProxy->resetArray(dataArray);
 }
 
