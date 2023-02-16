@@ -9,9 +9,8 @@ env:
   ARTIFACT_NAME: test
 jobs:
   Ubuntu:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      
       - name: (1) Checkout repo
         uses: actions/checkout@v3
       - name: (2) Install Qt
@@ -21,6 +20,7 @@ jobs:
           host: 'linux'
           target: 'desktop'
           dir: '${{ env.SOURCE_DIR }}/qt/'
+          modules: 'qtcharts qtdatavis3d'
           cache: 'true'
           cache-key-prefix: 'qt-ubuntu-cache'
           setup-python: 'false'
