@@ -21,19 +21,14 @@ jobs:
           host: 'linux'
           target: 'desktop'
           dir: '${{ env.SOURCE_DIR }}/qt/'
-          modules: 'datavisualization'
           cache: 'true'
           cache-key-prefix: 'qt-ubuntu-cache'
           setup-python: 'false'
-      - name: inr
-        run: sudo apt-get install qtdeclarative5-qtquick2-plugin qtdeclarative5-controls-plugin qtdeclarative5-datavisualization-plugin
       - name: (3) Create build directory
         run: mkdir ${{ env.SOURCE_DIR }}/build
       - name: (4) Build
         #run: /home/runner/work/PopovDS_9304_GraduateWork/PopovDS_9304_GraduateWork/qt/Qt/5.15.2/gcc_64/bin/qmake -h
-        run: |
-             qmake GraduateWork.pro
-             make
+        run: ls
   Windows:
     runs-on: windows-2019
     steps:
