@@ -15,7 +15,7 @@ jobs:
       - name: (1) Checkout repo
         uses: actions/checkout@v3
       - name: (2) Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
           host: 'linux'
