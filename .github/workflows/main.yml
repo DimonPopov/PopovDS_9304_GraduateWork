@@ -6,7 +6,8 @@ on:
 env:
   SOURCE_DIR: ${{ github.workspace }}
   QT_VERSION: '5.15.2'
-  ARTIFACT_NAME: test
+  ARTIFACT_NAME: 'test'
+  PROJECT_NAME: 'GraduateWork'
 jobs:
   Ubuntu:
     runs-on: ubuntu-20.04
@@ -30,14 +31,18 @@ jobs:
       - name: (4) Build
         working-directory: ${{ env.SOURCE_DIR }}/build
         run: |
-             qmake ../GraduateWork.pro
+             qmake ../${{ env.PROJECT_NAME }}.pro
              make
-      - name: (5) Create AppImage
+      - name: (5) Download linuxdeployqtCreate AppImage
         working-directory: ${{ env.SOURCE_DIR }}/build
         run: |
              wget -O deploy.AppImage https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
              chmod +x deploy.AppImage
-             ls
+      - name: (6) Create AppImage
+        working-directory: ${{ env.SOURCE_DIR }}/build
+        run: |
+             ./deploy.AppImage ${{ env.PROJECT_NAME }}.pro -appimage
+             mv ${{ env.PROJECT_NAME }}*.AppImage ${{ env.ARTIFACT_NAME }}
 #  Windows:
 #    runs-on: windows-2019
 #    steps:
