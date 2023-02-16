@@ -52,7 +52,7 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}_${{ env.GITHUB_CONTEXT.GITHUB_SHA }}
           path: ${{ env.SOURCE_DIR }}/build/${{ env.ARTIFACT_NAME }}
       - name: (8) Check env
-        run: env
+        run: echo ${{ GITHUB_CONTEXT }}
           
 #  Windows:
 #    runs-on: windows-2019
