@@ -14,6 +14,10 @@ jobs:
       
       - name: (1) Checkout repo
         uses: actions/checkout@v3
+      - name: (test) Update and upgrade
+        run: |
+             sudo apt-get update
+             sudo apt-get upgrade
       - name: (2) Install Qt
         uses: jurplel/install-qt-action@v2
         with:
