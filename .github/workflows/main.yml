@@ -4,10 +4,9 @@ on:
     branches:
       - master
 env:
-  GITHUB_CONTEXT: ${{ toJson(github.sha) }}
   SOURCE_DIR: ${{ github.workspace }}
   QT_VERSION: '5.15.2'
-  ARTIFACT_NAME: 'test'
+  ARTIFACT_NAME: 'test_artifact'
   PROJECT_NAME: 'GraduateWork'
 jobs:
   Ubuntu:
@@ -49,10 +48,8 @@ jobs:
       - name: (7) Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: "$ARTIFACT_NAME_$env.GITHUB_CONTEXT"
+          name: ${{ ARTIFACT_NAME }}
           path: ${{ env.SOURCE_DIR }}/build/${{ env.ARTIFACT_NAME }}
-      - name: (8) Check env
-        run: echo "$GITHUB_CONTEXT.sha"
           
 #  Windows:
 #    runs-on: windows-2019
