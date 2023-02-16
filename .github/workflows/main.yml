@@ -27,6 +27,8 @@ jobs:
       - name: (3) Download datavisualization module
         run: |
              sudo apt-get install libqt5datavisualization5-dev qt5-default libqt5charts5 libqt5charts5-dev
+             sudo apt-get update
+             sudo apt-get upgrade
       - name: (4) Create build directory
         run: mkdir ${{ env.SOURCE_DIR }}/build
       - name: (5) Build
@@ -34,26 +36,27 @@ jobs:
              cd ./build
              qmake ../GraduateWork.pro
              make
-  Windows:
-    runs-on: windows-2019
-    steps:
-      - name: (1) Install Qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: ${{ env.QT_VERSION }}
-          host: 'windows'
-          target: 'desktop'
-          arch: 'win64_msvc2019_64'
-          dir: '${{ env.SOURCE_DIR }}/qt/'
-          cache: 'true'
-          cache-key-prefix: 'qt-windows-cache'
-          setup-python: 'false'
-      - name: (2) Checkout repo
-        uses: actions/checkout@v3
-      - name: (3) Create build directory
-        run: mkdir ${{ env.SOURCE_DIR }}/build
-      - name: (4) Build
-        run: dir %Qt5_DIR%/
+#  Windows:
+#    runs-on: windows-2019
+#    steps:
+#      - name: (1) Install Qt
+#        uses: jurplel/install-qt-action@v3
+#        with:
+#          version: ${{ env.QT_VERSION }}
+#          host: 'windows'
+#          target: 'desktop'
+#          arch: 'win64_msvc2019_64'
+#          dir: '${{ env.SOURCE_DIR }}/qt/'
+#          cache: 'true'
+#          cache-key-prefix: 'qt-windows-cache'
+#          setup-python: 'false'
+#      - name: (2) Checkout repo
+#        uses: actions/checkout@v3
+#      - name: (3) Create build directory
+#        run: mkdir ${{ env.SOURCE_DIR }}/build
+#      - name: (4) Build
+#        run: dir %Qt5_DIR%/
+
 
 #          %Qt5_DIR%/qmake -r ${{ env.SOURCE_DIR }}\GraduateWork.pro
 #          windeployqt GraduateWork.exe
