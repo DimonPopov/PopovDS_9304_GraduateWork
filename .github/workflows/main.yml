@@ -48,7 +48,7 @@ jobs:
       - name: (7) Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ ARTIFACT_NAME }}
+          name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.SOURCE_DIR }}/build/${{ env.ARTIFACT_NAME }}
           
 #  Windows:
