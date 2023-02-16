@@ -24,11 +24,15 @@ jobs:
           cache: 'true'
           cache-key-prefix: 'qt-ubuntu-cache'
           setup-python: 'false'
-      - name: (3) Create build directory
+      - name: (3) Download datavisualization module
+        run: sudo apt-get install libqt5datavisualization5-dev
+      - name: (4) Create build directory
         run: mkdir ${{ env.SOURCE_DIR }}/build
-      - name: (4) Build
-        #run: /home/runner/work/PopovDS_9304_GraduateWork/PopovDS_9304_GraduateWork/qt/Qt/5.15.2/gcc_64/bin/qmake -h
-        run: ls
+      - name: (5) Build
+        run: |
+             cd ./build
+             qmake ../GraduateWork.pro
+             make
   Windows:
     runs-on: windows-2019
     steps:
