@@ -26,9 +26,7 @@ jobs:
           setup-python: 'false'
       - name: (3) Download datavisualization module
         run: |
-             sudo apt-get install libqt5datavisualization5-dev qt5-default libqt5charts5 libqt5charts5-dev
-             sudo apt-get update
-             sudo apt-get upgrade
+             sudo apt-get install libqt5datavisualization5-dev qt5-default libqt5charts5 libqt5charts5-dev libqt5datavisualization5
       - name: (4) Create build directory
         run: mkdir ${{ env.SOURCE_DIR }}/build
       - name: (5) Build
