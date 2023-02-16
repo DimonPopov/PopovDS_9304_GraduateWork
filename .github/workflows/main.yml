@@ -39,17 +39,19 @@ jobs:
              wget -O deploy.AppImage https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
              chmod +x deploy.AppImage
              export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/gcc_64/lib/
-             cp ${{ env.SOURCE_DIR }}/linux/* .
+             cp ${{ github.workspace }}/linux/* .
       - name: (6) Create AppImage
         working-directory: ${{ env.SOURCE_DIR }}/build
         run: |
-             ./deploy.AppImage ${{ env.PROJECT_NAME }} -unsupported-allow-new-glibc -appimage
+             ./deploy.AppImage ${{ env.PROJECT_NAME }}.desktop -unsupported-allow-new-glibc -appimage
              mv ${{ env.PROJECT_NAME }}*.AppImage ${{ env.ARTIFACT_NAME }}
       - name: (7) Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.SOURCE_DIR }}/build/${{ env.ARTIFACT_NAME }}
+      - name: (8) Check env
+        run: env
           
 #  Windows:
 #    runs-on: windows-2019
