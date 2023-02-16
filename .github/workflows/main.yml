@@ -41,8 +41,14 @@ jobs:
       - name: (6) Create AppImage
         working-directory: ${{ env.SOURCE_DIR }}/build
         run: |
-             ./deploy.AppImage ${{ env.PROJECT_NAME }}.pro -appimage
+             ./deploy.AppImage ${{ env.PROJECT_NAME }}.pro -unsupported-allow-new-glibc -appimage
              mv ${{ env.PROJECT_NAME }}*.AppImage ${{ env.ARTIFACT_NAME }}
+      - name: (7) Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.SOURCE_DIR }}/build/${{ env.ARTIFACT_NAME }}
+          
 #  Windows:
 #    runs-on: windows-2019
 #    steps:
