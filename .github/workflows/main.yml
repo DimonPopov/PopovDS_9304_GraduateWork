@@ -19,21 +19,22 @@ jobs:
           version: ${{ env.QT_VERSION }}
           host: 'linux'
           target: 'desktop'
+          arch: 'gcc_64'
           dir: '${{ env.SOURCE_DIR }}/qt/'
-          modules: 'qtcharts qtdatavis3d'
+          modules: 'qtdatavis3d'
           cache: 'true'
           cache-key-prefix: 'qt-ubuntu-cache'
           setup-python: 'false'
-#      - name: (3) Download datavisualization module
-#        run: |
-#             sudo apt-get install libqt5datavisualization5-dev qt5-default libqt5charts5 libqt5charts5-dev libqt5datavisualization5
-      - name: (4) Create build directory
+      - name: (3) Create build directory
         run: mkdir ${{ env.SOURCE_DIR }}/build
-      - name: (5) Build
+      - name: (4) Build
+        working-directory: ${{ env.SOURCE_DIR }}/build
         run: |
-             cd ./build
              qmake ../GraduateWork.pro
              make
+      - name: (5) Create AppImage
+        working-directory: ${{ env.SOURCE_DIR }}/build
+        run: echo 'appimage...'
 #  Windows:
 #    runs-on: windows-2019
 #    steps:
