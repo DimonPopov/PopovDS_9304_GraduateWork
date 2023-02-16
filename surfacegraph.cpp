@@ -24,21 +24,40 @@ SurfaceGraph::SurfaceGraph(Q3DSurface *surface)
     m_sqrtSinProxy = new QSurfaceDataProxy();
     m_sqrtSinSeries = new QSurface3DSeries(m_sqrtSinProxy);
 
-    fillSqrtSinProxy();
+    initTestData();
 
-    QImage heightMapImage(":/maps/mountain");
-    m_heightMapProxy = new QHeightMapSurfaceDataProxy(heightMapImage);
-    m_heightMapSeries = new QSurface3DSeries(m_heightMapProxy);
-    m_heightMapSeries->setItemLabelFormat(QStringLiteral("(@xLabel, @zLabel): @yLabel"));
-    m_heightMapProxy->setValueRanges(34.0f, 40.0f, 18.0f, 24.0f);
+//    QImage heightMapImage(":/maps/mountain");
+//    m_heightMapProxy = new QHeightMapSurfaceDataProxy(heightMapImage);
+//    m_heightMapSeries = new QSurface3DSeries(m_heightMapProxy);
+//    m_heightMapSeries->setItemLabelFormat(QStringLiteral("(@xLabel, @zLabel): @yLabel"));
+//    m_heightMapProxy->setValueRanges(34.0f, 40.0f, 18.0f, 24.0f);
 
-    m_heightMapWidth = heightMapImage.width();
-    m_heightMapHeight = heightMapImage.height();
+//    m_heightMapWidth = heightMapImage.width();
+//    m_heightMapHeight = heightMapImage.height();
 }
 
 SurfaceGraph::~SurfaceGraph()
 {
     delete m_graph;
+}
+
+void SurfaceGraph::initTestData()
+{
+    QSurfaceDataArray *dataArray = new QSurfaceDataArray;
+    dataArray->reserve(2);
+
+    for (int i = 0; i < 2; i++) {
+        QSurfaceDataRow *row = new QSurfaceDataRow;
+        for (int j = 0; j < 2; j++) {
+            QVector3D point0(i, j, 0);
+            QVector3D point1(i, j, 1);
+            (*row).append(QSurfaceDataItem(point0));
+            (*row).append(QSurfaceDataItem(point1));
+        }
+        *dataArray << row;
+    }
+
+    m_sqrtSinProxy->resetArray(dataArray);
 }
 
 void SurfaceGraph::fillSqrtSinProxy()
@@ -86,7 +105,15 @@ void SurfaceGraph::enableSqrtSinModel(bool enable)
         m_graph->axisY()->setLabelAutoRotation(90);
         m_graph->axisZ()->setLabelAutoRotation(30);
 
-        m_graph->removeSeries(m_heightMapSeries);
+        m_graph->axisX()->setTitle(QStringLiteral("X"));
+        m_graph->axisY()->setTitle(QStringLiteral("Y"));
+        m_graph->axisZ()->setTitle(QStringLiteral("Z"));
+
+        m_graph->axisX()->setTitleVisible(true);
+        m_graph->axisY()->setTitleVisible(true);
+        m_graph->axisZ()->setTitleVisible(true);
+
+//        m_graph->removeSeries(m_heightMapSeries);
         m_graph->addSeries(m_sqrtSinSeries);
 
         m_rangeMinX = sampleMin;
@@ -104,43 +131,43 @@ void SurfaceGraph::enableSqrtSinModel(bool enable)
     }
 }
 
-void SurfaceGraph::enableHeightMapModel(bool enable)
-{
-    if (enable)
-    {
-        m_heightMapSeries->setDrawMode(QSurface3DSeries::DrawSurface);
-        m_heightMapSeries->setFlatShadingEnabled(false);
+//void SurfaceGraph::enableHeightMapModel(bool enable)
+//{
+//    if (enable)
+//    {
+//        m_heightMapSeries->setDrawMode(QSurface3DSeries::DrawSurface);
+//        m_heightMapSeries->setFlatShadingEnabled(false);
 
-        m_graph->axisX()->setLabelFormat("%.1f N");
-        m_graph->axisZ()->setLabelFormat("%.1f E");
-        m_graph->axisX()->setRange(34.0f, 40.0f);
-        m_graph->axisY()->setAutoAdjustRange(true);
-        m_graph->axisZ()->setRange(18.0f, 24.0f);
+//        m_graph->axisX()->setLabelFormat("%.1f N");
+//        m_graph->axisZ()->setLabelFormat("%.1f E");
+//        m_graph->axisX()->setRange(34.0f, 40.0f);
+//        m_graph->axisY()->setAutoAdjustRange(true);
+//        m_graph->axisZ()->setRange(18.0f, 24.0f);
 
-        m_graph->axisX()->setTitle(QStringLiteral("Latitude"));
-        m_graph->axisY()->setTitle(QStringLiteral("Height"));
-        m_graph->axisZ()->setTitle(QStringLiteral("Longitude"));
+//        m_graph->axisX()->setTitle(QStringLiteral("Latitude"));
+//        m_graph->axisY()->setTitle(QStringLiteral("Height"));
+//        m_graph->axisZ()->setTitle(QStringLiteral("Longitude"));
 
-        m_graph->removeSeries(m_sqrtSinSeries);
-        m_graph->addSeries(m_heightMapSeries);
+//        m_graph->removeSeries(m_sqrtSinSeries);
+//        m_graph->addSeries(m_heightMapSeries);
 
-        int mapGridCountX = m_heightMapWidth / heightMapGridStepX;
-        int mapGridCountZ = m_heightMapHeight / heightMapGridStepZ;
+//        int mapGridCountX = m_heightMapWidth / heightMapGridStepX;
+//        int mapGridCountZ = m_heightMapHeight / heightMapGridStepZ;
 
-        m_rangeMinX = 34.0f;
-        m_rangeMinZ = 18.0f;
-        m_stepX = 6.0f / float(mapGridCountX - 1);
-        m_stepZ = 6.0f / float(mapGridCountZ - 1);
-        m_axisMinSliderX->setMaximum(mapGridCountX - 2);
-        m_axisMinSliderX->setValue(0);
-        m_axisMaxSliderX->setMaximum(mapGridCountX - 1);
-        m_axisMaxSliderX->setValue(mapGridCountX - 1);
-        m_axisMinSliderZ->setMaximum(mapGridCountZ - 2);
-        m_axisMinSliderZ->setValue(0);
-        m_axisMaxSliderZ->setMaximum(mapGridCountZ - 1);
-        m_axisMaxSliderZ->setValue(mapGridCountZ - 1);
-    }
-}
+//        m_rangeMinX = 34.0f;
+//        m_rangeMinZ = 18.0f;
+//        m_stepX = 6.0f / float(mapGridCountX - 1);
+//        m_stepZ = 6.0f / float(mapGridCountZ - 1);
+//        m_axisMinSliderX->setMaximum(mapGridCountX - 2);
+//        m_axisMinSliderX->setValue(0);
+//        m_axisMaxSliderX->setMaximum(mapGridCountX - 1);
+//        m_axisMaxSliderX->setValue(mapGridCountX - 1);
+//        m_axisMinSliderZ->setMaximum(mapGridCountZ - 2);
+//        m_axisMinSliderZ->setValue(0);
+//        m_axisMaxSliderZ->setMaximum(mapGridCountZ - 1);
+//        m_axisMaxSliderZ->setValue(mapGridCountZ - 1);
+//    }
+//}
 
 void SurfaceGraph::adjustXMin(int min)
 {
