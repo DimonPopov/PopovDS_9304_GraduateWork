@@ -34,7 +34,10 @@ jobs:
              make
       - name: (5) Create AppImage
         working-directory: ${{ env.SOURCE_DIR }}/build
-        run: echo 'appimage...'
+        run: |
+             wget -O deploy.AppImage https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
+             chmod +x deploy.AppImage
+             ls
 #  Windows:
 #    runs-on: windows-2019
 #    steps:
