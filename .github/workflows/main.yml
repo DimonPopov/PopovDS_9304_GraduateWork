@@ -51,27 +51,30 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.SOURCE_DIR }}/build/${{ env.ARTIFACT_NAME }}
           
-#  Windows:
-#    runs-on: windows-2019
-#    steps:
-#      - name: (1) Install Qt
-#        uses: jurplel/install-qt-action@v3
-#        with:
-#          version: ${{ env.QT_VERSION }}
-#          host: 'windows'
-#          target: 'desktop'
-#          arch: 'win64_msvc2019_64'
-#          dir: '${{ env.SOURCE_DIR }}/qt/'
-#          cache: 'true'
-#          cache-key-prefix: 'qt-windows-cache'
-#          setup-python: 'false'
-#      - name: (2) Checkout repo
-#        uses: actions/checkout@v3
-#      - name: (3) Create build directory
-#        run: mkdir ${{ env.SOURCE_DIR }}/build
-#      - name: (4) Build
-#        run: dir %Qt5_DIR%/
+  Windows:
+    runs-on: windows-2019
+    steps:
+      - name: (1) Checkout repo
+        uses: actions/checkout@v3
+      - name: (2) Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2019_64'
+          dir: '${{ env.SOURCE_DIR }}/qt/'
+          modules: 'qtdatavis3d'
+          cache: 'true'
+          cache-key-prefix: 'qt-windows-cache'
+          setup-python: 'false'
+      
+      - name: (3) Create build directory
+        run: mkdir ${{ env.SOURCE_DIR }}/build
+      - name: (4) Build
+        working-directory: ${{ env.SOURCE_DIR }}/build
+        run: qmake -h
 
 
-#          %Qt5_DIR%/qmake -r ${{ env.SOURCE_DIR }}\GraduateWork.pro
-#          windeployqt GraduateWork.exe
+          %Qt5_DIR%/qmake -r ${{ env.SOURCE_DIR }}\GraduateWork.pro
+          windeployqt GraduateWork.exe
