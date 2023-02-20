@@ -70,23 +70,6 @@ MainWindow::MainWindow(QWidget *parent)
     selectionVBox->addWidget(modeSliceColumnRB);
     selectionGroupBox->setLayout(selectionVBox);
 
-    QSlider *axisMinSliderX = new QSlider(Qt::Horizontal, widget);
-    axisMinSliderX->setMinimum(0);
-    axisMinSliderX->setTickInterval(1);
-    axisMinSliderX->setEnabled(true);
-    QSlider *axisMaxSliderX = new QSlider(Qt::Horizontal, widget);
-    axisMaxSliderX->setMinimum(1);
-    axisMaxSliderX->setTickInterval(1);
-    axisMaxSliderX->setEnabled(true);
-    QSlider *axisMinSliderZ = new QSlider(Qt::Horizontal, widget);
-    axisMinSliderZ->setMinimum(0);
-    axisMinSliderZ->setTickInterval(1);
-    axisMinSliderZ->setEnabled(true);
-    QSlider *axisMaxSliderZ = new QSlider(Qt::Horizontal, widget);
-    axisMaxSliderZ->setMinimum(1);
-    axisMaxSliderZ->setTickInterval(1);
-    axisMaxSliderZ->setEnabled(true);
-
     QComboBox *themeList = new QComboBox(widget);
     themeList->addItem(QStringLiteral("Qt"));
     themeList->addItem(QStringLiteral("Primary Colors"));
@@ -98,12 +81,6 @@ MainWindow::MainWindow(QWidget *parent)
     themeList->addItem(QStringLiteral("Isabelle"));
 
     vLayout->addWidget(selectionGroupBox);
-    vLayout->addWidget(new QLabel(tr("Column range")));
-    vLayout->addWidget(axisMinSliderX);
-    vLayout->addWidget(axisMaxSliderX);
-    vLayout->addWidget(new QLabel(tr("Row range")));
-    vLayout->addWidget(axisMinSliderZ);
-    vLayout->addWidget(axisMaxSliderZ);
     vLayout->addWidget(new QLabel(tr("Theme")));
     vLayout->addWidget(themeList);
 
@@ -117,25 +94,10 @@ MainWindow::MainWindow(QWidget *parent)
             modifier, &SurfaceGraph::toggleModeSliceRow);
     connect(modeSliceColumnRB, &QRadioButton::toggled,
             modifier, &SurfaceGraph::toggleModeSliceColumn);
-    connect(axisMinSliderX, &QSlider::valueChanged,
-            modifier, &SurfaceGraph::adjustXMin);
-    connect(axisMaxSliderX, &QSlider::valueChanged,
-            modifier, &SurfaceGraph::adjustXMax);
-    connect(axisMinSliderZ, &QSlider::valueChanged,
-            modifier, &SurfaceGraph::adjustZMin);
-    connect(axisMaxSliderZ, &QSlider::valueChanged,
-            modifier, &SurfaceGraph::adjustZMax);
     connect(themeList, QOverload<int>::of(&QComboBox::currentIndexChanged),
             modifier, &SurfaceGraph::changeTheme);
 
-    modifier->setAxisMinSliderX(axisMinSliderX);
-    modifier->setAxisMaxSliderX(axisMaxSliderX);
-    modifier->setAxisMinSliderZ(axisMinSliderZ);
-    modifier->setAxisMaxSliderZ(axisMaxSliderZ);
-
     setCentralWidget(widget);
-
-    modifier->enableSqrtSinModel(true);
 }
 
 

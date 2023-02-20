@@ -11,10 +11,12 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    sensor.cpp \
     surfacegraph.cpp
 
 HEADERS += \
     mainwindow.h \
+    sensor.h \
     surfacegraph.h
 
 FORMS += \
