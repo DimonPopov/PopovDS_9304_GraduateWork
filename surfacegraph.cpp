@@ -4,21 +4,20 @@
 #include <Q3DTheme>
 #include <qmath.h>
 
-using namespace QtDataVisualization;
 
 
-SurfaceGraph::SurfaceGraph(Q3DSurface *surface)
+SurfaceGraph::SurfaceGraph(Q3DScatter *surface)
     : m_graph(surface)
 {
     m_graph->setAxisX(new QValue3DAxis);
     m_graph->setAxisY(new QValue3DAxis);
     m_graph->setAxisZ(new QValue3DAxis);
 
-    m_dataProxy = new QSurfaceDataProxy();
-    m_dataSeries = new QSurface3DSeries(m_dataProxy);
+    m_dataProxy = new QScatterDataProxy();
+    m_dataSeries = new QScatter3DSeries(m_dataProxy);
 
-    m_dataSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
-    m_dataSeries->setFlatShadingEnabled(true);
+//    m_dataSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
+//    m_dataSeries->setFlatShadingEnabled(true);
 
     initTestData();
 
@@ -49,13 +48,8 @@ SurfaceGraph::~SurfaceGraph()
 
 void SurfaceGraph::initTestData()
 {
-    QSurfaceDataArray *data = new QSurfaceDataArray;
-    QSurfaceDataRow *dataRow1 = new QSurfaceDataRow;
-    QSurfaceDataRow *dataRow2 = new QSurfaceDataRow;
-
-    *dataRow1 << QVector3D(0.0f, 0.0f, 0.5f) << QVector3D(1.0f, 0.0f, 0.5f) << QVector3D(1.0f, 1.0f, 0.5f);
-    *dataRow2 << QVector3D(0.0f, 0.0f, 0.9f) << QVector3D(1.0f, 0.0f, 0.9f) << QVector3D(1.0f, 1.0f, 1.0f);
-    *data << dataRow1 << dataRow2;
+    QScatterDataArray *data = new QScatterDataArray;
+    *data << QVector3D(0.5f, 0.5f, 0.5f) << QVector3D(-0.3f, -0.5f, -0.4f) << QVector3D(0.0f, -0.3f, 0.2f);
 
     m_dataProxy->resetArray(data);
 }

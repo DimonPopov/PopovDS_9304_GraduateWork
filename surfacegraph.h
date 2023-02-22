@@ -1,21 +1,21 @@
 #ifndef SURFACEGRAPH_H
 #define SURFACEGRAPH_H
 
-#include <Q3DSurface>
-#include <QSurfaceDataProxy>
-#include <QHeightMapSurfaceDataProxy>
-#include <QSurface3DSeries>
+#include <Q3DScatter>
+#include <QScatter3DSeries>
+#include <QScatterDataProxy>
 #include <QSlider>
 
-using namespace QtDataVisualization;
+
+
+//using namespace QtDataVisualization;
 
 class SurfaceGraph : public QObject
 {
     Q_OBJECT
 public:
-    explicit SurfaceGraph(Q3DSurface *surface);
+    explicit SurfaceGraph(Q3DScatter *surface);
     ~SurfaceGraph();
-//    void enableSqrtSinModel(bool enable);
 
     void toggleModeNone() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionNone); }
     void toggleModeItem() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionItem); }
@@ -31,9 +31,9 @@ public slots:
     void changeTheme(int theme);
 
 private:
-    Q3DSurface *m_graph;
-    QSurfaceDataProxy *m_dataProxy;
-    QSurface3DSeries *m_dataSeries;
+    Q3DScatter *m_graph;
+    QScatterDataProxy *m_dataProxy;
+    QScatter3DSeries *m_dataSeries;
 
     void setAxisXRange(float min, float max);
     void setAxisZRange(float min, float max);

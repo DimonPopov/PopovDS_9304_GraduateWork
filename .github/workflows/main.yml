@@ -5,7 +5,7 @@ on:
       - master
 env:
   SOURCE_DIR: ${{ github.workspace }}
-  QT_VERSION: '5.15.2'
+  QT_VERSION: '6.4.2'
   ARTIFACT_NAME: 'test_artifact'
   PROJECT_NAME: 'GraduateWork'
 jobs:
@@ -74,7 +74,3 @@ jobs:
       - name: (4) Build
         working-directory: ${{ env.SOURCE_DIR }}/build
         run: qmake -h
-
-
-          %Qt5_DIR%/qmake -r ${{ env.SOURCE_DIR }}\GraduateWork.pro
-          windeployqt GraduateWork.exe

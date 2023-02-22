@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    Q3DSurface *graph = new Q3DSurface;
+    Q3DScatter *graph = new Q3DScatter;
     QWidget *container = QWidget::createWindowContainer(graph);
 
     if (!graph->hasContext())
