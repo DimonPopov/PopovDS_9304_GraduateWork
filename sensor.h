@@ -1,16 +1,27 @@
 #ifndef SENSOR
 #define SENSOR
 
-#include <QTimer>
+#include <QObject>
+#include <QVector3D>
 
+
+class QTimer;
 
 namespace SensorSpace {
 
-class Sensor : public QTimer
+class Sensor : public QObject
 {
     Q_OBJECT
 public:
-    Sensor(QObject* parent = nullptr);
+    Sensor(const quint32 position, QObject* parent = nullptr);
+    void setTimerStatus(bool status);
+private:
+    const quint32 m_positionInArray;
+    QTimer* m_updateDataTimer;
+signals:
+    void sigSensorUpdateData(const quint32& positionInArray, const QVector3D data);
+private slots:
+    void handleTimerTimeout();
 };
 
 

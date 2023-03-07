@@ -1,6 +1,7 @@
 #include "mainwindow.h"
-#include "surfacegraph.h"
+#include "scatterGraph.h"
 #include "ui_mainwindow.h"
+#include "controllPanel.h"
 
 #include <QMessageBox>
 #include <QScreen>
@@ -20,7 +21,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     Q3DScatter *graph = new Q3DScatter;
-    QWidget *container = QWidget::createWindowContainer(graph);
 
     if (!graph->hasContext())
     {
@@ -31,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     QSize screenSize = graph->screen()->size();
+    QWidget *container = QWidget::createWindowContainer(graph);
+
     container->setMinimumSize(QSize(screenSize.width() / 2, screenSize.height() / 1.6));
     container->setMaximumSize(screenSize);
     container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -43,59 +45,27 @@ MainWindow::MainWindow(QWidget *parent)
     hLayout->addLayout(vLayout);
     vLayout->setAlignment(Qt::AlignTop);
 
-    widget->setWindowTitle(tr("Surface"));
+    setWindowTitle(tr("Surface"));
 
-    QGroupBox *selectionGroupBox = new QGroupBox(tr("Selection Mode"));
+    m_controllPanel = new ControllPanel(this);
+    vLayout->addWidget(m_controllPanel);
 
-    QRadioButton *modeNoneRB = new QRadioButton(widget);
-    modeNoneRB->setText(tr("No selection"));
-    modeNoneRB->setChecked(false);
+    m_graph = new ScatterGraph(graph);
 
-    QRadioButton *modeItemRB = new QRadioButton(widget);
-    modeItemRB->setText(tr("Item"));
-    modeItemRB->setChecked(false);
+    connect(m_controllPanel, &ControllPanel::sigInterpolationPointColorChanged,
+            m_graph, &ScatterGraph::handleSetInterpolationColor);
 
-    QRadioButton *modeSliceRowRB = new QRadioButton(widget);
-    modeSliceRowRB->setText(tr("Row Slice"));
-    modeSliceRowRB->setChecked(false);
+    connect(m_controllPanel, &ControllPanel::sigSensorPointColorChanged,
+            m_graph, &ScatterGraph::handleSetSensorColor);
 
-    QRadioButton *modeSliceColumnRB = new QRadioButton(widget);
-    modeSliceColumnRB->setText(tr("Column Slice"));
-    modeSliceColumnRB->setChecked(false);
+    connect(m_controllPanel, &ControllPanel::sigSensorPointSizeChanged,
+            m_graph, &ScatterGraph::handleSetSensorSize);
 
-    QVBoxLayout *selectionVBox = new QVBoxLayout;
-    selectionVBox->addWidget(modeNoneRB);
-    selectionVBox->addWidget(modeItemRB);
-    selectionVBox->addWidget(modeSliceRowRB);
-    selectionVBox->addWidget(modeSliceColumnRB);
-    selectionGroupBox->setLayout(selectionVBox);
+    connect(m_controllPanel, &ControllPanel::sigInterpolationPointSizeChanged,
+            m_graph, &ScatterGraph::handleSetInterpolationSize);
 
-    QComboBox *themeList = new QComboBox(widget);
-    themeList->addItem(QStringLiteral("Qt"));
-    themeList->addItem(QStringLiteral("Primary Colors"));
-    themeList->addItem(QStringLiteral("Digia"));
-    themeList->addItem(QStringLiteral("Stone Moss"));
-    themeList->addItem(QStringLiteral("Army Blue"));
-    themeList->addItem(QStringLiteral("Retro"));
-    themeList->addItem(QStringLiteral("Ebony"));
-    themeList->addItem(QStringLiteral("Isabelle"));
-
-    vLayout->addWidget(selectionGroupBox);
-    vLayout->addWidget(new QLabel(tr("Theme")));
-    vLayout->addWidget(themeList);
-
-    SurfaceGraph *modifier = new SurfaceGraph(graph);
-
-    connect(modeNoneRB, &QRadioButton::toggled,
-            modifier, &SurfaceGraph::toggleModeNone);
-    connect(modeItemRB, &QRadioButton::toggled,
-            modifier, &SurfaceGraph::toggleModeItem);
-    connect(modeSliceRowRB, &QRadioButton::toggled,
-            modifier, &SurfaceGraph::toggleModeSliceRow);
-    connect(modeSliceColumnRB, &QRadioButton::toggled,
-            modifier, &SurfaceGraph::toggleModeSliceColumn);
-    connect(themeList, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            modifier, &SurfaceGraph::changeTheme);
+    connect(m_controllPanel, &ControllPanel::sigSensorCountChanged,
+            m_graph, &ScatterGraph::handleSetSensorCount);
 
     setCentralWidget(widget);
 }
@@ -105,5 +75,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete m_graph;
 }
 

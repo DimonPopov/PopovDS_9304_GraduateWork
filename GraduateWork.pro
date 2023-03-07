@@ -9,17 +9,21 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    controllPanel.cpp \
     main.cpp \
     mainwindow.cpp \
-    sensor.cpp \
-    surfacegraph.cpp
+    scatterGraph.cpp \
+    sensor.cpp
 
 HEADERS += \
+    controllPanel.h \
     mainwindow.h \
-    sensor.h \
-    surfacegraph.h
+    scatterGraph.h \
+    sensor.h
 
 FORMS += \
+    controllPanel.ui \
+    mainWidget.ui \
     mainwindow.ui
 
 #TRANSLATIONS += \
