@@ -63,6 +63,8 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface)
 ScatterGraph::~ScatterGraph()
 {
     delete m_graph;
+    for (const auto& s : m_sensors)
+        delete s;
 }
 
 void ScatterGraph::initTestData()
