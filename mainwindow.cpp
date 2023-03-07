@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
         return;
     }
 
-    setWindowTitle(tr("Scatter"));
+    setWindowTitle(tr("Surface"));
 
     QSize screenSize = graph->screen()->size();
     QWidget *container = QWidget::createWindowContainer(graph);
@@ -39,6 +39,10 @@ MainWindow::MainWindow(QWidget *parent)
     container->setMaximumSize(screenSize);
     container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     container->setFocusPolicy(Qt::StrongFocus);
+
+    QWidget *widget = new QWidget;
+    QHBoxLayout *hLayout = new QHBoxLayout(widget);
+    QVBoxLayout *vLayout = new QVBoxLayout();
 
     m_controllPanel = new ControllPanel(this);
     m_graph = new ScatterGraph(graph);
@@ -58,11 +62,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_controllPanel, &ControllPanel::sigSensorCountChanged,
             m_graph, &ScatterGraph::handleSetSensorCount);
 
-    QWidget *widget = new QWidget;
-    QHBoxLayout *hLayout = new QHBoxLayout(widget);
+    connect(m_controllPanel, &ControllPanel::sigEmulationButtonClicked,
+            m_graph, &ScatterGraph::handleSetEmulationState);
 
     hLayout->addWidget(container, 1);
-    hLayout->addWidget(m_controllPanel);
+    vLayout->addWidget(m_controllPanel);
+    hLayout->addLayout(vLayout);
+    vLayout->setAlignment(Qt::AlignTop);
+
 
     setCentralWidget(widget);
 }

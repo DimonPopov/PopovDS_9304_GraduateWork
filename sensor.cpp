@@ -8,7 +8,7 @@ SensorSpace::Sensor::Sensor(const quint32 position, QObject* parent)
       m_positionInArray(position),
       m_updateDataTimer(new QTimer(this))
 {
-    m_updateDataTimer->setInterval(2'000);
+    m_updateDataTimer->setInterval(2'00);
 
     connect(m_updateDataTimer, &QTimer::timeout,
             this, &Sensor::handleTimerTimeout);

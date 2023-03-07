@@ -28,6 +28,7 @@ public slots:
     void handleSetInterpolationSize(const double& newValue);
     void handleSetSensorColor(const QColor& newColor);
     void handleSetSensorSize(const double& newValue);
+    void handleSetEmulationState(const bool& state);
 
 private:
     Q3DScatter *m_graph;
@@ -36,9 +37,11 @@ private:
     QScatterDataProxy *m_sensorDataProxy;
     QScatter3DSeries *m_sensorDataSeries;
     QVector<SensorSpace::Sensor*> m_sensors;
+    quint32 m_enabledSensors;
 
     void setAxisXRange(float min, float max);
     void setAxisZRange(float min, float max);
+    void updateSensorArray(const quint32& newValue);
     void initTestData();
 };
 

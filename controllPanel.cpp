@@ -34,6 +34,8 @@ ControllPanel::ControllPanel(QWidget *parent) :
         ui->sensorPointColorCombo->addItem(colorToStr(static_cast<Color>(i)));
     }
 
+    ui->startStopButton->setCheckable(true);
+
     connect(ui->interpolationPointColorCombo, &QComboBox::currentIndexChanged,
             this, &ControllPanel::handleInterpolationPointColorChanged);
 
@@ -48,6 +50,9 @@ ControllPanel::ControllPanel(QWidget *parent) :
 
     connect(ui->sensorCountSpin, &QSpinBox::valueChanged,
             this, &ControllPanel::sigSensorCountChanged);
+
+    connect(ui->startStopButton, &QPushButton::clicked,
+            this, &ControllPanel::sigEmulationButtonClicked);
 }
 
 bool ControllPanel::load()

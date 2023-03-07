@@ -25,8 +25,10 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface)
     m_sensorDataSeries->setBaseColor("red");
     m_sensorDataSeries->setItemSize(0.4);
 
-    m_sensors.resize(3);
-    for (int i = 0; i < 3; ++i)
+    m_sensors.resize(99);
+    m_sensors.shrink_to_fit();
+
+    for (int i = 0; i < 99; ++i)
     {
         m_sensors[i] = new SensorSpace::Sensor(i, this);
 
@@ -56,8 +58,9 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface)
     m_graph->addSeries(m_dataSeries);
     m_graph->addSeries(m_sensorDataSeries);
 
-    for (const auto& s : m_sensors)
-        s->setTimerStatus(true);
+    m_enabledSensors = 3;
+    for (unsigned i = 0; i < m_enabledSensors; ++i)
+        m_sensors[i]->setTimerStatus(true);
 }
 
 ScatterGraph::~ScatterGraph()
@@ -97,6 +100,25 @@ void ScatterGraph::setAxisZRange(float min, float max)
     m_graph->axisZ()->setRange(min, max);
 }
 
+void ScatterGraph::updateSensorArray(const quint32& newValue)
+{
+    if (newValue == m_enabledSensors)
+        return;
+    else if (newValue > m_enabledSensors)
+        for (unsigned i = m_enabledSensors; i < newValue; ++i)
+        {
+            m_sensorDataProxy->addItem(QVector3D(12,12,12));
+            m_sensors[i]->setTimerStatus(true);
+        }
+    else
+    {
+        for (unsigned i = newValue; i < m_enabledSensors; ++i)
+            m_sensors[i]->setTimerStatus(false);
+        m_sensorDataProxy->removeItems(newValue, m_enabledSensors - newValue);
+    }
+    qDebug() << m_enabledSensors << newValue << m_sensorDataProxy->array()->size();
+}
+
 void ScatterGraph::handleAddSensorPoint(const quint32& positionInArray, const QVector3D data)
 {
     m_sensorDataProxy->setItem(positionInArray, QScatterDataItem(data));
@@ -104,7 +126,8 @@ void ScatterGraph::handleAddSensorPoint(const quint32& positionInArray, const QV
 
 void ScatterGraph::handleSetSensorCount(const quint32 &newValue)
 {
-    qDebug() << newValue;
+    updateSensorArray(newValue);
+    m_enabledSensors = newValue;
 }
 
 void ScatterGraph::handleSetInterpolationColor(const QColor &newColor)
@@ -125,6 +148,12 @@ void ScatterGraph::handleSetSensorColor(const QColor &newColor)
 void ScatterGraph::handleSetSensorSize(const double &newValue)
 {
     m_sensorDataSeries->setItemSize(newValue);
+}
+
+void ScatterGraph::handleSetEmulationState(const bool &state)
+{
+    for (unsigned i = 0; i < m_enabledSensors; ++i)
+        m_sensors[i]->setTimerStatus(state);
 }
 
 void ScatterGraph::setBlackToYellowGradient()
