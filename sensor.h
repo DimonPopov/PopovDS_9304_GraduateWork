@@ -24,6 +24,7 @@ private slots:
     void handleTimerTimeout();
 };
 
+QVector3D& getSensorPosition(const Sensor* sensor);
 
 }
 

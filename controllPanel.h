@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+class QSettings;
+
 namespace Ui {
 class ControllPanel;
 }
@@ -12,12 +14,14 @@ class ControllPanel : public QWidget
     Q_OBJECT
 public:
     explicit ControllPanel(QWidget *parent = nullptr);
-    bool load();
-    bool save();
+    void load();
+    void save();
+    void emitAllSignal();
     ~ControllPanel();
 
 private:
     Ui::ControllPanel *ui;
+    QSettings* m_settings;
 
 signals:
     void sigSensorPointColorChanged(const QColor& color);
@@ -30,6 +34,7 @@ signals:
 private slots:
     void handleSensorPointColorChanged(const int& index);
     void handleInterpolationPointColorChanged(const int& index);
+    void handleEmulationButtonChange(const bool& checked);
 };
 
 #endif // CONTROLLPANEL_H

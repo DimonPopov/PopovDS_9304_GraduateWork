@@ -3,11 +3,13 @@
 #include <QValue3DAxis>
 #include <Q3DTheme>
 #include <qmath.h>
+#include <boost/math/interpolators/barycentric_rational.hpp>
 
 
 
 ScatterGraph::ScatterGraph(Q3DScatter *surface)
-    : m_graph(surface)
+    : m_graph(surface),
+      m_enabledSensors(0)
 {
     m_graph->setAxisX(new QValue3DAxis);
     m_graph->setAxisY(new QValue3DAxis);
@@ -17,13 +19,8 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface)
     m_dataProxy = new QScatterDataProxy();
     m_dataSeries = new QScatter3DSeries(m_dataProxy);
 
-    m_dataSeries->setItemSize(0.3);
-
     m_sensorDataProxy = new QScatterDataProxy();
     m_sensorDataSeries = new QScatter3DSeries(m_sensorDataProxy);
-
-    m_sensorDataSeries->setBaseColor("red");
-    m_sensorDataSeries->setItemSize(0.4);
 
     m_sensors.resize(99);
     m_sensors.shrink_to_fit();
@@ -33,10 +30,8 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface)
         m_sensors[i] = new SensorSpace::Sensor(i, this);
 
         connect(m_sensors[i], &SensorSpace::Sensor::sigSensorUpdateData,
-                this, &ScatterGraph::handleAddSensorPoint);
+                this, &ScatterGraph::handleSetSensorPosition);
     }
-
-    initTestData();
 
     m_graph->axisX()->setLabelFormat("%.2f");
     m_graph->axisZ()->setLabelFormat("%.2f");
@@ -57,10 +52,6 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface)
 
     m_graph->addSeries(m_dataSeries);
     m_graph->addSeries(m_sensorDataSeries);
-
-    m_enabledSensors = 3;
-    for (unsigned i = 0; i < m_enabledSensors; ++i)
-        m_sensors[i]->setTimerStatus(true);
 }
 
 ScatterGraph::~ScatterGraph()
@@ -70,25 +61,25 @@ ScatterGraph::~ScatterGraph()
         delete s;
 }
 
-void ScatterGraph::initTestData()
-{
-    QScatterDataArray *data = new QScatterDataArray;
-    *data << QVector3D(0.0f, 0.0f, 0.0f)
-          << QVector3D(1.1f, 0.0f, 0.0f)
-          << QVector3D(2.2f, 0.0f, 0.0f)
-          << QVector3D(3.3f, 0.0f, 0.0f)
-          << QVector3D(4.4f, 0.0f, 0.0f)
-          << QVector3D(5.5f, 0.0f, 0.0f)
-          << QVector3D(6.6f, 0.0f, 0.0f);
+//void ScatterGraph::initTestData()
+//{
+//    QScatterDataArray *data = new QScatterDataArray;
+//    *data << QVector3D(0.0f, 0.0f, 0.0f)
+//          << QVector3D(1.1f, 0.0f, 0.0f)
+//          << QVector3D(2.2f, 0.0f, 0.0f)
+//          << QVector3D(3.3f, 0.0f, 0.0f)
+//          << QVector3D(4.4f, 0.0f, 0.0f)
+//          << QVector3D(5.5f, 0.0f, 0.0f)
+//          << QVector3D(6.6f, 0.0f, 0.0f);
 
-    QScatterDataArray *dataForSensor = new QScatterDataArray;
-    *dataForSensor << QVector3D(0.0f, 2.0f, 0.0f)
-                   << QVector3D(1.0f, 2.0f, 0.0f)
-                   << QVector3D(2.0f, 2.0f, 0.0f);
+//    QScatterDataArray *dataForSensor = new QScatterDataArray;
+//    *dataForSensor << QVector3D(0.0f, 2.0f, 0.0f)
+//                   << QVector3D(1.0f, 2.0f, 0.0f)
+//                   << QVector3D(2.0f, 2.0f, 0.0f);
 
-    m_dataProxy->resetArray(data);
-    m_sensorDataProxy->resetArray(dataForSensor);
-}
+//    m_dataProxy->resetArray(data);
+//    m_sensorDataProxy->resetArray(dataForSensor);
+//}
 
 void ScatterGraph::setAxisXRange(float min, float max)
 {
@@ -106,20 +97,17 @@ void ScatterGraph::updateSensorArray(const quint32& newValue)
         return;
     else if (newValue > m_enabledSensors)
         for (unsigned i = m_enabledSensors; i < newValue; ++i)
-        {
             m_sensorDataProxy->addItem(QVector3D(12,12,12));
-            m_sensors[i]->setTimerStatus(true);
-        }
     else
-    {
-        for (unsigned i = newValue; i < m_enabledSensors; ++i)
-            m_sensors[i]->setTimerStatus(false);
         m_sensorDataProxy->removeItems(newValue, m_enabledSensors - newValue);
-    }
-    qDebug() << m_enabledSensors << newValue << m_sensorDataProxy->array()->size();
 }
 
-void ScatterGraph::handleAddSensorPoint(const quint32& positionInArray, const QVector3D data)
+void ScatterGraph::calculateInterpolation()
+{
+
+}
+
+void ScatterGraph::handleSetSensorPosition(const quint32& positionInArray, const QVector3D data)
 {
     m_sensorDataProxy->setItem(positionInArray, QScatterDataItem(data));
 }

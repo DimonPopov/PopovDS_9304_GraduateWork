@@ -8,7 +8,7 @@ SensorSpace::Sensor::Sensor(const quint32 position, QObject* parent)
       m_positionInArray(position),
       m_updateDataTimer(new QTimer(this))
 {
-    m_updateDataTimer->setInterval(2'00);
+    m_updateDataTimer->setInterval(200);
 
     connect(m_updateDataTimer, &QTimer::timeout,
             this, &Sensor::handleTimerTimeout);
@@ -27,4 +27,9 @@ void SensorSpace::Sensor::handleTimerTimeout()
     emit sigSensorUpdateData(m_positionInArray, QVector3D(a_random_double,
                                                           a_random_double,
                                                           a_random_double));
+}
+
+QVector3D &SensorSpace::getSensorPosition(const Sensor* sensor)
+{
+
 }

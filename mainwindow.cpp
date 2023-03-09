@@ -65,6 +65,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_controllPanel, &ControllPanel::sigEmulationButtonClicked,
             m_graph, &ScatterGraph::handleSetEmulationState);
 
+    m_controllPanel->emitAllSignal();
+
     hLayout->addWidget(container, 1);
     vLayout->addWidget(m_controllPanel);
     hLayout->addLayout(vLayout);
