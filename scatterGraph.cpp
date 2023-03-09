@@ -4,12 +4,15 @@
 #include <Q3DTheme>
 #include <qmath.h>
 #include <boost/math/interpolators/barycentric_rational.hpp>
+#include <vector>
+#include <boost/rational.hpp>
 
 
 
 ScatterGraph::ScatterGraph(Q3DScatter *surface)
     : m_graph(surface),
-      m_enabledSensors(0)
+      m_enabledSensors(0),
+      m_interpolationCount(0)
 {
     m_graph->setAxisX(new QValue3DAxis);
     m_graph->setAxisY(new QValue3DAxis);
@@ -22,12 +25,14 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface)
     m_sensorDataProxy = new QScatterDataProxy();
     m_sensorDataSeries = new QScatter3DSeries(m_sensorDataProxy);
 
+    m_sensorModel = new SensorSpace::SensorModel(99, m_enabledSensors);
+
     m_sensors.resize(99);
     m_sensors.shrink_to_fit();
 
     for (int i = 0; i < 99; ++i)
     {
-        m_sensors[i] = new SensorSpace::Sensor(i, this);
+        m_sensors[i] = new SensorSpace::Sensor(i, m_sensorModel, this);
 
         connect(m_sensors[i], &SensorSpace::Sensor::sigSensorUpdateData,
                 this, &ScatterGraph::handleSetSensorPosition);
@@ -57,6 +62,7 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface)
 ScatterGraph::~ScatterGraph()
 {
     delete m_graph;
+    delete m_sensorModel;
     for (const auto& s : m_sensors)
         delete s;
 }
@@ -95,25 +101,48 @@ void ScatterGraph::updateSensorArray(const quint32& newValue)
 {
     if (newValue == m_enabledSensors)
         return;
-    else if (newValue > m_enabledSensors)
+
+    if (newValue > m_enabledSensors)
         for (unsigned i = m_enabledSensors; i < newValue; ++i)
-            m_sensorDataProxy->addItem(QVector3D(12,12,12));
+            m_sensorDataProxy->addItem(QVector3D(0,0,0));
     else
         m_sensorDataProxy->removeItems(newValue, m_enabledSensors - newValue);
+
+    for (unsigned i = 0; i < newValue; ++i)
+        m_sensorDataProxy->setItem(i, m_sensorModel->getNewSensorPosition(i));
 }
 
 void ScatterGraph::calculateInterpolation()
 {
-
+    std::vector<double> x;
+    std::vector<double> y;
+    std::vector<double> z;
+    for (auto& p : *m_sensorDataProxy->array())
+    {
+        x.emplace_back(p.x());
+        y.emplace_back(p.y());
+        z.emplace_back(p.z());
+    }
+    auto interpolator = boost::math::interpolators::barycentric_rational<double>(std::move(x), std::move(y));
+    double step = 10.0f / static_cast<double>(m_interpolationCount);
+    QScatterDataArray *data = new QScatterDataArray;
+    for (unsigned i = 0; i < m_interpolationCount; ++i)
+    {
+        double result = interpolator(i * step);
+        *data << QVector3D(i * step, result, 2);
+    }
+    m_dataProxy->resetArray(data);
 }
 
 void ScatterGraph::handleSetSensorPosition(const quint32& positionInArray, const QVector3D data)
 {
     m_sensorDataProxy->setItem(positionInArray, QScatterDataItem(data));
+    calculateInterpolation();
 }
 
 void ScatterGraph::handleSetSensorCount(const quint32 &newValue)
 {
+    m_sensorModel->setEnabledSensor(newValue);
     updateSensorArray(newValue);
     m_enabledSensors = newValue;
 }
@@ -144,28 +173,33 @@ void ScatterGraph::handleSetEmulationState(const bool &state)
         m_sensors[i]->setTimerStatus(state);
 }
 
-void ScatterGraph::setBlackToYellowGradient()
+void ScatterGraph::handleSetInterpolationCount(const quint32 &newValue)
 {
-    QLinearGradient gr;
-    gr.setColorAt(0.0, Qt::black);
-    gr.setColorAt(0.33, Qt::blue);
-    gr.setColorAt(0.67, Qt::red);
-    gr.setColorAt(1.0, Qt::yellow);
-
-    m_graph->seriesList().at(0)->setBaseGradient(gr);
-    m_graph->seriesList().at(0)->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
+    m_interpolationCount = newValue;
 }
 
-void ScatterGraph::setGreenToRedGradient()
-{
-    QLinearGradient gr;
-    gr.setColorAt(0.0, Qt::darkGreen);
-    gr.setColorAt(0.5, Qt::yellow);
-    gr.setColorAt(0.8, Qt::red);
-    gr.setColorAt(1.0, Qt::darkRed);
+//void ScatterGraph::setBlackToYellowGradient()
+//{
+//    QLinearGradient gr;
+//    gr.setColorAt(0.0, Qt::black);
+//    gr.setColorAt(0.33, Qt::blue);
+//    gr.setColorAt(0.67, Qt::red);
+//    gr.setColorAt(1.0, Qt::yellow);
 
-    m_graph->seriesList().at(0)->setBaseGradient(gr);
-    m_graph->seriesList().at(0)->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
-}
+//    m_graph->seriesList().at(0)->setBaseGradient(gr);
+//    m_graph->seriesList().at(0)->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
+//}
+
+//void ScatterGraph::setGreenToRedGradient()
+//{
+//    QLinearGradient gr;
+//    gr.setColorAt(0.0, Qt::darkGreen);
+//    gr.setColorAt(0.5, Qt::yellow);
+//    gr.setColorAt(0.8, Qt::red);
+//    gr.setColorAt(1.0, Qt::darkRed);
+
+//    m_graph->seriesList().at(0)->setBaseGradient(gr);
+//    m_graph->seriesList().at(0)->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
+//}
 
 

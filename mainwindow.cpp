@@ -65,6 +65,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_controllPanel, &ControllPanel::sigEmulationButtonClicked,
             m_graph, &ScatterGraph::handleSetEmulationState);
 
+    connect(m_controllPanel, &ControllPanel::sigInterpolationCountChanged,
+            m_graph, &ScatterGraph::handleSetInterpolationCount);
+
     m_controllPanel->emitAllSignal();
 
     hLayout->addWidget(container, 1);
