@@ -68,6 +68,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_controllPanel, &ControllPanel::sigInterpolationCountChanged,
             m_graph, &ScatterGraph::handleSetInterpolationCount);
 
+    connect(m_controllPanel, &ControllPanel::sigMaxDeviationChanged,
+            m_graph, &ScatterGraph::handleSetMaxDeviation);
+
     m_controllPanel->emitAllSignal();
 
     hLayout->addWidget(container, 1);

@@ -10,6 +10,7 @@
 #define INTERPOLATION_POINT_SIZE  ("InterpolationPointSize")
 #define INTERPOLATION_POINT_COLOR ("InterpolationPointColor")
 #define INTERPOLATION_COUNT       ("InterpolationCount")
+#define MAX_DEVIATION             ("MaxDeviation")
 
 enum Color {
     Undefine = -1,
@@ -69,6 +70,9 @@ ControllPanel::ControllPanel(QWidget *parent) :
 
     connect(ui->interpolationPointsSpin, &QSpinBox::valueChanged,
             this, &ControllPanel::sigInterpolationCountChanged);
+
+    connect(ui->maximumDeviationSpin, &QDoubleSpinBox::valueChanged,
+            this, &ControllPanel::sigMaxDeviationChanged);
 }
 
 ControllPanel::~ControllPanel()
@@ -86,6 +90,7 @@ void ControllPanel::load()
         ui->interpolationPointSizeSpin->setValue(m_settings->value(INTERPOLATION_POINT_SIZE, 0.3f).toDouble());
         ui->interpolationPointColorCombo->setCurrentIndex(m_settings->value(INTERPOLATION_POINT_COLOR, 0).toInt());
         ui->interpolationPointsSpin->setValue(m_settings->value(INTERPOLATION_COUNT, 0).toInt());
+        ui->maximumDeviationSpin->setValue(m_settings->value(MAX_DEVIATION, 0.1f).toDouble());
     m_settings->endGroup();
 }
 
@@ -98,6 +103,7 @@ void ControllPanel::save()
         m_settings->setValue(INTERPOLATION_POINT_SIZE, ui->interpolationPointSizeSpin->value());
         m_settings->setValue(INTERPOLATION_POINT_COLOR, ui->interpolationPointColorCombo->currentData());
         m_settings->setValue(INTERPOLATION_COUNT, ui->interpolationPointsSpin->value());
+        m_settings->setValue(MAX_DEVIATION, ui->maximumDeviationSpin->value());
     m_settings->endGroup();
 }
 
@@ -109,6 +115,7 @@ void ControllPanel::emitAllSignal()
     emit sigSensorPointSizeChanged(ui->sensorPointSizeSpin->value());
     emit sigInterpolationPointSizeChanged(ui->interpolationPointSizeSpin->value());
     emit sigInterpolationCountChanged(ui->interpolationPointsSpin->value());
+    emit sigMaxDeviationChanged(ui->maximumDeviationSpin->value());
 }
 
 void ControllPanel::handleSensorPointColorChanged(const int& index)
@@ -129,7 +136,7 @@ void ControllPanel::handleEmulationButtonChange(const bool& checked)
 {
     checked ? ui->startStopButton->setText(tr("Stop")) : ui->startStopButton->setText(tr("Start"));
 //    ui->sensorCountSpin->setEnabled(!checked);
-    ui->interpolationPointsSpin->setEnabled(!checked);
+//    ui->interpolationPointsSpin->setEnabled(!checked);
 
     emit sigEmulationButtonClicked(checked);
 }

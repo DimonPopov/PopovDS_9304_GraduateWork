@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - pull_request
 env:
   SOURCE_DIR: ${{ github.workspace }}
   QT_VERSION: '6.4.2'

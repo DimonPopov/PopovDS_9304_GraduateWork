@@ -18,9 +18,6 @@ public:
     explicit ScatterGraph(Q3DScatter *surface);
     ~ScatterGraph();
 
-//    void setBlackToYellowGradient();
-//    void setGreenToRedGradient();
-
 public slots:
     void handleSetSensorPosition(const quint32& positionInArray, const QVector3D data);
     void handleSetSensorCount(const quint32& newValue);
@@ -30,6 +27,7 @@ public slots:
     void handleSetInterpolationSize(const double& newValue);
     void handleSetEmulationState(const bool& state);
     void handleSetInterpolationCount(const quint32& newValue);
+    void handleSetMaxDeviation(const double& newMaxValue);
 
 private:
     Q3DScatter *m_graph;
@@ -46,7 +44,6 @@ private:
     void setAxisZRange(float min, float max);
     void updateSensorArray(const quint32& newValue);
     void calculateInterpolation();
-    //    void initTestData();
 };
 
 #endif // ScatterGraph_H

@@ -31,6 +31,7 @@ signals:
     void sigInterpolationPointSizeChanged(const double& interpolationPointSize);
     void sigEmulationButtonClicked(const bool& state);
     void sigInterpolationCountChanged(const quint32& count);
+    void sigMaxDeviationChanged(const double& value);
 
 private slots:
     void handleSensorPointColorChanged(const int& index);

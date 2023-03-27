@@ -5,7 +5,6 @@
 #include <qmath.h>
 #include <boost/math/interpolators/barycentric_rational.hpp>
 #include <vector>
-#include <boost/rational.hpp>
 
 
 
@@ -25,7 +24,7 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface)
     m_sensorDataProxy = new QScatterDataProxy();
     m_sensorDataSeries = new QScatter3DSeries(m_sensorDataProxy);
 
-    m_sensorModel = new SensorSpace::SensorModel(99, m_enabledSensors);
+    m_sensorModel = new SensorSpace::SensorModel(m_enabledSensors);
 
     m_sensors.resize(99);
     m_sensors.shrink_to_fit();
@@ -176,6 +175,11 @@ void ScatterGraph::handleSetEmulationState(const bool &state)
 void ScatterGraph::handleSetInterpolationCount(const quint32 &newValue)
 {
     m_interpolationCount = newValue;
+}
+
+void ScatterGraph::handleSetMaxDeviation(const double &newMaxValue)
+{
+    m_sensorModel->setMaxDeviation(newMaxValue);
 }
 
 //void ScatterGraph::setBlackToYellowGradient()

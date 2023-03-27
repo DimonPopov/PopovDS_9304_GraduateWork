@@ -30,10 +30,10 @@
       <item row="0" column="1">
        <widget class="QSpinBox" name="sensorCountSpin">
         <property name="minimum">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="value">
-         <number>0</number>
+         <number>4</number>
         </property>
        </widget>
       </item>
@@ -83,7 +83,7 @@
          <number>2</number>
         </property>
         <property name="minimum">
-         <double>0.100000000000000</double>
+         <double>0.000000000000000</double>
         </property>
         <property name="maximum">
          <double>1.000000000000000</double>
@@ -116,7 +116,7 @@
          <number>2</number>
         </property>
         <property name="minimum">
-         <double>0.100000000000000</double>
+         <double>0.000000000000000</double>
         </property>
         <property name="maximum">
          <double>1.000000000000000</double>

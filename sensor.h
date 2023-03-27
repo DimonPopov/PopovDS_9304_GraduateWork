@@ -12,13 +12,15 @@ namespace SensorSpace {
 class SensorModel
 {
 public:
-    SensorModel(const quint32& sensorCount, const quint32& enabledSensor);
+    SensorModel(const quint32& enabledSensor);
     QVector3D getNewSensorPosition(const quint32& positionInArray, const bool& timerEnable = false);
     void setEnabledSensor(const quint32& newValue);
+    void setMaxDeviation(const double& newMaxValue);
 private:
-    const quint32 m_sensorCount;
     quint32 m_enabledSensor;
     double m_step;
+    const double m_len;
+    QVector<double> m_dev;
 };
 
 class Sensor : public QObject

@@ -29,11 +29,12 @@ void SensorSpace::Sensor::handleTimerTimeout()
     emit sigSensorUpdateData(m_positionInArray, m_model->getNewSensorPosition(m_positionInArray, true));
 }
 
-SensorSpace::SensorModel::SensorModel(const quint32 &sensorCount, const quint32& enabledSensor)
-    : m_sensorCount(sensorCount),
-      m_enabledSensor(enabledSensor)
+SensorSpace::SensorModel::SensorModel(const quint32& enabledSensor)
+    : m_enabledSensor(enabledSensor),
+      m_len(10.0)
 {
-    m_step = 10.0 / static_cast<double>(m_enabledSensor);
+    m_step = m_len / static_cast<double>(m_enabledSensor);
+    const double lim = m_step / 2;
 }
 
 QVector3D SensorSpace::SensorModel::getNewSensorPosition(const quint32 &positionInArray, const bool& timerEnable)
@@ -50,13 +51,19 @@ QVector3D SensorSpace::SensorModel::getNewSensorPosition(const quint32 &position
             l = 0;
     }
 
-    const double newPosition = 3 + sin(positionInArray);
+    const double curPos = m_step * positionInArray;
+    const double newPosition = 3 + sin(curPos);
 
-    return QVector3D(m_step * positionInArray + f[l], newPosition + f[l], 2);
+    return QVector3D(curPos, newPosition + f[l], 2);
 }
 
 void SensorSpace::SensorModel::setEnabledSensor(const quint32 &newValue)
 {
     m_enabledSensor = newValue;
-    m_step = 10.0 / static_cast<double>(m_enabledSensor);
+    m_step = m_len / static_cast<double>(m_enabledSensor);
+}
+
+void SensorSpace::SensorModel::setMaxDeviation(const double &newMaxValue)
+{
+
 }
