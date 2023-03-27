@@ -1,6 +1,7 @@
 #include "mainwindow.h"
-#include "surfacegraph.h"
+#include "scatterGraph.h"
 #include "ui_mainwindow.h"
+#include "controllPanel.h"
 
 #include <QMessageBox>
 #include <QScreen>
@@ -19,8 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    Q3DSurface *graph = new Q3DSurface;
-    QWidget *container = QWidget::createWindowContainer(graph);
+    Q3DScatter *graph = new Q3DScatter;
 
     if (!graph->hasContext())
     {
@@ -30,7 +30,11 @@ MainWindow::MainWindow(QWidget *parent)
         return;
     }
 
+    setWindowTitle(tr("Surface"));
+
     QSize screenSize = graph->screen()->size();
+    QWidget *container = QWidget::createWindowContainer(graph);
+
     container->setMinimumSize(QSize(screenSize.width() / 2, screenSize.height() / 1.6));
     container->setMaximumSize(screenSize);
     container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -39,103 +43,43 @@ MainWindow::MainWindow(QWidget *parent)
     QWidget *widget = new QWidget;
     QHBoxLayout *hLayout = new QHBoxLayout(widget);
     QVBoxLayout *vLayout = new QVBoxLayout();
+
+    m_controllPanel = new ControllPanel(this);
+    m_graph = new ScatterGraph(graph);
+
+    connect(m_controllPanel, &ControllPanel::sigInterpolationPointColorChanged,
+            m_graph, &ScatterGraph::handleSetInterpolationColor);
+
+    connect(m_controllPanel, &ControllPanel::sigSensorPointColorChanged,
+            m_graph, &ScatterGraph::handleSetSensorColor);
+
+    connect(m_controllPanel, &ControllPanel::sigSensorPointSizeChanged,
+            m_graph, &ScatterGraph::handleSetSensorSize);
+
+    connect(m_controllPanel, &ControllPanel::sigInterpolationPointSizeChanged,
+            m_graph, &ScatterGraph::handleSetInterpolationSize);
+
+    connect(m_controllPanel, &ControllPanel::sigSensorCountChanged,
+            m_graph, &ScatterGraph::handleSetSensorCount);
+
+    connect(m_controllPanel, &ControllPanel::sigEmulationButtonClicked,
+            m_graph, &ScatterGraph::handleSetEmulationState);
+
+    connect(m_controllPanel, &ControllPanel::sigInterpolationCountChanged,
+            m_graph, &ScatterGraph::handleSetInterpolationCount);
+
+    connect(m_controllPanel, &ControllPanel::sigMaxDeviationChanged,
+            m_graph, &ScatterGraph::handleSetMaxDeviation);
+
+    m_controllPanel->emitAllSignal();
+
     hLayout->addWidget(container, 1);
+    vLayout->addWidget(m_controllPanel);
     hLayout->addLayout(vLayout);
     vLayout->setAlignment(Qt::AlignTop);
 
-    widget->setWindowTitle(tr("Surface"));
-
-    QGroupBox *selectionGroupBox = new QGroupBox(tr("Selection Mode"));
-
-    QRadioButton *modeNoneRB = new QRadioButton(widget);
-    modeNoneRB->setText(tr("No selection"));
-    modeNoneRB->setChecked(false);
-
-    QRadioButton *modeItemRB = new QRadioButton(widget);
-    modeItemRB->setText(tr("Item"));
-    modeItemRB->setChecked(false);
-
-    QRadioButton *modeSliceRowRB = new QRadioButton(widget);
-    modeSliceRowRB->setText(tr("Row Slice"));
-    modeSliceRowRB->setChecked(false);
-
-    QRadioButton *modeSliceColumnRB = new QRadioButton(widget);
-    modeSliceColumnRB->setText(tr("Column Slice"));
-    modeSliceColumnRB->setChecked(false);
-
-    QVBoxLayout *selectionVBox = new QVBoxLayout;
-    selectionVBox->addWidget(modeNoneRB);
-    selectionVBox->addWidget(modeItemRB);
-    selectionVBox->addWidget(modeSliceRowRB);
-    selectionVBox->addWidget(modeSliceColumnRB);
-    selectionGroupBox->setLayout(selectionVBox);
-
-    QSlider *axisMinSliderX = new QSlider(Qt::Horizontal, widget);
-    axisMinSliderX->setMinimum(0);
-    axisMinSliderX->setTickInterval(1);
-    axisMinSliderX->setEnabled(true);
-    QSlider *axisMaxSliderX = new QSlider(Qt::Horizontal, widget);
-    axisMaxSliderX->setMinimum(1);
-    axisMaxSliderX->setTickInterval(1);
-    axisMaxSliderX->setEnabled(true);
-    QSlider *axisMinSliderZ = new QSlider(Qt::Horizontal, widget);
-    axisMinSliderZ->setMinimum(0);
-    axisMinSliderZ->setTickInterval(1);
-    axisMinSliderZ->setEnabled(true);
-    QSlider *axisMaxSliderZ = new QSlider(Qt::Horizontal, widget);
-    axisMaxSliderZ->setMinimum(1);
-    axisMaxSliderZ->setTickInterval(1);
-    axisMaxSliderZ->setEnabled(true);
-
-    QComboBox *themeList = new QComboBox(widget);
-    themeList->addItem(QStringLiteral("Qt"));
-    themeList->addItem(QStringLiteral("Primary Colors"));
-    themeList->addItem(QStringLiteral("Digia"));
-    themeList->addItem(QStringLiteral("Stone Moss"));
-    themeList->addItem(QStringLiteral("Army Blue"));
-    themeList->addItem(QStringLiteral("Retro"));
-    themeList->addItem(QStringLiteral("Ebony"));
-    themeList->addItem(QStringLiteral("Isabelle"));
-
-    vLayout->addWidget(selectionGroupBox);
-    vLayout->addWidget(new QLabel(tr("Column range")));
-    vLayout->addWidget(axisMinSliderX);
-    vLayout->addWidget(axisMaxSliderX);
-    vLayout->addWidget(new QLabel(tr("Row range")));
-    vLayout->addWidget(axisMinSliderZ);
-    vLayout->addWidget(axisMaxSliderZ);
-    vLayout->addWidget(new QLabel(tr("Theme")));
-    vLayout->addWidget(themeList);
-
-    SurfaceGraph *modifier = new SurfaceGraph(graph);
-
-    connect(modeNoneRB, &QRadioButton::toggled,
-            modifier, &SurfaceGraph::toggleModeNone);
-    connect(modeItemRB, &QRadioButton::toggled,
-            modifier, &SurfaceGraph::toggleModeItem);
-    connect(modeSliceRowRB, &QRadioButton::toggled,
-            modifier, &SurfaceGraph::toggleModeSliceRow);
-    connect(modeSliceColumnRB, &QRadioButton::toggled,
-            modifier, &SurfaceGraph::toggleModeSliceColumn);
-    connect(axisMinSliderX, &QSlider::valueChanged,
-            modifier, &SurfaceGraph::adjustXMin);
-    connect(axisMaxSliderX, &QSlider::valueChanged,
-            modifier, &SurfaceGraph::adjustXMax);
-    connect(axisMinSliderZ, &QSlider::valueChanged,
-            modifier, &SurfaceGraph::adjustZMin);
-    connect(axisMaxSliderZ, &QSlider::valueChanged,
-            modifier, &SurfaceGraph::adjustZMax);
-    connect(themeList, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            modifier, &SurfaceGraph::changeTheme);
-
-    modifier->setAxisMinSliderX(axisMinSliderX);
-    modifier->setAxisMaxSliderX(axisMaxSliderX);
-    modifier->setAxisMinSliderZ(axisMinSliderZ);
-    modifier->setAxisMaxSliderZ(axisMaxSliderZ);
 
     setCentralWidget(widget);
-
-    modifier->enableSqrtSinModel(true);
 }
 
 
@@ -143,5 +87,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete m_graph;
 }
 
