@@ -44,6 +44,10 @@ jobs:
         run: |
              qmake ../${{ env.PROJECT_NAME }}.pro
              make
+      - name: (*) Install FUSE
+        run: |
+             sudo add-apt-repository universe
+             sudo apt install libfuse2
       - name: (6) Download linuxdeployqt
         working-directory: ${{ env.SOURCE_DIR }}/build
         run: |
