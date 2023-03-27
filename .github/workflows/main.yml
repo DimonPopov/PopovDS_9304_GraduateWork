@@ -28,14 +28,17 @@ jobs:
           cache-key-prefix: 'qt-ubuntu-cache'
           setup-python: 'false'
       - name: (3) Install boost lib
-        uses: MarkusJx/install-boost@v2.4.1
-        with:
-          boost_version: 1.81.0
-          platform_version: 20.04
-      - name: (4) Create build directory
         run: |
-             mkdir ${{ env.SOURCE_DIR }}/build
+             sudo apt-get install libboost-all-dev
+             wget -O boost_1_81_0.tar.gz http://sourceforge.net/projects/boost/files/boost/1.81.0/boost_1_81_0.tar.gz/download
+             tar xzvf boost_1_81_0.tar.gz
+             cd boost_1_81_0/
+             sudo ./bootstrap.sh --prefix=/usr/local
+             sudo ./b2 install
              export LD_LIBRARY_PATH=/usr/local/lib
+        
+      - name: (4) Create build directory
+        run: mkdir ${{ env.SOURCE_DIR }}/build
       - name: (5) Build
         working-directory: ${{ env.SOURCE_DIR }}/build
         run: |
