@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-      - pull_request
+  
 env:
   SOURCE_DIR: ${{ github.workspace }}
   QT_VERSION: '6.4.2'
@@ -20,7 +20,7 @@ jobs:
         with:
           path: |
                 ${{ env.SOURCE_DIR }}/qt/
-                /usr/local/lib
+                /usr/local
           key: qt-boost-lib
       - name: (3) Install Qt
         uses: jurplel/install-qt-action@v3
@@ -31,8 +31,8 @@ jobs:
           arch: 'gcc_64'
           dir: '${{ env.SOURCE_DIR }}/qt/'
           modules: 'qtdatavis3d'
-          cache: 'true'
-          cache-key-prefix: 'qt-ubuntu-cache'
+#          cache: 'true'
+#          cache-key-prefix: 'qt-ubuntu-cache'
           setup-python: 'false'
       - name: (4) Install boost lib
         run: |
