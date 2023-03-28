@@ -15,7 +15,14 @@ jobs:
     steps:
       - name: (1) Checkout repo
         uses: actions/checkout@v3
-      - name: (2) Install Qt
+      - name: (2) Cache deps
+        uses: actions/cache@v3
+        with:
+          path: |
+                ${{ env.SOURCE_DIR }}/qt/
+                /usr/local/lib
+          key: qt-boost-lib
+      - name: (3) Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
@@ -27,7 +34,7 @@ jobs:
           cache: 'true'
           cache-key-prefix: 'qt-ubuntu-cache'
           setup-python: 'false'
-      - name: (3) Install boost lib
+      - name: (4) Install boost lib
         run: |
              sudo apt-get install libboost-all-dev
              wget -O boost_1_81_0.tar.gz http://sourceforge.net/projects/boost/files/boost/1.81.0/boost_1_81_0.tar.gz/download
@@ -37,30 +44,30 @@ jobs:
              sudo ./b2 install
              export LD_LIBRARY_PATH=/usr/local/lib
         
-      - name: (4) Create build directory
+      - name: (5) Create build directory
         run: mkdir ${{ env.SOURCE_DIR }}/build
-      - name: (5) Build
+      - name: (6) Build
         working-directory: ${{ env.SOURCE_DIR }}/build
         run: |
              qmake ../${{ env.PROJECT_NAME }}.pro
              make
-      - name: (*) Install FUSE
+      - name: (7) Install FUSE
         run: |
              sudo add-apt-repository universe
              sudo apt install libfuse2
-      - name: (6) Download linuxdeployqt
+      - name: (8) Download linuxdeployqt
         working-directory: ${{ env.SOURCE_DIR }}/build
         run: |
              wget -O deploy.AppImage https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
              chmod +x deploy.AppImage
              export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/gcc_64/lib/
              cp ${{ env.SOURCE_DIR }}/linux/* .
-      - name: (7) Create AppImage
+      - name: (9) Create AppImage
         working-directory: ${{ env.SOURCE_DIR }}/build
         run: |
              ./deploy.AppImage ${{ env.PROJECT_NAME }} -unsupported-allow-new-glibc -appimage
              mv ${{ env.PROJECT_NAME }}*.AppImage ${{ env.ARTIFACT_NAME }}
-      - name: (8) Upload artifacts
+      - name: (10) Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.ARTIFACT_NAME }}
