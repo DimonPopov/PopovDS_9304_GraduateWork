@@ -47,6 +47,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_controllPanel = new ControllPanel(this);
     m_graph = new ScatterGraph(graph);
 
+    connect(m_controllPanel, &ControllPanel::sigSensorDataChanged,
+            m_graph, &ScatterGraph::handleSetSensorData);
+
     connect(m_controllPanel, &ControllPanel::sigInterpolationPointColorChanged,
             m_graph, &ScatterGraph::handleSetInterpolationColor);
 
@@ -59,9 +62,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_controllPanel, &ControllPanel::sigInterpolationPointSizeChanged,
             m_graph, &ScatterGraph::handleSetInterpolationSize);
 
-    connect(m_controllPanel, &ControllPanel::sigSensorCountChanged,
-            m_graph, &ScatterGraph::handleSetSensorCount);
-
     connect(m_controllPanel, &ControllPanel::sigEmulationButtonClicked,
             m_graph, &ScatterGraph::handleSetEmulationState);
 
@@ -71,13 +71,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_controllPanel, &ControllPanel::sigMaxDeviationChanged,
             m_graph, &ScatterGraph::handleSetMaxDeviation);
 
-    m_controllPanel->emitAllSignal();
+    m_controllPanel->load();
+    m_graph->calculateInterpolation();
 
     hLayout->addWidget(container, 1);
     vLayout->addWidget(m_controllPanel);
     hLayout->addLayout(vLayout);
     vLayout->setAlignment(Qt::AlignTop);
-
 
     setCentralWidget(widget);
 }
