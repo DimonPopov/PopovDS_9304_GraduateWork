@@ -141,6 +141,8 @@ void ScatterGraph::handleSetSensorData(const QPair<quint32, double>& newSensorDa
 
         for (unsigned i = 0; i < newSensCount; ++i)
             proxy->setItem(i, m_sensorModel->getNewSensorPosition(i));
+
+        calculateInterpolation();
     }
 }
 
@@ -175,6 +177,7 @@ void ScatterGraph::handleSetEmulationState(const bool &state)
 void ScatterGraph::handleSetInterpolationCount(const quint32 &newValue)
 {
     m_interpolationCount = newValue;
+    calculateInterpolation();
 }
 
 void ScatterGraph::handleSetMaxDeviation(const double &newMaxValue)
