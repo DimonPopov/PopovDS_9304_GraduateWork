@@ -59,6 +59,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_graph->handleSetSensorVisibility(m_controllPanel->getSensorVisibility());
     m_graph->handleSetInterpolationVisibility(m_controllPanel->getInterpolationVisibility());
 
+    m_graph->calculateInterpolation();
+
     connect(m_controllPanel, &ControllPanel::sigSensorDataChanged,
             m_graph, &ScatterGraph::handleSetSensorData);
 
@@ -91,8 +93,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_controllPanel, &ControllPanel::sigInterpolationVisibilityChanged,
             m_graph, &ScatterGraph::handleSetInterpolationVisibility);
-
-//    m_graph->calculateInterpolation();
 
     hLayout->addWidget(container, 1);
     vLayout->addWidget(m_controllPanel);

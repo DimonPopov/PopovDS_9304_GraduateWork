@@ -22,9 +22,9 @@ namespace BasicSettingValues {
     constexpr double BASIC_ANTENNA_LENGHT = 10.0f;
     constexpr double BASIC_SENSOR_POINT_SIZE = 0.3f;
     constexpr double BASIC_INTERPOLATION_POINT_SIZE = 0.3f;
-    constexpr bool BASIC_ANTENNA_VISIBILITY = false;
-    constexpr bool BASIC_SENSOR_VISIBILITY = false;
-    constexpr bool BASIC_INTERPOLATION_VISIBILITY = false;
+    constexpr bool BASIC_ANTENNA_VISIBILITY = true;
+    constexpr bool BASIC_SENSOR_VISIBILITY = true;
+    constexpr bool BASIC_INTERPOLATION_VISIBILITY = true;
 }
 
 #endif // SETTINGSDEFINE_H

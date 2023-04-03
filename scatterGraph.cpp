@@ -78,20 +78,24 @@ void ScatterGraph::calculateInterpolation()
     std::vector<double> x;
     std::vector<double> y;
     std::vector<double> z;
+
     for (auto& p : *m_sensorSeries->dataProxy()->array())
     {
         x.emplace_back(p.x());
         y.emplace_back(p.y());
         z.emplace_back(p.z());
     }
+
     auto interpolator = boost::math::interpolators::barycentric_rational<double>(std::move(x), std::move(y));
     double step = m_sensorModel->getLenght() / static_cast<double>(m_interpolationCount);
     QScatterDataArray *data = new QScatterDataArray;
+
     for (unsigned i = 0; i < m_interpolationCount; ++i)
     {
         double result = interpolator(i * step);
         *data << QVector3D(i * step, result, 2);
     }
+
     m_interpolationSeries->dataProxy()->resetArray(data);
 }
 
