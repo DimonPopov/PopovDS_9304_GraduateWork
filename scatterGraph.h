@@ -30,6 +30,9 @@ public slots:
     void handleSetEmulationState(const bool& state);
     void handleSetInterpolationCount(const quint32& newValue);
     void handleSetMaxDeviation(const double& newMaxValue);
+    void handleSetAntennaVisibility(const bool& newState);
+    void handleSetSensorVisibility(const bool& newState);
+    void handleSetInterpolationVisibility(const bool& newState);
 
 private:
     Q3DScatter *m_graph;

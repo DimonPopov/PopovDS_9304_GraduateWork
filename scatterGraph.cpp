@@ -178,17 +178,17 @@ void ScatterGraph::handleSetMaxDeviation(const double &newMaxValue)
     m_sensorModel->setMaxDeviation(newMaxValue);
 }
 
-//void ScatterGraph::handleSetAntennaLenght(const double &newLenght)
-//{
-//    m_sensorModel->setAntennaLenght(newLenght);
-//    const quint32 curSensCount = m_sensorModel->getEnabledSensor();
+void ScatterGraph::handleSetAntennaVisibility(const bool &newState)
+{
+    qDebug() << "Antenna = " <<  newState;
+}
 
-//    if (newLenght > m_graph->axisX()->max() - 0.5f)
-//        m_graph->axisX()->setRange(m_graph->axisX()->min(), newLenght + 1);
+void ScatterGraph::handleSetSensorVisibility(const bool &newState)
+{
+    m_sensorSeries->setVisible(newState);
+}
 
-//    if (newLenght + 0.5f < m_graph->axisX()->max())
-//        m_graph->axisX()->setRange(m_graph->axisX()->min(), newLenght + 1);
-
-//    for (quint32 i = 0; i < curSensCount; ++i)
-//        m_sensorDataProxy->setItem(i, m_sensorModel->getNewSensorPosition(i));
-//}
+void ScatterGraph::handleSetInterpolationVisibility(const bool &newState)
+{
+    m_interpolationSeries->setVisible(newState);
+}

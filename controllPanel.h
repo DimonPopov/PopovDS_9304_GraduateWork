@@ -18,6 +18,16 @@ public:
     ~ControllPanel();
     void load();
     void save();
+    double getAntennaLenght() const;
+    double getSensorSize() const;
+    double getInterpolationSize() const;
+    quint32 getSensorCount() const;
+    quint32 getInterpolationCount() const;
+    QColor getSensorColor() const;
+    QColor getInterpolationColor() const;
+    int getAntennaVisibility() const;
+    int getSensorVisibility() const;
+    int getInterpolationVisibility() const;
 
 private:
     Ui::ControllPanel *ui;
@@ -32,6 +42,9 @@ signals:
     void sigEmulationButtonClicked(const bool& state);
     void sigInterpolationCountChanged(const quint32& count);
     void sigMaxDeviationChanged(const double& value);
+    void sigAntennaVisibilityChanged(const bool& state);
+    void sigSensorVisibilityChanged(const bool& state);
+    void sigInterpolationVisibilityChanged(const bool& state);
 
 private slots:
     void handleSensorDataChanged();

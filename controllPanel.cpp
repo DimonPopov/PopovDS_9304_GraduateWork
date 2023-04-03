@@ -2,16 +2,9 @@
 
 #include "controllPanel.h"
 #include "ui_controllPanel.h"
+#include "settingsDefine.h"
 
-#define SETTING_FIRST_GROUP       ("Settings")
-#define SENSOR_COUNT              ("SensorCount")
-#define SENSOR_POINT_SIZE         ("SensorPointSize")
-#define SENSOR_POINT_COLOR        ("SensorPointColor")
-#define INTERPOLATION_POINT_SIZE  ("InterpolationPointSize")
-#define INTERPOLATION_POINT_COLOR ("InterpolationPointColor")
-#define INTERPOLATION_COUNT       ("InterpolationCount")
-#define MAX_DEVIATION             ("MaxDeviation")
-#define ANTENNA_LENGTH            ("AntennaLength")
+
 
 enum Color {
     Undefine = -1,
@@ -47,11 +40,9 @@ ControllPanel::ControllPanel(QWidget *parent) :
         ui->sensorPointColorCombo->addItem(colorToStr(static_cast<Color>(i)), i);
     }
 
-//    load();
+    load();
 
     ui->startStopButton->setCheckable(true);
-    ui->sensorPointColorCombo->setCurrentIndex(-1);
-    ui->interpolationPointColorCombo->setCurrentIndex(-1);
 
     connect(ui->sensorCountSpin, &QSpinBox::valueChanged,
             this, &ControllPanel::handleSensorDataChanged);
@@ -74,7 +65,7 @@ ControllPanel::ControllPanel(QWidget *parent) :
     connect(ui->startStopButton, &QPushButton::clicked,
             this, &ControllPanel::handleEmulationButtonChange);
 
-    connect(ui->interpolationPointsSpin, &QSpinBox::valueChanged,
+    connect(ui->interpolationCountSpin, &QSpinBox::valueChanged,
             this, &ControllPanel::sigInterpolationCountChanged);
 
     connect(ui->maximumDeviationSpin, &QDoubleSpinBox::valueChanged,
@@ -98,30 +89,88 @@ ControllPanel::~ControllPanel()
 
 void ControllPanel::load()
 {
+    using namespace BasicSettingValues;
+
     m_settings->beginGroup(SETTING_FIRST_GROUP);
-        ui->sensorCountSpin->setValue(m_settings->value(SENSOR_COUNT, 4).toInt());
-        ui->antennaLengthSpin->setValue(m_settings->value(ANTENNA_LENGTH, 10.0f).toDouble());
-        ui->sensorPointSizeSpin->setValue(m_settings->value(SENSOR_POINT_SIZE, 0.3f).toDouble());
-        ui->sensorPointColorCombo->setCurrentIndex(m_settings->value(SENSOR_POINT_COLOR, 0).toInt());
-        ui->interpolationPointSizeSpin->setValue(m_settings->value(INTERPOLATION_POINT_SIZE, 0.3f).toDouble());
-        ui->interpolationPointColorCombo->setCurrentIndex(m_settings->value(INTERPOLATION_POINT_COLOR, 0).toInt());
-        ui->interpolationPointsSpin->setValue(m_settings->value(INTERPOLATION_COUNT, 0).toInt());
-        ui->maximumDeviationSpin->setValue(m_settings->value(MAX_DEVIATION, 0.1f).toDouble());
+        ui->sensorCountSpin->setValue(                    m_settings->value(SENSOR_COUNT,              BASIC_SENSOR_COUNT).toInt());
+        ui->antennaLengthSpin->setValue(                  m_settings->value(ANTENNA_LENGTH,            BASIC_ANTENNA_LENGHT).toDouble());
+        ui->sensorPointSizeSpin->setValue(                m_settings->value(SENSOR_POINT_SIZE,         BASIC_SENSOR_POINT_SIZE).toDouble());
+        ui->sensorPointColorCombo->setCurrentIndex(       m_settings->value(SENSOR_POINT_COLOR,        BASIC_SENSOR_POINT_COLOR).toInt());
+        ui->interpolationPointSizeSpin->setValue(         m_settings->value(INTERPOLATION_POINT_SIZE,  BASIC_INTERPOLATION_POINT_SIZE).toDouble());
+        ui->interpolationPointColorCombo->setCurrentIndex(m_settings->value(INTERPOLATION_POINT_COLOR, BASIC_INTERPOLATION_POINT_COLOR).toInt());
+        ui->interpolationCountSpin->setValue(             m_settings->value(INTERPOLATION_COUNT,       BASIC_INTERPOLATION_COUNT).toInt());
+        ui->antennaVisibilityCheck->setChecked(           m_settings->value(ANTENNA_VISIBILITY,        BASIC_ANTENNA_VISIBILITY).toBool());
+        ui->sensorsVisibilityCheck->setChecked(           m_settings->value(SENSOR_VISIBILITY,         BASIC_SENSOR_VISIBILITY).toBool());
+        ui->interpolationVisibilityCheck->setChecked(     m_settings->value(INTERPOLATION_VISIBILITY,  BASIC_INTERPOLATION_VISIBILITY).toBool());
+        ui->maximumDeviationSpin->setValue(               m_settings->value(MAX_DEVIATION,             0.1f).toDouble());
     m_settings->endGroup();
 }
 
 void ControllPanel::save()
 {
     m_settings->beginGroup(SETTING_FIRST_GROUP);
-        m_settings->setValue(SENSOR_COUNT, ui->sensorCountSpin->value());
-        m_settings->setValue(SENSOR_POINT_SIZE, ui->sensorPointSizeSpin->value());
-        m_settings->setValue(SENSOR_POINT_COLOR, ui->sensorPointColorCombo->currentData());
-        m_settings->setValue(INTERPOLATION_POINT_SIZE, ui->interpolationPointSizeSpin->value());
+        m_settings->setValue(SENSOR_COUNT,              ui->sensorCountSpin->value());
+        m_settings->setValue(SENSOR_POINT_SIZE,         ui->sensorPointSizeSpin->value());
+        m_settings->setValue(SENSOR_POINT_COLOR,        ui->sensorPointColorCombo->currentData());
+        m_settings->setValue(INTERPOLATION_POINT_SIZE,  ui->interpolationPointSizeSpin->value());
         m_settings->setValue(INTERPOLATION_POINT_COLOR, ui->interpolationPointColorCombo->currentData());
-        m_settings->setValue(INTERPOLATION_COUNT, ui->interpolationPointsSpin->value());
-        m_settings->setValue(MAX_DEVIATION, ui->maximumDeviationSpin->value());
-        m_settings->setValue(ANTENNA_LENGTH, ui->antennaLengthSpin->value());
+        m_settings->setValue(INTERPOLATION_COUNT,       ui->interpolationCountSpin->value());
+        m_settings->setValue(MAX_DEVIATION,             ui->maximumDeviationSpin->value());
+        m_settings->setValue(ANTENNA_LENGTH,            ui->antennaLengthSpin->value());
+        m_settings->setValue(ANTENNA_VISIBILITY,        ui->antennaVisibilityCheck->checkState());
+        m_settings->setValue(SENSOR_VISIBILITY,         ui->sensorsVisibilityCheck->checkState());
+        m_settings->setValue(INTERPOLATION_VISIBILITY,  ui->interpolationVisibilityCheck->checkState());
     m_settings->endGroup();
+}
+
+double ControllPanel::getAntennaLenght() const
+{
+    return ui->antennaLengthSpin->value();
+}
+
+quint32 ControllPanel::getSensorCount() const
+{
+    return ui->sensorCountSpin->value();
+}
+
+quint32 ControllPanel::getInterpolationCount() const
+{
+    return ui->interpolationCountSpin->value();
+}
+
+double ControllPanel::getSensorSize() const
+{
+    return ui->sensorPointSizeSpin->value();
+}
+
+double ControllPanel::getInterpolationSize() const
+{
+    return ui->interpolationPointSizeSpin->value();
+}
+
+QColor ControllPanel::getSensorColor() const
+{
+    return QColor(ui->sensorPointColorCombo->currentText());
+}
+
+QColor ControllPanel::getInterpolationColor() const
+{
+    return QColor(ui->interpolationPointColorCombo->currentText());
+}
+
+int ControllPanel::getAntennaVisibility() const
+{
+    return ui->antennaVisibilityCheck->checkState();
+}
+
+int ControllPanel::getSensorVisibility() const
+{
+    return ui->sensorsVisibilityCheck->checkState();
+}
+
+int ControllPanel::getInterpolationVisibility() const
+{
+    return ui->interpolationVisibilityCheck->checkState();
 }
 
 void ControllPanel::handleSensorDataChanged()
@@ -157,7 +206,12 @@ void ControllPanel::handleEmulationButtonChange(const bool& checked)
 
 void ControllPanel::handleVisibilityCheckBoxsChanged(const bool &checkState)
 {
-    Q_UNUSED(checkState);
+    const QString senderName = sender()->objectName();
 
-//    sender();
+    if (ui->antennaVisibilityCheck->objectName() == senderName)
+        emit sigAntennaVisibilityChanged(checkState);
+    if (ui->sensorsVisibilityCheck->objectName() == senderName)
+        emit sigSensorVisibilityChanged(checkState);
+    if (ui->interpolationVisibilityCheck->objectName() == senderName)
+        emit sigInterpolationVisibilityChanged(checkState);
 }

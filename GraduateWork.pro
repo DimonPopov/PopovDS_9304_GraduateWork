@@ -19,7 +19,8 @@ HEADERS += \
     controllPanel.h \
     mainwindow.h \
     scatterGraph.h \
-    sensor.h
+    sensor.h \
+    settingsDefine.h
 
 FORMS += \
     controllPanel.ui \

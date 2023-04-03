@@ -47,14 +47,23 @@ MainWindow::MainWindow(QWidget *parent)
     m_controllPanel = new ControllPanel(this);
     m_graph = new ScatterGraph(graph);
 
+    // Получение значений панели управления для графика.
+
+    m_graph->handleSetSensorData({m_controllPanel->getSensorCount(), m_controllPanel->getAntennaLenght()});
+    m_graph->handleSetInterpolationCount(m_controllPanel->getInterpolationCount());
+    m_graph->handleSetSensorSize(m_controllPanel->getSensorSize());
+    m_graph->handleSetInterpolationSize(m_controllPanel->getInterpolationSize());
+    m_graph->handleSetSensorColor(m_controllPanel->getSensorColor());
+    m_graph->handleSetInterpolationColor(m_controllPanel->getInterpolationColor());
+    m_graph->handleSetAntennaVisibility(m_controllPanel->getAntennaVisibility());
+    m_graph->handleSetSensorVisibility(m_controllPanel->getSensorVisibility());
+    m_graph->handleSetInterpolationVisibility(m_controllPanel->getInterpolationVisibility());
+
     connect(m_controllPanel, &ControllPanel::sigSensorDataChanged,
             m_graph, &ScatterGraph::handleSetSensorData);
 
-    connect(m_controllPanel, &ControllPanel::sigInterpolationPointColorChanged,
-            m_graph, &ScatterGraph::handleSetInterpolationColor);
-
-    connect(m_controllPanel, &ControllPanel::sigSensorPointColorChanged,
-            m_graph, &ScatterGraph::handleSetSensorColor);
+    connect(m_controllPanel, &ControllPanel::sigInterpolationCountChanged,
+            m_graph, &ScatterGraph::handleSetInterpolationCount);
 
     connect(m_controllPanel, &ControllPanel::sigSensorPointSizeChanged,
             m_graph, &ScatterGraph::handleSetSensorSize);
@@ -62,17 +71,28 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_controllPanel, &ControllPanel::sigInterpolationPointSizeChanged,
             m_graph, &ScatterGraph::handleSetInterpolationSize);
 
+    connect(m_controllPanel, &ControllPanel::sigSensorPointColorChanged,
+            m_graph, &ScatterGraph::handleSetSensorColor);
+
+    connect(m_controllPanel, &ControllPanel::sigInterpolationPointColorChanged,
+            m_graph, &ScatterGraph::handleSetInterpolationColor);
+
     connect(m_controllPanel, &ControllPanel::sigEmulationButtonClicked,
             m_graph, &ScatterGraph::handleSetEmulationState);
-
-    connect(m_controllPanel, &ControllPanel::sigInterpolationCountChanged,
-            m_graph, &ScatterGraph::handleSetInterpolationCount);
 
     connect(m_controllPanel, &ControllPanel::sigMaxDeviationChanged,
             m_graph, &ScatterGraph::handleSetMaxDeviation);
 
-    m_controllPanel->load();
-    m_graph->calculateInterpolation();
+    connect(m_controllPanel, &ControllPanel::sigAntennaVisibilityChanged,
+            m_graph, &ScatterGraph::handleSetAntennaVisibility);
+
+    connect(m_controllPanel, &ControllPanel::sigSensorVisibilityChanged,
+            m_graph, &ScatterGraph::handleSetSensorVisibility);
+
+    connect(m_controllPanel, &ControllPanel::sigInterpolationVisibilityChanged,
+            m_graph, &ScatterGraph::handleSetInterpolationVisibility);
+
+//    m_graph->calculateInterpolation();
 
     hLayout->addWidget(container, 1);
     vLayout->addWidget(m_controllPanel);
