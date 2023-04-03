@@ -33,10 +33,9 @@ public slots:
 
 private:
     Q3DScatter *m_graph;
-    QScatterDataProxy *m_dataProxy;
-    QScatter3DSeries *m_dataSeries;
-    QScatterDataProxy *m_sensorDataProxy;
-    QScatter3DSeries *m_sensorDataSeries;
+    QScatter3DSeries *m_interpolationSeries;
+    QScatter3DSeries *m_sensorSeries;
+    QScatter3DSeries *m_antennaSeries;
     QVector<SensorSpace::Sensor*> m_sensors;
     SensorSpace::SensorModel* m_sensorModel;
     quint32 m_interpolationCount;

@@ -38,6 +38,7 @@ private slots:
     void handleSensorPointColorChanged(const int& index);
     void handleInterpolationPointColorChanged(const int& index);
     void handleEmulationButtonChange(const bool& checked);
+    void handleVisibilityCheckBoxsChanged(const bool& checkState);
 };
 
 #endif // CONTROLLPANEL_H

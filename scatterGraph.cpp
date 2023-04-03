@@ -17,13 +17,11 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface)
     m_graph->setAxisZ(new QValue3DAxis);
     m_graph->setShadowQuality(QAbstract3DGraph::ShadowQualityNone);
 
-    m_dataProxy = new QScatterDataProxy();
-    m_dataSeries = new QScatter3DSeries(m_dataProxy);
+    m_interpolationSeries = new QScatter3DSeries(new QScatterDataProxy);
+    m_antennaSeries       = new QScatter3DSeries(new QScatterDataProxy);
+    m_sensorSeries        = new QScatter3DSeries(new QScatterDataProxy);
 
-    m_sensorDataProxy = new QScatterDataProxy();
-    m_sensorDataSeries = new QScatter3DSeries(m_sensorDataProxy);
-
-    m_sensorModel = new SensorSpace::SensorModel();
+    m_sensorModel = new SensorSpace::SensorModel;
 
     m_sensors.reserve(100);
 
@@ -52,8 +50,9 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface)
     m_graph->axisY()->setTitleVisible(true);
     m_graph->axisZ()->setTitleVisible(true);
 
-    m_graph->addSeries(m_dataSeries);
-    m_graph->addSeries(m_sensorDataSeries);
+    m_graph->addSeries(m_interpolationSeries);
+    m_graph->addSeries(m_antennaSeries);
+    m_graph->addSeries(m_sensorSeries);
 }
 
 ScatterGraph::~ScatterGraph()
@@ -79,7 +78,7 @@ void ScatterGraph::calculateInterpolation()
     std::vector<double> x;
     std::vector<double> y;
     std::vector<double> z;
-    for (auto& p : *m_sensorDataProxy->array())
+    for (auto& p : *m_sensorSeries->dataProxy()->array())
     {
         x.emplace_back(p.x());
         y.emplace_back(p.y());
@@ -93,12 +92,12 @@ void ScatterGraph::calculateInterpolation()
         double result = interpolator(i * step);
         *data << QVector3D(i * step, result, 2);
     }
-    m_dataProxy->resetArray(data);
+    m_interpolationSeries->dataProxy()->resetArray(data);
 }
 
 void ScatterGraph::handleSetSensorPosition(const quint32& positionInArray, const QVector3D data)
 {
-    m_sensorDataProxy->setItem(positionInArray, QScatterDataItem(data));
+    m_sensorSeries->dataProxy()->setItem(positionInArray, QScatterDataItem(data));
     calculateInterpolation();
 }
 
@@ -110,50 +109,55 @@ void ScatterGraph::handleSetSensorData(const QPair<quint32, double>& newSensorDa
     const double curAntennLenght = m_sensorModel->getLenght();
     const double newAntennLenght = newSensorData.second;
 
-    if (curAntennLenght != newAntennLenght)
+    if (curAntennLenght != newAntennLenght || curSensCount != newSensCount)
     {
-        m_sensorModel->setAntennaLenght(newAntennLenght);
+        auto proxy = m_sensorSeries->dataProxy();
 
-        if (newAntennLenght > m_graph->axisX()->max() - 0.5f)
-            m_graph->axisX()->setRange(m_graph->axisX()->min(), newAntennLenght + 1);
+        if (curAntennLenght != newAntennLenght)
+        {
+            m_sensorModel->setAntennaLenght(newAntennLenght);
 
-        if (newAntennLenght + 0.5f < m_graph->axisX()->max())
-            m_graph->axisX()->setRange(m_graph->axisX()->min(), newAntennLenght + 1);
+            if (newAntennLenght > m_graph->axisX()->max() - 0.5f)
+                m_graph->axisX()->setRange(m_graph->axisX()->min(), newAntennLenght + 1);
+
+            if (newAntennLenght + 0.5f < m_graph->axisX()->max())
+                m_graph->axisX()->setRange(m_graph->axisX()->min(), newAntennLenght + 1);
+        }
+
+        if (curSensCount != newSensCount)
+        {
+            m_sensorModel->setEnabledSensor(newSensCount);
+
+            if (newSensCount > curSensCount)
+                for (unsigned i = curSensCount; i < newSensCount; ++i)
+                    proxy->addItem(QVector3D(0,0,0));
+            else
+                proxy->removeItems(newSensCount, curSensCount - newSensCount);
+        }
+
+        for (unsigned i = 0; i < newSensCount; ++i)
+            proxy->setItem(i, m_sensorModel->getNewSensorPosition(i));
     }
-
-    if (curSensCount != newSensCount)
-    {
-        m_sensorModel->setEnabledSensor(newSensCount);
-
-        if (newSensCount > curSensCount)
-            for (unsigned i = curSensCount; i < newSensCount; ++i)
-                m_sensorDataProxy->addItem(QVector3D(0,0,0));
-        else
-            m_sensorDataProxy->removeItems(newSensCount, curSensCount - newSensCount);
-    }
-
-    for (unsigned i = 0; i < newSensCount; ++i)
-        m_sensorDataProxy->setItem(i, m_sensorModel->getNewSensorPosition(i));
 }
 
 void ScatterGraph::handleSetInterpolationColor(const QColor &newColor)
 {
-    m_dataSeries->setBaseColor(newColor);
+    m_interpolationSeries->setBaseColor(newColor);
 }
 
 void ScatterGraph::handleSetInterpolationSize(const double &newValue)
 {
-    m_dataSeries->setItemSize(newValue);
+    m_interpolationSeries->setItemSize(newValue);
 }
 
 void ScatterGraph::handleSetSensorColor(const QColor &newColor)
 {
-    m_sensorDataSeries->setBaseColor(newColor);
+    m_sensorSeries->setBaseColor(newColor);
 }
 
 void ScatterGraph::handleSetSensorSize(const double &newValue)
 {
-    m_sensorDataSeries->setItemSize(newValue);
+    m_sensorSeries->setItemSize(newValue);
 }
 
 void ScatterGraph::handleSetEmulationState(const bool &state)

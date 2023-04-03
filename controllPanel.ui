@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>262</width>
-    <height>385</height>
+    <height>516</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -145,6 +145,36 @@
       </item>
       <item row="3" column="1">
        <widget class="QComboBox" name="interpolationPointColorCombo"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>Visibility</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QCheckBox" name="antennaVisibilityCheck">
+        <property name="text">
+         <string>Antenna</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="sensorsVisibilityCheck">
+        <property name="text">
+         <string>Sensors</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="interpolationVisibilityCheck">
+        <property name="text">
+         <string>Interpolation result</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

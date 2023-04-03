@@ -80,7 +80,14 @@ ControllPanel::ControllPanel(QWidget *parent) :
     connect(ui->maximumDeviationSpin, &QDoubleSpinBox::valueChanged,
             this, &ControllPanel::sigMaxDeviationChanged);
 
+    connect(ui->antennaVisibilityCheck, &QCheckBox::stateChanged,
+            this, &ControllPanel::handleVisibilityCheckBoxsChanged);
 
+    connect(ui->sensorsVisibilityCheck, &QCheckBox::stateChanged,
+            this, &ControllPanel::handleVisibilityCheckBoxsChanged);
+
+    connect(ui->interpolationVisibilityCheck, &QCheckBox::stateChanged,
+            this, &ControllPanel::handleVisibilityCheckBoxsChanged);
 }
 
 ControllPanel::~ControllPanel()
@@ -146,4 +153,11 @@ void ControllPanel::handleEmulationButtonChange(const bool& checked)
 {
     checked ? ui->startStopButton->setText(tr("Stop")) : ui->startStopButton->setText(tr("Start"));
     emit sigEmulationButtonClicked(checked);
+}
+
+void ControllPanel::handleVisibilityCheckBoxsChanged(const bool &checkState)
+{
+    Q_UNUSED(checkState);
+
+//    sender();
 }
