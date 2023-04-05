@@ -45,10 +45,10 @@ ControllPanel::ControllPanel(QWidget *parent) :
     ui->startStopButton->setCheckable(true);
 
     connect(ui->sensorCountSpin, &QSpinBox::valueChanged,
-            this, &ControllPanel::handleSensorDataChanged);
+            this, &ControllPanel::sigSensorCountChanged);
 
     connect(ui->antennaLengthSpin, &QDoubleSpinBox::valueChanged,
-            this, &ControllPanel::handleSensorDataChanged);
+            this, &ControllPanel::sigAntennaLenghtChanged);
 
     connect(ui->interpolationPointColorCombo, &QComboBox::currentIndexChanged,
             this, &ControllPanel::handleInterpolationPointColorChanged);
@@ -171,17 +171,6 @@ int ControllPanel::getSensorVisibility() const
 int ControllPanel::getInterpolationVisibility() const
 {
     return ui->interpolationVisibilityCheck->checkState();
-}
-
-void ControllPanel::handleSensorDataChanged()
-{
-    const int sensCount = ui->sensorCountSpin->value();
-    const double antLenght = ui->antennaLengthSpin->value();
-
-    if (sensCount < 4 || antLenght == 0)
-        return;
-
-    emit sigSensorDataChanged({ui->sensorCountSpin->value(), ui->antennaLengthSpin->value()});
 }
 
 void ControllPanel::handleSensorPointColorChanged(const int& index)

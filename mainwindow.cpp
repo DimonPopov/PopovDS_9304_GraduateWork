@@ -45,11 +45,11 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout *vLayout = new QVBoxLayout();
 
     m_controllPanel = new ControllPanel(this);
-    m_graph = new ScatterGraph(graph);
+    auto antennaModel = new SensorSpace::SensorModel(m_controllPanel->getSensorCount(), m_controllPanel->getAntennaLenght());
+    m_graph = new ScatterGraph(graph, antennaModel);
 
     // Получение значений панели управления для графика.
 
-    m_graph->handleSetSensorData({m_controllPanel->getSensorCount(), m_controllPanel->getAntennaLenght()});
     m_graph->handleSetInterpolationCount(m_controllPanel->getInterpolationCount());
     m_graph->handleSetSensorSize(m_controllPanel->getSensorSize());
     m_graph->handleSetInterpolationSize(m_controllPanel->getInterpolationSize());
@@ -61,8 +61,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_graph->calculateInterpolation();
 
-    connect(m_controllPanel, &ControllPanel::sigSensorDataChanged,
-            m_graph, &ScatterGraph::handleSetSensorData);
+    connect(m_controllPanel, &ControllPanel::sigSensorCountChanged,
+            m_graph, &ScatterGraph::handleSensorCountChanged);
+
+    connect(m_controllPanel, &ControllPanel::sigAntennaLenghtChanged,
+            m_graph, &ScatterGraph::handleAntennaLenghtChanged);
 
     connect(m_controllPanel, &ControllPanel::sigInterpolationCountChanged,
             m_graph, &ScatterGraph::handleSetInterpolationCount);

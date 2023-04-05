@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QVector3D>
+#include <QWeakPointer>
+#include <QSharedPointer>
 
 
 class QTimer;
@@ -12,7 +14,7 @@ namespace SensorSpace {
 class SensorModel
 {
 public:
-    SensorModel(const quint32& enabledSensor = 0);
+    SensorModel(const quint32& enabledSensor = 0, const double& lenght = 0);
     QVector3D getNewSensorPosition(const quint32& positionInArray, const bool& timerEnable = false);
     void setEnabledSensor(const quint32& newValue);
     void setAntennaLenght(const double& newLenght);
@@ -31,11 +33,11 @@ class Sensor : public QObject
 {
     Q_OBJECT
 public:
-    Sensor(const quint32 position, SensorModel* model, QObject* parent = nullptr);
+    Sensor(const quint32 position, QSharedPointer<SensorModel> model, QObject* parent = nullptr);
     void setTimerStatus(bool status);
 private:
     const quint32 m_positionInArray;
-    SensorModel* m_model;
+    QWeakPointer<SensorModel> m_model;
     QTimer* m_updateDataTimer;
     QVector3D m_currentPosition;
 signals:

@@ -6,13 +6,13 @@
 #include "sensor.h"
 
 
-SensorSpace::Sensor::Sensor(const quint32 position, SensorModel* model, QObject* parent)
+SensorSpace::Sensor::Sensor(const quint32 position, QSharedPointer<SensorModel> model, QObject* parent)
     : QObject(parent),
       m_positionInArray(position),
       m_model(model),
       m_updateDataTimer(new QTimer(this))
 {
-    m_updateDataTimer->setInterval(200);
+    m_updateDataTimer->setInterval(1'000);
 
     connect(m_updateDataTimer, &QTimer::timeout,
             this, &Sensor::handleTimerTimeout);
@@ -26,34 +26,28 @@ void SensorSpace::Sensor::setTimerStatus(bool status)
 
 void SensorSpace::Sensor::handleTimerTimeout()
 {
-    emit sigSensorUpdateData(m_positionInArray, m_model->getNewSensorPosition(m_positionInArray, true));
+    emit sigSensorUpdateData(m_positionInArray, m_model.toStrongRef()->getNewSensorPosition(m_positionInArray, true));
 }
 
-SensorSpace::SensorModel::SensorModel(const quint32& enabledSensor)
+SensorSpace::SensorModel::SensorModel(const quint32& enabledSensor, const double& lenght)
     : m_enabledSensor(enabledSensor),
-      m_len(0)
+      m_len(lenght)
 {
     calculateStep();
 }
 
 QVector3D SensorSpace::SensorModel::getNewSensorPosition(const quint32 &positionInArray, const bool& timerEnable)
 {
-    static double f[] = {0, 0.1, 0.03, 0.12,
-                         0.14, 0, 0.27, 0.014,
-                         0, 0.38, 0.34, 0.09 };
-    static int l = 0;
+    Q_UNUSED(timerEnable);
 
-    if (timerEnable)
-    {
-        ++l;
-        if (l == 11)
-            l = 0;
-    }
+    if (!m_enabledSensor || !m_len)
+        throw std::logic_error("Incorrect sensor model parameters");
 
-    const double curPos = m_step * positionInArray;
-    const double newPosition = 3 + sin(curPos);
+    const double x = m_step * positionInArray;
+    const double y = 3 + sin(2 * x + 0.5f);
+    const double z = 2 + x * 0.3f;
 
-    return QVector3D(curPos, newPosition + f[l], 2);
+    return QVector3D(x, y, z);
 }
 
 void SensorSpace::SensorModel::setEnabledSensor(const quint32 &newValue)
@@ -90,5 +84,5 @@ quint32 SensorSpace::SensorModel::getEnabledSensor() const
 
 void SensorSpace::SensorModel::calculateStep()
 {
-    m_step = m_len / static_cast<double>(m_enabledSensor - 1);
+    m_step = m_len / static_cast<double>(m_enabledSensor);
 }

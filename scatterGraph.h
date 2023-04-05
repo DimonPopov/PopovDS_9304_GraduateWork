@@ -7,6 +7,7 @@
 #include <QSlider>
 #include <QVector>
 #include <QPair>
+#include <QSharedPointer>
 
 #include "sensor.h"
 
@@ -16,13 +17,13 @@ class ScatterGraph : public QObject
 {
     Q_OBJECT
 public:
-    explicit ScatterGraph(Q3DScatter *surface);
+    explicit ScatterGraph(Q3DScatter *surface, SensorSpace::SensorModel* model);
     void calculateInterpolation();
-    ~ScatterGraph();
 
 public slots:
-    void handleSetSensorPosition(const quint32& positionInArray, const QVector3D data);
-    void handleSetSensorData(const QPair<quint32, double>& newSensorData);
+    void handleSetSensorPosition(const quint32& positionInArray, const QVector3D data);    
+    void handleSensorCountChanged(const quint32& newCount);
+    void handleAntennaLenghtChanged(const double& newLenght);
     void handleSetSensorColor(const QColor& newColor);
     void handleSetSensorSize(const double& newValue);
     void handleSetInterpolationColor(const QColor& newColor);
@@ -35,17 +36,17 @@ public slots:
     void handleSetInterpolationVisibility(const bool& newState);
 
 private:
-    Q3DScatter *m_graph;
+    QSharedPointer<Q3DScatter> m_graph;
+    QSharedPointer<SensorSpace::SensorModel> m_sensorModel;
+    QVector<QSharedPointer<SensorSpace::Sensor>> m_sensors;
     QScatter3DSeries *m_interpolationSeries;
     QScatter3DSeries *m_sensorSeries;
     QScatter3DSeries *m_antennaSeries;
-    QVector<SensorSpace::Sensor*> m_sensors;
-    SensorSpace::SensorModel* m_sensorModel;
     quint32 m_interpolationCount;
 
     void setAxisXRange(float min, float max);
     void setAxisZRange(float min, float max);
-
+    void updateSens(const quint32& newCount = 0);
 };
 
 #endif // ScatterGraph_H

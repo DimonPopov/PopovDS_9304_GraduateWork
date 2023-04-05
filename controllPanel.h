@@ -2,7 +2,6 @@
 #define CONTROLLPANEL_H
 
 #include <QWidget>
-#include <QPair>
 
 class QSettings;
 
@@ -34,7 +33,9 @@ private:
     QSettings* m_settings;
 
 signals:
-    void sigSensorDataChanged(const QPair<quint32, double>& data);
+    void sigSensorCountChanged(const quint32& count);
+    void sigAntennaLenghtChanged(const double& lenght);
+
     void sigSensorPointColorChanged(const QColor& color);
     void sigSensorPointSizeChanged(const double& sensorPointSize);
     void sigInterpolationPointColorChanged(const QColor& color);
@@ -47,7 +48,6 @@ signals:
     void sigInterpolationVisibilityChanged(const bool& state);
 
 private slots:
-    void handleSensorDataChanged();
     void handleSensorPointColorChanged(const int& index);
     void handleInterpolationPointColorChanged(const int& index);
     void handleEmulationButtonChange(const bool& checked);
