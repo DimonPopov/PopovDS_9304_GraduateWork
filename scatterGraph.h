@@ -8,45 +8,46 @@
 #include <QVector>
 #include <QPair>
 #include <QSharedPointer>
+#include <QScopedPointer>
 
 #include "sensor.h"
+#include "interpolator.h"
 
 
-
+/**
+ * @brief Класс-обертка для Q3DScatter.
+ */
 class ScatterGraph : public QObject
 {
     Q_OBJECT
 public:
-    explicit ScatterGraph(Q3DScatter *surface, SensorSpace::SensorModel* model);
+    explicit ScatterGraph(Q3DScatter* surface,
+                          SensorSpace::Sensors* sensors,
+                          InterpolatorSpace::Interpolator* interpolator);
     void calculateInterpolation();
 
 public slots:
-    void handleSetSensorPosition(const quint32& positionInArray, const QVector3D data);    
-    void handleSensorCountChanged(const quint32& newCount);
-    void handleAntennaLenghtChanged(const double& newLenght);
     void handleSetSensorColor(const QColor& newColor);
     void handleSetSensorSize(const double& newValue);
     void handleSetInterpolationColor(const QColor& newColor);
     void handleSetInterpolationSize(const double& newValue);
     void handleSetEmulationState(const bool& state);
-    void handleSetInterpolationCount(const quint32& newValue);
     void handleSetMaxDeviation(const double& newMaxValue);
     void handleSetAntennaVisibility(const bool& newState);
     void handleSetSensorVisibility(const bool& newState);
     void handleSetInterpolationVisibility(const bool& newState);
 
 private:
-    QSharedPointer<Q3DScatter> m_graph;
-    QSharedPointer<SensorSpace::SensorModel> m_sensorModel;
-    QVector<QSharedPointer<SensorSpace::Sensor>> m_sensors;
-    QScatter3DSeries *m_interpolationSeries;
-    QScatter3DSeries *m_sensorSeries;
-    QScatter3DSeries *m_antennaSeries;
-    quint32 m_interpolationCount;
+    QSharedPointer<Q3DScatter> m_graph;                             ///< График для отображеня.
+    QScopedPointer<SensorSpace::Sensors> m_positionSensors;         ///< Представление набора сенсоров.
+    QScopedPointer<InterpolatorSpace::Interpolator> m_interpolator; ///< Интерполятор.
+    QScatter3DSeries *m_acousticSensorSeries;                       ///< Набор востановленных координат акустических сенсоров.
+    QScatter3DSeries *m_positionSensorSeries;                       ///< Набор координат сенсоров местоположения.
+    QScatter3DSeries *m_trueAntennaModelSeries;                     ///< Набор координат истинной формы антены.
 
     void setAxisXRange(float min, float max);
     void setAxisZRange(float min, float max);
-    void updateSens(const quint32& newCount = 0);
+    void updatePositionSensors();
 };
 
 #endif // ScatterGraph_H

@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     controllPanel.cpp \
+    interpolator.cpp \
     main.cpp \
     mainwindow.cpp \
     scatterGraph.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
 
 HEADERS += \
     controllPanel.h \
+    interpolator.h \
     mainwindow.h \
     scatterGraph.h \
     sensor.h \

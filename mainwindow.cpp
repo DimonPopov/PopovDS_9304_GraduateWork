@@ -45,12 +45,12 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout *vLayout = new QVBoxLayout();
 
     m_controllPanel = new ControllPanel(this);
-    auto antennaModel = new SensorSpace::SensorModel(m_controllPanel->getSensorCount(), m_controllPanel->getAntennaLenght());
-    m_graph = new ScatterGraph(graph, antennaModel);
+    auto sensors = new SensorSpace::Sensors(m_controllPanel->getSensorCount(), m_controllPanel->getAntennaLenght());
+    auto interpolator = new InterpolatorSpace::Interpolator(m_controllPanel->getInterpolationCount(),  m_controllPanel->getAntennaLenght());
+    m_graph = new ScatterGraph(graph, sensors, interpolator);
 
     // Получение значений панели управления для графика.
 
-    m_graph->handleSetInterpolationCount(m_controllPanel->getInterpolationCount());
     m_graph->handleSetSensorSize(m_controllPanel->getSensorSize());
     m_graph->handleSetInterpolationSize(m_controllPanel->getInterpolationSize());
     m_graph->handleSetSensorColor(m_controllPanel->getSensorColor());
@@ -59,16 +59,17 @@ MainWindow::MainWindow(QWidget *parent)
     m_graph->handleSetSensorVisibility(m_controllPanel->getSensorVisibility());
     m_graph->handleSetInterpolationVisibility(m_controllPanel->getInterpolationVisibility());
 
-    m_graph->calculateInterpolation();
-
     connect(m_controllPanel, &ControllPanel::sigSensorCountChanged,
-            m_graph, &ScatterGraph::handleSensorCountChanged);
+            sensors, &SensorSpace::Sensors::handleSetSensorCount);
 
     connect(m_controllPanel, &ControllPanel::sigAntennaLenghtChanged,
-            m_graph, &ScatterGraph::handleAntennaLenghtChanged);
+            interpolator, &InterpolatorSpace::Interpolator::handleAntennaLenghtChanged);
+
+    connect(m_controllPanel, &ControllPanel::sigAntennaLenghtChanged,
+            sensors, &SensorSpace::Sensors::handleSetModelLenght);
 
     connect(m_controllPanel, &ControllPanel::sigInterpolationCountChanged,
-            m_graph, &ScatterGraph::handleSetInterpolationCount);
+            interpolator, &InterpolatorSpace::Interpolator::handleInterpolationCountChanged);
 
     connect(m_controllPanel, &ControllPanel::sigSensorPointSizeChanged,
             m_graph, &ScatterGraph::handleSetSensorSize);

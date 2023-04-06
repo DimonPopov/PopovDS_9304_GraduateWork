@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include <QVector3D>
-#include <QWeakPointer>
-#include <QSharedPointer>
+#include <QScopedPointer>
+
 
 
 class QTimer;
@@ -33,21 +33,40 @@ class Sensor : public QObject
 {
     Q_OBJECT
 public:
-    Sensor(const quint32 position, QSharedPointer<SensorModel> model, QObject* parent = nullptr);
+    Sensor(const quint32& position, QObject* parent = nullptr);
     void setTimerStatus(bool status);
 private:
-    const quint32 m_positionInArray;
-    QWeakPointer<SensorModel> m_model;
-    QTimer* m_updateDataTimer;
-    QVector3D m_currentPosition;
-signals:
-    void sigSensorUpdateData(const quint32& positionInArray, const QVector3D data);
+    const quint32 m_sensorNumber;
+    QTimer* m_timer;
 private slots:
     void handleTimerTimeout();
+signals:
+    void sigSensorTriggered(const quint32& sensorNumber);
 };
 
+class Sensors : public QObject
+{
+    Q_OBJECT
+public:
+    explicit Sensors(const quint32& sensorCount, const double &modelLenght, QObject* parent = nullptr);
+    quint32 getSensorCount() const;
+    double getModelLenght() const;
+    QVector3D getSensorPosition(const quint32& index) const;
+    Sensor* operator[](const quint32& index) const;
+private:
+    QScopedPointer<SensorModel> m_model;
+    QVector<Sensor*> m_sensors;
+public slots:
+    void handleSensorTrigger(const quint32& sensorNumber);
+    void handleSetSensorCount(const quint32& newSensorCount);
+    void handleSetModelLenght(const double& newModelLenght);
+signals:
+    void sigUpdateSensorPosition(const quint32& sensorNumber, const QVector3D& newPosition);
+    void sigModelChanged();
+};
+
+
+
 }
-
-
 
 #endif // SENSOR
