@@ -7,10 +7,16 @@
 
 
 
-ScatterGraph::ScatterGraph(Q3DScatter *surface, SensorSpace::Sensors* sensors, InterpolatorSpace::Interpolator* interpolator)
+using namespace PointContainerSpace;
+
+ScatterGraph::ScatterGraph(Q3DScatter *surface,
+                           QSharedPointer<PositionSensors> positionSensors,
+                           QSharedPointer<AcousticSensors> acousticSensors,
+                           QSharedPointer<TrueModel> trueModel)
     : m_graph(surface),
-      m_positionSensors(sensors),
-      m_interpolator(interpolator)
+      m_positionSensors(positionSensors),
+      m_acousticSensors(acousticSensors),
+      m_trueModel(trueModel)
 {
     // Инициализация сетки графика.
 
@@ -25,7 +31,7 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface, SensorSpace::Sensors* sensors, I
 
     m_graph->axisX()->setLabelFormat("%.2f");
     m_graph->axisZ()->setLabelFormat("%.2f");
-    m_graph->axisX()->setRange(0.0f, sensors->getModelLenght() + 1.0f);
+    m_graph->axisX()->setRange(0.0f, 12.0f);
     m_graph->axisY()->setRange(0.0f, 12.0f);
     m_graph->axisZ()->setRange(0.0f, 12.0f);
     m_graph->axisX()->setLabelAutoRotation(30);
@@ -40,24 +46,22 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface, SensorSpace::Sensors* sensors, I
     m_graph->axisY()->setTitleVisible(true);
     m_graph->axisZ()->setTitleVisible(true);
 
-    // Добавление сенсоров на график.
+    connect(m_positionSensors.data(), &PositionSensors::sigContainerChanged,
+            this, &ScatterGraph::handleUpdatePositionSensors);
 
-    for (unsigned i = 0; i < m_positionSensors->getSensorCount(); ++i)
-        m_positionSensorSeries->dataProxy()->addItem(m_positionSensors->getSensorPosition(i));
+    connect(m_acousticSensors.data(), &AcousticSensors::sigContainerChanged,
+            this, &ScatterGraph::handleUpdateAcousticSensors);
 
-    // При изменении модели антенны (длины\кол-ва датчиков) обновить визуал графика.
+    connect(m_trueModel.data(), &TrueModel::sigContainerChanged,
+            this, &ScatterGraph::handleUpdateTrueModel);
 
-    connect(sensors, &SensorSpace::Sensors::sigModelChanged,
-            this, &ScatterGraph::updatePositionSensors);
-
-    connect(interpolator, &InterpolatorSpace::Interpolator::sigInterpolatorChanged,
-            this, &ScatterGraph::calculateInterpolation);
+    handleUpdatePositionSensors();
+    handleUpdateAcousticSensors();
+    handleUpdateTrueModel();
 
     m_graph->addSeries(m_acousticSensorSeries);
     m_graph->addSeries(m_trueAntennaModelSeries);
     m_graph->addSeries(m_positionSensorSeries);
-
-    calculateInterpolation();
 }
 
 void ScatterGraph::setAxisXRange(float min, float max)
@@ -70,38 +74,25 @@ void ScatterGraph::setAxisZRange(float min, float max)
     m_graph->axisZ()->setRange(min, max);
 }
 
-void ScatterGraph::updatePositionSensors()
+void ScatterGraph::handleUpdatePositionSensors()
 {
-    auto newArray = new QScatterDataArray;
-
-    for (unsigned i = 0; i < m_positionSensors->getSensorCount(); ++i)
-        *newArray << m_positionSensors->getSensorPosition(i);
-
-    m_positionSensorSeries->dataProxy()->resetArray(newArray);
-
-    calculateInterpolation();
+    auto strongRef = m_positionSensors->getScatterArray().toStrongRef();
+    if (strongRef)
+        m_positionSensorSeries->dataProxy()->resetArray(strongRef.data());
 }
 
-void ScatterGraph::calculateInterpolation()
+void ScatterGraph::handleUpdateAcousticSensors()
 {
-    std::vector<double> x;
-    std::vector<double> y;
-    std::vector<double> z;
+    auto strongRef = m_acousticSensors->getScatterArray().toStrongRef();
+    if (strongRef)
+        m_acousticSensorSeries->dataProxy()->resetArray(strongRef.data());
+}
 
-    for (auto& p : *m_positionSensorSeries->dataProxy()->array())
-    {
-        x.push_back(p.x());
-        y.push_back(p.y());
-        z.push_back(p.z());
-    }
-
-    auto list = m_interpolator->calculateInterpolation(x, y, z);
-    auto data = new QScatterDataArray;
-
-    for (const auto& l : list)
-        *data << l;
-
-    m_acousticSensorSeries->dataProxy()->resetArray(data);
+void ScatterGraph::handleUpdateTrueModel()
+{
+    auto strongRef = m_trueModel->getScatterArray().toStrongRef();
+    if (strongRef)
+        m_trueAntennaModelSeries->dataProxy()->resetArray(strongRef.data());
 }
 
 void ScatterGraph::handleSetInterpolationColor(const QColor &newColor)
@@ -137,7 +128,7 @@ void ScatterGraph::handleSetMaxDeviation(const double &newMaxValue)
 
 void ScatterGraph::handleSetAntennaVisibility(const bool &newState)
 {
-    qDebug() << "Antenna = " <<  newState;
+    m_trueAntennaModelSeries->setVisible(newState);
 }
 
 void ScatterGraph::handleSetSensorVisibility(const bool &newState)
@@ -148,4 +139,14 @@ void ScatterGraph::handleSetSensorVisibility(const bool &newState)
 void ScatterGraph::handleSetInterpolationVisibility(const bool &newState)
 {
     m_acousticSensorSeries->setVisible(newState);
+}
+
+void ScatterGraph::handleSetTrueModelColor(const QColor &newColor)
+{
+    m_trueAntennaModelSeries->setBaseColor(newColor);
+}
+
+void ScatterGraph::handleSetTrueModelSize(const double &newValue)
+{
+    m_trueAntennaModelSeries->setItemSize(newValue);
 }

@@ -36,8 +36,10 @@ ControllPanel::ControllPanel(QWidget *parent) :
 
     for (int i = 0; i < Color::Count; ++i)
     {
-        ui->interpolationPointColorCombo->addItem(colorToStr(static_cast<Color>(i)), i);
-        ui->sensorPointColorCombo->addItem(colorToStr(static_cast<Color>(i)), i);
+        auto color = colorToStr(static_cast<Color>(i));
+        ui->interpolationPointColorCombo->addItem(color, i);
+        ui->sensorPointColorCombo->addItem(color, i);
+        ui->trueModelColorCombo->addItem(color, i);
     }
 
     load();
@@ -55,6 +57,15 @@ ControllPanel::ControllPanel(QWidget *parent) :
 
     connect(ui->sensorPointColorCombo, &QComboBox::currentIndexChanged,
             this, &ControllPanel::handleSensorPointColorChanged);
+
+    connect(ui->trueModelCountSpin, &QSpinBox::valueChanged,
+            this, &ControllPanel::sigTrueModelCountChanged);
+
+    connect(ui->trueModelColorCombo, &QComboBox::currentIndexChanged,
+            this, &ControllPanel::handleTrueModelColorChanged);
+
+    connect(ui->trueModelPointSizeSpin, &QDoubleSpinBox::valueChanged,
+            this, &ControllPanel::sigTrueModelPointSizeChanged);
 
     connect(ui->sensorPointSizeSpin, &QDoubleSpinBox::valueChanged,
             this, &ControllPanel::sigSensorPointSizeChanged);
@@ -102,6 +113,9 @@ void ControllPanel::load()
         ui->antennaVisibilityCheck->setChecked(           m_settings->value(ANTENNA_VISIBILITY,        BASIC_ANTENNA_VISIBILITY).toBool());
         ui->sensorsVisibilityCheck->setChecked(           m_settings->value(SENSOR_VISIBILITY,         BASIC_SENSOR_VISIBILITY).toBool());
         ui->interpolationVisibilityCheck->setChecked(     m_settings->value(INTERPOLATION_VISIBILITY,  BASIC_INTERPOLATION_VISIBILITY).toBool());
+        ui->trueModelCountSpin->setValue(                 m_settings->value(MODEL_COUNT,               BASIC_MODEL_COUNT).toInt());
+        ui->trueModelPointSizeSpin->setValue(             m_settings->value(MODEL_POINT_SIZE,          BASIC_MODEL_POINT_SIZE).toDouble());
+        ui->trueModelColorCombo->setCurrentIndex(         m_settings->value(MODEL_POINT_COLOR,         BASIC_MODEL_POINT_COLOR).toInt());
         ui->maximumDeviationSpin->setValue(               m_settings->value(MAX_DEVIATION,             0.1f).toDouble());
     m_settings->endGroup();
 }
@@ -120,6 +134,9 @@ void ControllPanel::save()
         m_settings->setValue(ANTENNA_VISIBILITY,        ui->antennaVisibilityCheck->checkState());
         m_settings->setValue(SENSOR_VISIBILITY,         ui->sensorsVisibilityCheck->checkState());
         m_settings->setValue(INTERPOLATION_VISIBILITY,  ui->interpolationVisibilityCheck->checkState());
+        m_settings->setValue(MODEL_COUNT,               ui->trueModelCountSpin->value());
+        m_settings->setValue(MODEL_POINT_SIZE,          ui->trueModelPointSizeSpin->value());
+        m_settings->setValue(MODEL_POINT_COLOR,         ui->trueModelColorCombo->currentData());
     m_settings->endGroup();
 }
 
@@ -138,6 +155,11 @@ quint32 ControllPanel::getInterpolationCount() const
     return ui->interpolationCountSpin->value();
 }
 
+quint32 ControllPanel::getTrueModelCount() const
+{
+    return ui->trueModelCountSpin->value();
+}
+
 double ControllPanel::getSensorSize() const
 {
     return ui->sensorPointSizeSpin->value();
@@ -148,6 +170,11 @@ double ControllPanel::getInterpolationSize() const
     return ui->interpolationPointSizeSpin->value();
 }
 
+double ControllPanel::getTrueModelSize() const
+{
+    return ui->trueModelPointSizeSpin->value();
+}
+
 QColor ControllPanel::getSensorColor() const
 {
     return QColor(ui->sensorPointColorCombo->currentText());
@@ -156,6 +183,11 @@ QColor ControllPanel::getSensorColor() const
 QColor ControllPanel::getInterpolationColor() const
 {
     return QColor(ui->interpolationPointColorCombo->currentText());
+}
+
+QColor ControllPanel::getTrueModelColor() const
+{
+    return QColor(ui->trueModelColorCombo->currentText());
 }
 
 int ControllPanel::getAntennaVisibility() const
@@ -185,6 +217,13 @@ void ControllPanel::handleInterpolationPointColorChanged(const int& index)
     Q_UNUSED(index);
     const QColor newColor = QColor(ui->interpolationPointColorCombo->currentText());
     emit sigInterpolationPointColorChanged(newColor);
+}
+
+void ControllPanel::handleTrueModelColorChanged(const int &index)
+{
+    Q_UNUSED(index);
+    const QColor newColor = QColor(ui->trueModelColorCombo->currentText());
+    emit sigTrueModelPointColorChanged(newColor);
 }
 
 void ControllPanel::handleEmulationButtonChange(const bool& checked)

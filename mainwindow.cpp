@@ -14,6 +14,9 @@
 
 
 
+using namespace PointContainerSpace;
+using namespace AntennaModelSpace;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow)
@@ -45,11 +48,13 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout *vLayout = new QVBoxLayout();
 
     m_controllPanel = new ControllPanel(this);
-    auto sensors = new SensorSpace::Sensors(m_controllPanel->getSensorCount(), m_controllPanel->getAntennaLenght());
-    auto interpolator = new InterpolatorSpace::Interpolator(m_controllPanel->getInterpolationCount(),  m_controllPanel->getAntennaLenght());
-    m_graph = new ScatterGraph(graph, sensors, interpolator);
 
-    // Получение значений панели управления для графика.
+    QSharedPointer<AntennaModel> antennaModel(new AntennaModel(m_controllPanel->getAntennaLenght()));
+    QSharedPointer<TrueModel> trueModel(new TrueModel(antennaModel, m_controllPanel->getTrueModelCount()));
+    QSharedPointer<PositionSensors> positionSensors(new PositionSensors(antennaModel, m_controllPanel->getSensorCount()));
+    QSharedPointer<AcousticSensors> acousticSensors(new AcousticSensors(antennaModel, positionSensors, m_controllPanel->getInterpolationCount()));
+
+    m_graph = new ScatterGraph(graph, positionSensors, acousticSensors, trueModel);
 
     m_graph->handleSetSensorSize(m_controllPanel->getSensorSize());
     m_graph->handleSetInterpolationSize(m_controllPanel->getInterpolationSize());
@@ -58,18 +63,26 @@ MainWindow::MainWindow(QWidget *parent)
     m_graph->handleSetAntennaVisibility(m_controllPanel->getAntennaVisibility());
     m_graph->handleSetSensorVisibility(m_controllPanel->getSensorVisibility());
     m_graph->handleSetInterpolationVisibility(m_controllPanel->getInterpolationVisibility());
+    m_graph->handleSetTrueModelColor(m_controllPanel->getTrueModelColor());
+    m_graph->handleSetTrueModelSize(m_controllPanel->getTrueModelSize());
 
     connect(m_controllPanel, &ControllPanel::sigSensorCountChanged,
-            sensors, &SensorSpace::Sensors::handleSetSensorCount);
-
-    connect(m_controllPanel, &ControllPanel::sigAntennaLenghtChanged,
-            interpolator, &InterpolatorSpace::Interpolator::handleAntennaLenghtChanged);
-
-    connect(m_controllPanel, &ControllPanel::sigAntennaLenghtChanged,
-            sensors, &SensorSpace::Sensors::handleSetModelLenght);
+            positionSensors.data(), &PositionSensors::setScatterArraySize);
 
     connect(m_controllPanel, &ControllPanel::sigInterpolationCountChanged,
-            interpolator, &InterpolatorSpace::Interpolator::handleInterpolationCountChanged);
+            acousticSensors.data(), &AcousticSensors::setScatterArraySize);
+
+    connect(m_controllPanel, &ControllPanel::sigTrueModelCountChanged,
+            trueModel.data(), &TrueModel::setScatterArraySize);
+
+    connect(m_controllPanel, &ControllPanel::sigAntennaLenghtChanged,
+            antennaModel.data(), &AntennaModel::setLenght);
+
+    connect(m_controllPanel, &ControllPanel::sigTrueModelPointSizeChanged,
+            m_graph, &ScatterGraph::handleSetTrueModelSize);
+
+    connect(m_controllPanel, &ControllPanel::sigTrueModelPointColorChanged,
+            m_graph, &ScatterGraph::handleSetTrueModelColor);
 
     connect(m_controllPanel, &ControllPanel::sigSensorPointSizeChanged,
             m_graph, &ScatterGraph::handleSetSensorSize);
@@ -111,6 +124,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete m_graph;
+//    delete m_graph;
 }
 

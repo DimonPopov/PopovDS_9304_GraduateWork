@@ -20,10 +20,13 @@ public:
     double getAntennaLenght() const;
     double getSensorSize() const;
     double getInterpolationSize() const;
+    double getTrueModelSize() const;
     quint32 getSensorCount() const;
     quint32 getInterpolationCount() const;
+    quint32 getTrueModelCount() const;
     QColor getSensorColor() const;
     QColor getInterpolationColor() const;
+    QColor getTrueModelColor() const;
     int getAntennaVisibility() const;
     int getSensorVisibility() const;
     int getInterpolationVisibility() const;
@@ -35,7 +38,6 @@ private:
 signals:
     void sigSensorCountChanged(const quint32& count);
     void sigAntennaLenghtChanged(const double& lenght);
-
     void sigSensorPointColorChanged(const QColor& color);
     void sigSensorPointSizeChanged(const double& sensorPointSize);
     void sigInterpolationPointColorChanged(const QColor& color);
@@ -46,10 +48,14 @@ signals:
     void sigAntennaVisibilityChanged(const bool& state);
     void sigSensorVisibilityChanged(const bool& state);
     void sigInterpolationVisibilityChanged(const bool& state);
+    void sigTrueModelPointColorChanged(const QColor& color);
+    void sigTrueModelPointSizeChanged(const double& trueModelPointSize);
+    void sigTrueModelCountChanged(const quint32& count);
 
 private slots:
     void handleSensorPointColorChanged(const int& index);
     void handleInterpolationPointColorChanged(const int& index);
+    void handleTrueModelColorChanged(const int& index);
     void handleEmulationButtonChange(const bool& checked);
     void handleVisibilityCheckBoxsChanged(const bool& checkState);
 };

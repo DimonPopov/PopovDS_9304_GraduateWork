@@ -1,14 +1,12 @@
-#ifndef INTERPOLATOR_H
-#define INTERPOLATOR_H
+#ifndef INTERPOLATION_H
+#define INTERPOLATION_H
 
-#include <QObject>
 #include <QVector3D>
-#include <QList>
-#include <vector>
+#include <QScatterDataProxy>
 
 
 
-namespace InterpolatorSpace {
+namespace InterpolaionSpace {
 
 enum InterpolationType {
     CardinalCubicBSpline,            ///< Кардинальная кубическая интерполяция B-сплайна
@@ -27,33 +25,12 @@ enum InterpolationType {
     BilinearUniform                  ///< Билинейная равномерная интерполяция
 };
 
-class Interpolator : public QObject
-{
-    Q_OBJECT
-public:
-    Interpolator(const quint32& amountPoints, const double& lenght, QObject* parent = nullptr);
-    quint32 getInterpolationCount() const;
-    void setLenght(const double& newLenght);
-    QList<QVector3D> calculateInterpolation(std::vector<double>& x,
-                                            std::vector<double>& y,
-                                            std::vector<double>& z,
-                                            const InterpolationType type = InterpolationType::BarycentricRational) const;
-private:
-    quint32 m_interpolationCount;
-    double  m_lenght;
-    QList<QVector3D> barycentricRational(std::vector<double> &x,
-                                         std::vector<double> &y,
-                                         std::vector<double> &z,
-                                         QList<QVector3D>& result) const;
 
-public slots:
-    void handleInterpolationCountChanged(const quint32& newCount);
-    void handleAntennaLenghtChanged(const double& newLenght);
-
-signals:
-    void sigInterpolatorChanged();
-};
-
+QList<QVector3D> calculateInterpolation(QSharedPointer<QScatterDataArray> scatterArray,
+                                        const double& lenght,
+                                        const double& size,
+                                        const InterpolationType type = InterpolationType::BarycentricRational);
 }
 
-#endif // INTERPOLATOR_H
+
+#endif // INTERPOLATION_H
