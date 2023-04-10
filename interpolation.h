@@ -8,12 +8,12 @@
 
 namespace InterpolaionSpace {
 
-enum InterpolationType {
+enum InterpolationType : quint32 {
+    BarycentricRational,             ///< Барицентрическая рациональная интерполяция
     CardinalCubicBSpline,            ///< Кардинальная кубическая интерполяция B-сплайна
     CardinalQuadraticBSpline,        ///< Кардинально-квадратичная B-сплайновая интерполяция
     CardinalQuinticBSpline,          ///< B-сплайновая интерполяция Cardinal Quintic
     WhittakerShannon,                ///< Интерполяция Уиттакера-Шеннона
-    BarycentricRational,             ///< Барицентрическая рациональная интерполяция
     VectorValuedBarycentricRational, ///< Барицентрическая рациональная интерполяция с векторным знаком
     CatmullRomSplines,               ///< Сплайны Кэтмулла-Рома
     BezierPolynomials,               ///< Полиномы Безье
@@ -22,13 +22,16 @@ enum InterpolationType {
     ModifiedAkima,                   ///< Модифицированная интерполяция Akima
     PCHIP,                           ///< Интерполяция PCHIP
     QuinticHermite,                  ///< Интерполяция Quintic Hermite
-    BilinearUniform                  ///< Билинейная равномерная интерполяция
+    BilinearUniform,                 ///< Билинейная равномерная интерполяция
+    Count
 };
+
+QString getStrFromType(const InterpolationType& type);
 
 
 QList<QVector3D> calculateInterpolation(QSharedPointer<QScatterDataArray> scatterArray,
                                         const double& lenght,
-                                        const double& size,
+                                        const quint32& size,
                                         const InterpolationType type = InterpolationType::BarycentricRational);
 }
 

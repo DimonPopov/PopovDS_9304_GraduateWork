@@ -1,5 +1,4 @@
 #include "abstractpointcontainer.h"
-#include "interpolation.h"
 
 
 
@@ -12,10 +11,7 @@ PointContainerSpace::AbstractPointContainer::AbstractPointContainer(QSharedPoint
       m_scatterArray(new QScatterDataArray)
 {
     connect(model.data(), &AntennaModel::sigLenghtChanged,
-            this, [&](){
-        updatePointPosition();
-        emit sigContainerChanged();
-    });
+            this, &AbstractPointContainer::updatePointPosition);
 }
 
 PointContainerSpace::AbstractPointContainer::~AbstractPointContainer()
@@ -64,10 +60,7 @@ PointContainerSpace::PositionSensors::PositionSensors(QSharedPointer<AntennaMode
     m_timer->setInterval(1'000);
 
     connect(m_timer.data(), &QTimer::timeout,
-            this, [&](){
-        updatePointPosition();
-        emit sigContainerChanged();
-    });
+            this, &PositionSensors::updatePointPosition);
 
     setScatterArraySize(amountPoints);
 }
@@ -85,19 +78,40 @@ void PointContainerSpace::PositionSensors::updatePointPosition()
     emit sigContainerChanged();
 }
 
+void PointContainerSpace::PositionSensors::handleSetNoiseState(const bool &noise)
+{
+    noise ? m_timer->start() : m_timer->stop();
+}
+
 
 
 PointContainerSpace::AcousticSensors::AcousticSensors(QSharedPointer<AntennaModel> model,
                                  QSharedPointer<PositionSensors> positionSensors,
+                                 const InterpolaionSpace::InterpolationType& type,
                                  const quint32 &amountPoints,
                                  QObject *parent)
     : AbstractPointContainer(model, parent),
-      m_positionSensors(positionSensors)
+      m_positionSensors(positionSensors),
+      m_type(type)
 {
     connect(positionSensors.data(), &PositionSensors::sigContainerChanged,
             this, &AcousticSensors::updatePointPosition);
 
     setScatterArraySize(amountPoints);
+}
+
+void PointContainerSpace::AcousticSensors::setInterpolationType(const InterpolaionSpace::InterpolationType &newType)
+{
+    if (newType == m_type)
+        return;
+
+    m_type = newType;
+    updatePointPosition();
+}
+
+InterpolaionSpace::InterpolationType PointContainerSpace::AcousticSensors::getInterpolationType() const
+{
+    return m_type;
 }
 
 void PointContainerSpace::AcousticSensors::updatePointPosition()
@@ -109,7 +123,7 @@ void PointContainerSpace::AcousticSensors::updatePointPosition()
     auto strongRef = m_positionSensors.toStrongRef();
     if (strongRef)
     {
-        auto res = InterpolaionSpace::calculateInterpolation(strongRef->getScatterArray(), m_model->getLenght(), size);
+        auto res = InterpolaionSpace::calculateInterpolation(strongRef->getScatterArray(), m_model->getLenght(), size, m_type);
 
         for(const auto& p : res)
             *m_scatterArray << p;
@@ -117,7 +131,6 @@ void PointContainerSpace::AcousticSensors::updatePointPosition()
         emit sigContainerChanged();
     }
 }
-
 
 PointContainerSpace::TrueModel::TrueModel(QSharedPointer<AntennaModel> model,
                                           const quint32 &amountPoints,

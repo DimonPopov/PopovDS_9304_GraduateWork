@@ -34,13 +34,16 @@ ControllPanel::ControllPanel(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    for (int i = 0; i < Color::Count; ++i)
+    for (unsigned i = 0; i < Color::Count; ++i)
     {
         auto color = colorToStr(static_cast<Color>(i));
         ui->interpolationPointColorCombo->addItem(color, i);
         ui->sensorPointColorCombo->addItem(color, i);
         ui->trueModelColorCombo->addItem(color, i);
     }
+
+    for (unsigned i = 0; i < InterpolaionSpace::InterpolationType::Count; ++i)
+        ui->interpolationCombo->addItem(InterpolaionSpace::getStrFromType(static_cast<InterpolaionSpace::InterpolationType>(i)), i);
 
     load();
 
@@ -90,6 +93,9 @@ ControllPanel::ControllPanel(QWidget *parent) :
 
     connect(ui->interpolationVisibilityCheck, &QCheckBox::stateChanged,
             this, &ControllPanel::handleVisibilityCheckBoxsChanged);
+
+    connect(ui->interpolationCombo, &QComboBox::currentIndexChanged,
+            this, &ControllPanel::handleInterpolationTypeChanged);
 }
 
 ControllPanel::~ControllPanel()
@@ -103,19 +109,20 @@ void ControllPanel::load()
     using namespace BasicSettingValues;
 
     m_settings->beginGroup(SETTING_FIRST_GROUP);
-        ui->sensorCountSpin->setValue(                    m_settings->value(SENSOR_COUNT,              BASIC_SENSOR_COUNT).toInt());
+        ui->sensorCountSpin->setValue(                    m_settings->value(SENSOR_COUNT,              BASIC_SENSOR_COUNT).toUInt());
         ui->antennaLengthSpin->setValue(                  m_settings->value(ANTENNA_LENGTH,            BASIC_ANTENNA_LENGHT).toDouble());
         ui->sensorPointSizeSpin->setValue(                m_settings->value(SENSOR_POINT_SIZE,         BASIC_SENSOR_POINT_SIZE).toDouble());
-        ui->sensorPointColorCombo->setCurrentIndex(       m_settings->value(SENSOR_POINT_COLOR,        BASIC_SENSOR_POINT_COLOR).toInt());
+        ui->sensorPointColorCombo->setCurrentIndex(       m_settings->value(SENSOR_POINT_COLOR,        BASIC_SENSOR_POINT_COLOR).toUInt());
         ui->interpolationPointSizeSpin->setValue(         m_settings->value(INTERPOLATION_POINT_SIZE,  BASIC_INTERPOLATION_POINT_SIZE).toDouble());
-        ui->interpolationPointColorCombo->setCurrentIndex(m_settings->value(INTERPOLATION_POINT_COLOR, BASIC_INTERPOLATION_POINT_COLOR).toInt());
-        ui->interpolationCountSpin->setValue(             m_settings->value(INTERPOLATION_COUNT,       BASIC_INTERPOLATION_COUNT).toInt());
+        ui->interpolationPointColorCombo->setCurrentIndex(m_settings->value(INTERPOLATION_POINT_COLOR, BASIC_INTERPOLATION_POINT_COLOR).toUInt());
+        ui->interpolationCountSpin->setValue(             m_settings->value(INTERPOLATION_COUNT,       BASIC_INTERPOLATION_COUNT).toUInt());
         ui->antennaVisibilityCheck->setChecked(           m_settings->value(ANTENNA_VISIBILITY,        BASIC_ANTENNA_VISIBILITY).toBool());
         ui->sensorsVisibilityCheck->setChecked(           m_settings->value(SENSOR_VISIBILITY,         BASIC_SENSOR_VISIBILITY).toBool());
         ui->interpolationVisibilityCheck->setChecked(     m_settings->value(INTERPOLATION_VISIBILITY,  BASIC_INTERPOLATION_VISIBILITY).toBool());
-        ui->trueModelCountSpin->setValue(                 m_settings->value(MODEL_COUNT,               BASIC_MODEL_COUNT).toInt());
+        ui->trueModelCountSpin->setValue(                 m_settings->value(MODEL_COUNT,               BASIC_MODEL_COUNT).toUInt());
         ui->trueModelPointSizeSpin->setValue(             m_settings->value(MODEL_POINT_SIZE,          BASIC_MODEL_POINT_SIZE).toDouble());
-        ui->trueModelColorCombo->setCurrentIndex(         m_settings->value(MODEL_POINT_COLOR,         BASIC_MODEL_POINT_COLOR).toInt());
+        ui->trueModelColorCombo->setCurrentIndex(         m_settings->value(MODEL_POINT_COLOR,         BASIC_MODEL_POINT_COLOR).toUInt());
+        ui->interpolationCombo->setCurrentIndex(          m_settings->value(INTERPOLATION_TYPE,        BASIC_INTERPOLATION_TYPE).toUInt());
         ui->maximumDeviationSpin->setValue(               m_settings->value(MAX_DEVIATION,             0.1f).toDouble());
     m_settings->endGroup();
 }
@@ -137,6 +144,7 @@ void ControllPanel::save()
         m_settings->setValue(MODEL_COUNT,               ui->trueModelCountSpin->value());
         m_settings->setValue(MODEL_POINT_SIZE,          ui->trueModelPointSizeSpin->value());
         m_settings->setValue(MODEL_POINT_COLOR,         ui->trueModelColorCombo->currentData());
+        m_settings->setValue(INTERPOLATION_TYPE,        ui->interpolationCombo->currentIndex());
     m_settings->endGroup();
 }
 
@@ -158,6 +166,11 @@ quint32 ControllPanel::getInterpolationCount() const
 quint32 ControllPanel::getTrueModelCount() const
 {
     return ui->trueModelCountSpin->value();
+}
+
+InterpolaionSpace::InterpolationType ControllPanel::getInterpolationType() const
+{
+    return static_cast<InterpolaionSpace::InterpolationType>(ui->interpolationCombo->currentData().toUInt());
 }
 
 double ControllPanel::getSensorSize() const
@@ -242,4 +255,10 @@ void ControllPanel::handleVisibilityCheckBoxsChanged(const bool &checkState)
         emit sigSensorVisibilityChanged(checkState);
     if (ui->interpolationVisibilityCheck->objectName() == senderName)
         emit sigInterpolationVisibilityChanged(checkState);
+}
+
+void ControllPanel::handleInterpolationTypeChanged(const int &index)
+{
+    Q_UNUSED(index);
+    emit sigInterpolationTypeChanged(static_cast<InterpolaionSpace::InterpolationType>(ui->interpolationCombo->currentData().toUInt()));
 }

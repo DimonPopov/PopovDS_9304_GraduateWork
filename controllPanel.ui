@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>286</width>
-    <height>628</height>
+    <width>270</width>
+    <height>642</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,7 +55,11 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QSpinBox" name="interpolationCountSpin"/>
+       <widget class="QSpinBox" name="interpolationCountSpin">
+        <property name="maximum">
+         <number>10000</number>
+        </property>
+       </widget>
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label_6">
@@ -79,7 +83,18 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QSpinBox" name="trueModelCountSpin"/>
+       <widget class="QSpinBox" name="trueModelCountSpin">
+        <property name="maximum">
+         <number>10000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QComboBox" name="interpolationCombo">
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

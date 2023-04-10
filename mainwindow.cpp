@@ -50,9 +50,15 @@ MainWindow::MainWindow(QWidget *parent)
     m_controllPanel = new ControllPanel(this);
 
     QSharedPointer<AntennaModel> antennaModel(new AntennaModel(m_controllPanel->getAntennaLenght()));
-    QSharedPointer<TrueModel> trueModel(new TrueModel(antennaModel, m_controllPanel->getTrueModelCount()));
-    QSharedPointer<PositionSensors> positionSensors(new PositionSensors(antennaModel, m_controllPanel->getSensorCount()));
-    QSharedPointer<AcousticSensors> acousticSensors(new AcousticSensors(antennaModel, positionSensors, m_controllPanel->getInterpolationCount()));
+
+    QSharedPointer<TrueModel> trueModel(new TrueModel(antennaModel,
+                                                      m_controllPanel->getTrueModelCount()));
+    QSharedPointer<PositionSensors> positionSensors(new PositionSensors(antennaModel,
+                                                                        m_controllPanel->getSensorCount()));
+    QSharedPointer<AcousticSensors> acousticSensors(new AcousticSensors(antennaModel,
+                                                                        positionSensors,
+                                                                        m_controllPanel->getInterpolationType(),
+                                                                        m_controllPanel->getInterpolationCount()));
 
     m_graph = new ScatterGraph(graph, positionSensors, acousticSensors, trueModel);
 
@@ -78,6 +84,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_controllPanel, &ControllPanel::sigAntennaLenghtChanged,
             antennaModel.data(), &AntennaModel::setLenght);
 
+    connect(m_controllPanel, &ControllPanel::sigEmulationButtonClicked,
+            positionSensors.data(), &PositionSensors::handleSetNoiseState);
+
+    connect(m_controllPanel, &ControllPanel::sigInterpolationTypeChanged,
+            acousticSensors.data(), &AcousticSensors::setInterpolationType);
+
     connect(m_controllPanel, &ControllPanel::sigTrueModelPointSizeChanged,
             m_graph, &ScatterGraph::handleSetTrueModelSize);
 
@@ -95,12 +107,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_controllPanel, &ControllPanel::sigInterpolationPointColorChanged,
             m_graph, &ScatterGraph::handleSetInterpolationColor);
-
-    connect(m_controllPanel, &ControllPanel::sigEmulationButtonClicked,
-            m_graph, &ScatterGraph::handleSetEmulationState);
-
-    connect(m_controllPanel, &ControllPanel::sigMaxDeviationChanged,
-            m_graph, &ScatterGraph::handleSetMaxDeviation);
 
     connect(m_controllPanel, &ControllPanel::sigAntennaVisibilityChanged,
             m_graph, &ScatterGraph::handleSetAntennaVisibility);

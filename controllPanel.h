@@ -3,6 +3,10 @@
 
 #include <QWidget>
 
+#include "interpolation.h"
+
+
+
 class QSettings;
 
 namespace Ui {
@@ -24,6 +28,7 @@ public:
     quint32 getSensorCount() const;
     quint32 getInterpolationCount() const;
     quint32 getTrueModelCount() const;
+    InterpolaionSpace::InterpolationType getInterpolationType() const;
     QColor getSensorColor() const;
     QColor getInterpolationColor() const;
     QColor getTrueModelColor() const;
@@ -51,6 +56,7 @@ signals:
     void sigTrueModelPointColorChanged(const QColor& color);
     void sigTrueModelPointSizeChanged(const double& trueModelPointSize);
     void sigTrueModelCountChanged(const quint32& count);
+    void sigInterpolationTypeChanged(const InterpolaionSpace::InterpolationType& type);
 
 private slots:
     void handleSensorPointColorChanged(const int& index);
@@ -58,6 +64,7 @@ private slots:
     void handleTrueModelColorChanged(const int& index);
     void handleEmulationButtonChange(const bool& checked);
     void handleVisibilityCheckBoxsChanged(const bool& checkState);
+    void handleInterpolationTypeChanged(const int& index);
 };
 
 #endif // CONTROLLPANEL_H

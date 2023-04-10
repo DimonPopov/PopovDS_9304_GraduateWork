@@ -38,6 +38,10 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface,
     m_graph->axisY()->setLabelAutoRotation(90);
     m_graph->axisZ()->setLabelAutoRotation(30);
 
+    m_graph->axisX()->setAutoAdjustRange(true);
+    m_graph->axisY()->setAutoAdjustRange(true);
+    m_graph->axisZ()->setAutoAdjustRange(true);
+
     m_graph->axisX()->setTitle(QStringLiteral("X"));
     m_graph->axisY()->setTitle(QStringLiteral("Y"));
     m_graph->axisZ()->setTitle(QStringLiteral("Z"));
@@ -64,14 +68,19 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface,
     m_graph->addSeries(m_positionSensorSeries);
 }
 
-void ScatterGraph::setAxisXRange(float min, float max)
+void ScatterGraph::setAxisXRange(const double min, const double max)
 {
     m_graph->axisX()->setRange(min, max);
 }
 
-void ScatterGraph::setAxisZRange(float min, float max)
+void ScatterGraph::setAxisZRange(const double min, const double max)
 {
     m_graph->axisZ()->setRange(min, max);
+}
+
+void ScatterGraph::setAxisYRange(const double min, const double max)
+{
+    m_graph->axisY()->setRange(min, max);
 }
 
 void ScatterGraph::handleUpdatePositionSensors()
@@ -113,17 +122,6 @@ void ScatterGraph::handleSetSensorColor(const QColor &newColor)
 void ScatterGraph::handleSetSensorSize(const double &newValue)
 {
     m_positionSensorSeries->setItemSize(newValue);
-}
-
-void ScatterGraph::handleSetEmulationState(const bool &state)
-{
-//    for (const auto& s : m_positionSensors)
-//        s->setTimerStatus(state);
-}
-
-void ScatterGraph::handleSetMaxDeviation(const double &newMaxValue)
-{
-//    m_sensorModel->setMaxDeviation(newMaxValue);
 }
 
 void ScatterGraph::handleSetAntennaVisibility(const bool &newState)

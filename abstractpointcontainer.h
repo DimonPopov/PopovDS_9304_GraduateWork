@@ -8,6 +8,7 @@
 #include <QTimer>
 
 #include "antennamodel.h"
+#include "interpolation.h"
 
 
 
@@ -49,13 +50,17 @@ protected:
 
 class PositionSensors : public AbstractPointContainer
 {
+    Q_OBJECT
 public:
     explicit PositionSensors(QSharedPointer<AntennaModelSpace::AntennaModel> model,
                              const quint32& amountPoints,
                              QObject *parent = nullptr);
 protected:
     void updatePointPosition() override;
-    QSharedPointer<QTimer> m_timer;
+    QScopedPointer<QTimer> m_timer;
+
+public slots:
+    void handleSetNoiseState(const bool& noise);
 };
 
 
@@ -65,11 +70,15 @@ class AcousticSensors : public AbstractPointContainer
 public:
     explicit AcousticSensors(QSharedPointer<AntennaModelSpace::AntennaModel> model,
                              QSharedPointer<PositionSensors> positionSensors,
+                             const InterpolaionSpace::InterpolationType& newType,
                              const quint32& amountPoints,
                              QObject *parent = nullptr);
+    void setInterpolationType(const InterpolaionSpace::InterpolationType& newType);
+    InterpolaionSpace::InterpolationType getInterpolationType() const;
 protected:
     void updatePointPosition() override;
     QWeakPointer<PositionSensors> m_positionSensors;
+    InterpolaionSpace::InterpolationType m_type;
 };
 
 }

@@ -16,6 +16,7 @@
 #define MODEL_COUNT               ("ModelCount")
 #define MODEL_POINT_SIZE          ("ModelPointSize")
 #define MODEL_POINT_COLOR         ("ModelPointColor")
+#define INTERPOLATION_TYPE        ("InterpolarionType")
 
 
 namespace BasicSettingValues {
@@ -24,6 +25,7 @@ namespace BasicSettingValues {
     constexpr int BASIC_MODEL_COUNT = 20;
     constexpr int BASIC_MODEL_POINT_COLOR = 0;
     constexpr int BASIC_INTERPOLATION_POINT_COLOR = 0;
+    constexpr int BASIC_INTERPOLATION_TYPE = 0;
     constexpr int BASIC_INTERPOLATION_COUNT = 20;
     constexpr double BASIC_ANTENNA_LENGHT = 10.0f;
     constexpr double BASIC_SENSOR_POINT_SIZE = 0.1f;

@@ -28,8 +28,6 @@ public slots:
     void handleSetSensorSize(const double& newValue);
     void handleSetInterpolationColor(const QColor& newColor);
     void handleSetInterpolationSize(const double& newValue);
-    void handleSetEmulationState(const bool& state);
-    void handleSetMaxDeviation(const double& newMaxValue);
     void handleSetAntennaVisibility(const bool& newState);
     void handleSetSensorVisibility(const bool& newState);
     void handleSetInterpolationVisibility(const bool& newState);
@@ -45,8 +43,9 @@ private:
     QScatter3DSeries *m_positionSensorSeries;                       ///< Набор координат сенсоров местоположения.
     QScatter3DSeries *m_trueAntennaModelSeries;                     ///< Набор координат истинной формы антены.
 
-    void setAxisXRange(float min, float max);
-    void setAxisZRange(float min, float max);
+    void setAxisXRange(const double min, const double max);
+    void setAxisZRange(const double min, const double max);
+    void setAxisYRange(const double min, const double max);
 
 private slots:
     void handleUpdatePositionSensors();
