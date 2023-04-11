@@ -8,15 +8,16 @@
 
 namespace InterpolaionSpace {
 
+// https://www.boost.org/doc/libs/1_81_0/libs/math/doc/html/interpolation.html
 enum InterpolationType : quint32 {
     BarycentricRational,             ///< Барицентрическая рациональная интерполяция
     CardinalCubicBSpline,            ///< Кардинальная кубическая интерполяция B-сплайна
     CardinalQuadraticBSpline,        ///< Кардинально-квадратичная B-сплайновая интерполяция
-    CardinalQuinticBSpline,          ///< B-сплайновая интерполяция Cardinal Quintic
+//    CardinalQuinticBSpline,          ///< B-сплайновая интерполяция Cardinal Quintic
     WhittakerShannon,                ///< Интерполяция Уиттакера-Шеннона
     VectorValuedBarycentricRational, ///< Барицентрическая рациональная интерполяция с векторным знаком
     CatmullRomSplines,               ///< Сплайны Кэтмулла-Рома
-    BezierPolynomials,               ///< Полиномы Безье
+//    BezierPolynomials,               ///< Полиномы Безье
     CardinalTrigonometric,           ///< Кардинальная тригонометрическая интерполяция
     CubicHermite,                    ///< Кубическая интерполяция Эрмита
     ModifiedAkima,                   ///< Модифицированная интерполяция Akima

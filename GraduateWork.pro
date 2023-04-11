@@ -31,6 +31,8 @@ FORMS += \
     mainWidget.ui \
     mainwindow.ui
 
+LIBS += -L/usr/lib -lfftw3
+
 #TRANSLATIONS += \
 #    :/tr/GraduateWork_ru_RU.ts
 

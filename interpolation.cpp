@@ -3,9 +3,13 @@
 #include <boost/math/interpolators/cardinal_quadratic_b_spline.hpp>
 #include <boost/math/interpolators/cardinal_quintic_b_spline.hpp>
 #include <boost/math/interpolators/whittaker_shannon.hpp>
+#include <boost/math/interpolators/catmull_rom.hpp>
+#include <boost/math/interpolators/bezier_polynomial.hpp>
+#include <boost/math/interpolators/cardinal_trigonometric.hpp>
+#include <fftw3.h>
 
 #include "interpolation.h"
-
+#include <QVariant>
 
 
 static QList<QVector3D> barycentricRational(std::vector<double>& x,
@@ -21,7 +25,7 @@ static QList<QVector3D> barycentricRational(std::vector<double>& x,
     auto interpolatorX = barycentric_rational<double>(std::move(x), std::move(y));
     auto interpolatorZ = barycentric_rational<double>(std::move(duplicate), std::move(z));
 
-    double step = lenght / size;
+    float step = lenght / size;
 
     QList<QVector3D> result;
 
@@ -49,7 +53,7 @@ static QList<QVector3D> cardinalCubicBSpline(std::vector<double>& y,
 
     QList<QVector3D> result;
 
-    double step = lenght / size;
+    float step = lenght / size;
 
     for (unsigned i = 0; i < size; ++i)
     {
@@ -75,7 +79,7 @@ static QList<QVector3D> cardinalQuadraticBSpline(std::vector<double>& y,
 
     QList<QVector3D> result;
 
-    double step = lenght / size;
+    float step = lenght / size;
 
     for (unsigned i = 0; i < size; ++i)
     {
@@ -101,7 +105,7 @@ static QList<QVector3D> cardinalQuinticBSpline(std::vector<double>& y,
 
     QList<QVector3D> result;
 
-    double step = lenght / size;
+    float step = lenght / size;
 
     for (unsigned i = 0; i < size; ++i)
     {
@@ -127,7 +131,7 @@ static QList<QVector3D> whittakerShannon(std::vector<double>& y,
 
     QList<QVector3D> result;
 
-    double step = lenght / size;
+    float step = lenght / size;
 
     for (unsigned i = 0; i < size; ++i)
     {
@@ -146,9 +150,79 @@ static QList<QVector3D> catmullRomSplines(std::vector<double>& x,
                                           const double& lenght,
                                           const quint32& size)
 {
+    using namespace boost::math;
 
+    std::vector<std::array<double, 3>> points;
+
+    for (unsigned i = 0; i < x.size(); ++i)
+        points.push_back({x[i], y[i], z[i]});
+
+    auto interpolator = catmull_rom<std::array<double, 3>>(std::move(points));
+
+    QList<QVector3D> result;
+
+    float step = interpolator.max_parameter() / size;
+
+    for (unsigned i = 0; i < size; ++i)
+    {
+        auto position = interpolator(i * step);
+        result << QVector3D(position[0], position[1], position[2]);
+    }
+
+    return result;
 }
 
+//static QList<QVector3D> bezierPolynomials(std::vector<double>& x,
+//                                          std::vector<double>& y,
+//                                          std::vector<double>& z,
+//                                          const quint32& size)
+//{
+//    using namespace boost::math::interpolators;
+
+//    std::vector<std::array<double, 3>> points;
+
+//    for (unsigned i = 0; i < x.size(); ++i)
+//        points.push_back({x[i], y[i], z[i]});
+
+//    auto interpolator = bezier_polynomial(std::move(points));
+
+//    QList<QVector3D> result;
+
+//    float step = 1.0f / size;
+
+//    for (unsigned i = 0; i < size; ++i)
+//    {
+//        auto position = interpolator(i * step);
+//        qDebug() << position[0] << position[1] << position[2] <<position.size();
+//        result << QVector3D(position[0], position[1], position[2]);
+//    }
+//    qDebug() << '\n';
+
+//    return result;
+//}
+
+
+static QList<QVector3D> cardinalTrigonometric(std::vector<double>& x,
+                                              std::vector<double>& y,
+                                              std::vector<double>& z,
+                                              const double& lenght,
+                                              const quint32& size)
+{
+    using boost::math::interpolators::cardinal_trigonometric;
+
+    auto interpolatorX = cardinal_trigonometric<std::vector<double>>(x, 0, 0.1);
+    auto interpolatorY = cardinal_trigonometric<std::vector<double>>(y, 0, 0.1);
+    auto interpolatorZ = cardinal_trigonometric<std::vector<double>>(z, 0, 0.1);
+
+    QList<QVector3D> result;
+
+    float step = lenght / size;
+
+    for (unsigned i = 0; i < size; ++i)
+        result << QVector3D(interpolatorX(i * step), interpolatorY(i * step), interpolatorZ(i * step));
+
+    return result;
+}
 
 QList<QVector3D> InterpolaionSpace::calculateInterpolation(QSharedPointer<QScatterDataArray> scatterArray,
                                                            const double& lenght,
@@ -176,11 +250,11 @@ QList<QVector3D> InterpolaionSpace::calculateInterpolation(QSharedPointer<QScatt
     {
         case InterpolationType::CardinalCubicBSpline:               return cardinalCubicBSpline(y, z, lenght, size);
         case InterpolationType::CardinalQuadraticBSpline:           return cardinalQuadraticBSpline(y, z, lenght, size);
-        case InterpolationType::CardinalQuinticBSpline:             return cardinalQuinticBSpline(y, z, lenght, size); // Чет не робит
+//        case InterpolationType::CardinalQuinticBSpline:             return cardinalQuinticBSpline(y, z, lenght, size);      // Не работает.
         case InterpolationType::WhittakerShannon:                   return whittakerShannon(y, z, lenght, size);
-        case InterpolationType::CatmullRomSplines:                  return catmullRomSplines(x, y, z, lenght, size);
-        case InterpolationType::BezierPolynomials:
-        case InterpolationType::CardinalTrigonometric:
+        case InterpolationType::CatmullRomSplines:                  return catmullRomSplines(x, y, z, lenght, size);        // Странная реализация.
+//        case InterpolationType::BezierPolynomials:                  return bezierPolynomials(x, y, z, size);
+        case InterpolationType::CardinalTrigonometric:              return cardinalTrigonometric(x, y, z, lenght, size);
         case InterpolationType::CubicHermite:
         case InterpolationType::ModifiedAkima:
         case InterpolationType::PCHIP:
@@ -198,10 +272,10 @@ QString InterpolaionSpace::getStrFromType(const InterpolationType &type)
     {
         case InterpolationType::CardinalCubicBSpline:               return QString("Cardinal Cubic B-Spline");
         case InterpolationType::CardinalQuadraticBSpline:           return QString("Cardinal Quadratic B-Spline");
-        case InterpolationType::CardinalQuinticBSpline:             return QString("Cardinal Quintic B-Spline");
+//        case InterpolationType::CardinalQuinticBSpline:             return QString("Cardinal Quintic B-Spline");
         case InterpolationType::WhittakerShannon:                   return QString("Whittaker Shannon");
         case InterpolationType::CatmullRomSplines:                  return QString("Catmull Rom Splines");
-        case InterpolationType::BezierPolynomials:                  return QString("Bezier Polynomials");
+//        case InterpolationType::BezierPolynomials:                  return QString("Bezier Polynomials");
         case InterpolationType::CardinalTrigonometric:              return QString("Cardinal Trigonometric");
         case InterpolationType::CubicHermite:                       return QString("Cubic Hermite");
         case InterpolationType::ModifiedAkima:                      return QString("Modified Akima");
