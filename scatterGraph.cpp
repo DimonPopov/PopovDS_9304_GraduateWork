@@ -3,15 +3,20 @@
 #include <QValue3DAxis>
 #include <Q3DTheme>
 #include <qmath.h>
-#include <boost/math/interpolators/barycentric_rational.hpp>
 #include <vector>
 
 
 
-ScatterGraph::ScatterGraph(Q3DScatter *surface, SensorSpace::SensorModel* model)
+using namespace PointContainerSpace;
+
+ScatterGraph::ScatterGraph(Q3DScatter *surface,
+                           QSharedPointer<PositionSensors> positionSensors,
+                           QSharedPointer<AcousticSensors> acousticSensors,
+                           QSharedPointer<TrueModel> trueModel)
     : m_graph(surface),
-      m_sensorModel(model),
-      m_interpolationCount(0)
+      m_positionSensors(positionSensors),
+      m_acousticSensors(acousticSensors),
+      m_trueModel(trueModel)
 {
     // Инициализация сетки графика.
 
@@ -20,15 +25,15 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface, SensorSpace::SensorModel* model)
     m_graph->setAxisZ(new QValue3DAxis);
     m_graph->setShadowQuality(QAbstract3DGraph::ShadowQualityNone);
 
-    m_interpolationSeries = new QScatter3DSeries(new QScatterDataProxy);
-    m_antennaSeries       = new QScatter3DSeries(new QScatterDataProxy);
-    m_sensorSeries        = new QScatter3DSeries(new QScatterDataProxy);
+    m_acousticSensorSeries   = new QScatter3DSeries(new QScatterDataProxy);
+    m_trueAntennaModelSeries = new QScatter3DSeries(new QScatterDataProxy);
+    m_positionSensorSeries   = new QScatter3DSeries(new QScatterDataProxy);
 
     m_graph->axisX()->setLabelFormat("%.2f");
     m_graph->axisZ()->setLabelFormat("%.2f");
-    m_graph->axisX()->setRange(-1.0f, 12.0f);
-    m_graph->axisY()->setRange(-1.0f, 12.0f);
-    m_graph->axisZ()->setRange(-1.0f, 12.0f);
+    m_graph->axisX()->setRange(0.0f, 12.0f);
+    m_graph->axisY()->setRange(0.0f, 7.0f);
+    m_graph->axisZ()->setRange(0.0f, 7.0f);
     m_graph->axisX()->setLabelAutoRotation(30);
     m_graph->axisY()->setLabelAutoRotation(90);
     m_graph->axisZ()->setLabelAutoRotation(30);
@@ -41,182 +46,101 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface, SensorSpace::SensorModel* model)
     m_graph->axisY()->setTitleVisible(true);
     m_graph->axisZ()->setTitleVisible(true);
 
-    // Инициализация сенсоров, добавление их местоположения на график.
+    connect(m_positionSensors.data(), &PositionSensors::sigContainerChanged,
+            this, &ScatterGraph::handleUpdatePositionSensors, Qt::UniqueConnection);
 
-    for (unsigned i = 0; i < m_sensorModel->getEnabledSensor(); ++i)
-    {
-        auto newSensor = QSharedPointer<SensorSpace::Sensor>(new SensorSpace::Sensor(i, m_sensorModel, this));
+    connect(m_acousticSensors.data(), &AcousticSensors::sigContainerChanged,
+            this, &ScatterGraph::handleUpdateAcousticSensors, Qt::UniqueConnection);
 
-        connect(newSensor.data(), &SensorSpace::Sensor::sigSensorUpdateData,
-                this, &ScatterGraph::handleSetSensorPosition);
+    connect(m_trueModel.data(), &TrueModel::sigContainerChanged,
+            this, &ScatterGraph::handleUpdateTrueModel, Qt::UniqueConnection);
 
-        m_sensors.push_back(newSensor);
-        m_sensorSeries->dataProxy()->addItem(m_sensorModel->getNewSensorPosition(i));
-    }
+    handleUpdatePositionSensors();
+    handleUpdateAcousticSensors();
+    handleUpdateTrueModel();
 
-    m_graph->addSeries(m_interpolationSeries);
-    m_graph->addSeries(m_antennaSeries);
-    m_graph->addSeries(m_sensorSeries);
+    m_graph->addSeries(m_acousticSensorSeries);
+    m_graph->addSeries(m_trueAntennaModelSeries);
+    m_graph->addSeries(m_positionSensorSeries);
 }
 
-void ScatterGraph::setAxisXRange(float min, float max)
+void ScatterGraph::setAxisXRange(const double min, const double max)
 {
     m_graph->axisX()->setRange(min, max);
 }
 
-void ScatterGraph::setAxisZRange(float min, float max)
+void ScatterGraph::setAxisZRange(const double min, const double max)
 {
     m_graph->axisZ()->setRange(min, max);
 }
 
-void ScatterGraph::updateSens(const quint32 &newCount)
+void ScatterGraph::setAxisYRange(const double min, const double max)
 {
-    const quint32 value = (newCount == 0 ? m_sensorModel->getEnabledSensor() : newCount);
-
-    for (unsigned i = 0; i < value; ++i)
-        m_sensorSeries->dataProxy()->setItem(i, m_sensorModel->getNewSensorPosition(i));
-
-    calculateInterpolation();
+    m_graph->axisY()->setRange(min, max);
 }
 
-void ScatterGraph::calculateInterpolation()
+void ScatterGraph::handleUpdatePositionSensors()
 {
-    std::vector<double> x;
-    std::vector<double> x2;
-    std::vector<double> y;
-    std::vector<double> z;
-
-    for (auto& p : *m_sensorSeries->dataProxy()->array())
-    {
-        x.emplace_back(p.x());
-        x2.emplace_back(p.x());
-        y.emplace_back(p.y());
-        z.emplace_back(p.z());
-    }
-
-    auto interpolatorX = boost::math::interpolators::barycentric_rational<double>(std::move(x), std::move(y));
-    auto interpolatorZ = boost::math::interpolators::barycentric_rational<double>(std::move(x2), std::move(z));
-
-    double step = m_sensorModel->getLenght() / static_cast<double>(m_interpolationCount);
-    QScatterDataArray *data = new QScatterDataArray;
-
-    for (unsigned i = 0; i < m_interpolationCount; ++i)
-    {
-        double Y = interpolatorX(i * step);
-        double Z = interpolatorZ(i * step);
-        *data << QVector3D(i * step, Y, Z);
-    }
-
-    m_interpolationSeries->dataProxy()->resetArray(data);
+    auto strongRef = m_positionSensors->getScatterArray().toStrongRef();
+    if (strongRef)
+        m_positionSensorSeries->dataProxy()->resetArray(strongRef.data());
 }
 
-void ScatterGraph::handleSetSensorPosition(const quint32& positionInArray, const QVector3D data)
+void ScatterGraph::handleUpdateAcousticSensors()
 {
-    m_sensorSeries->dataProxy()->setItem(positionInArray, QScatterDataItem(data));
-    calculateInterpolation();
+    auto strongRef = m_acousticSensors->getScatterArray().toStrongRef();
+    if (strongRef)
+        m_acousticSensorSeries->dataProxy()->resetArray(strongRef.data());
 }
 
-void ScatterGraph::handleSensorCountChanged(const quint32 &newCount)
+void ScatterGraph::handleUpdateTrueModel()
 {
-    const quint32 curSensCount = m_sensorModel->getEnabledSensor();
-    const quint32 newSensCount = newCount;
-
-    if (curSensCount == newSensCount)
-        return;
-
-    auto proxy = m_sensorSeries->dataProxy();
-
-    m_sensorModel->setEnabledSensor(newSensCount);
-
-    if (newSensCount > curSensCount)
-        for (unsigned i = curSensCount; i < newSensCount; ++i)
-        {
-            auto newSensor = QSharedPointer<SensorSpace::Sensor>(new SensorSpace::Sensor(i, m_sensorModel, this));
-
-            connect(newSensor.data(), &SensorSpace::Sensor::sigSensorUpdateData,
-                    this, &ScatterGraph::handleSetSensorPosition);
-
-            m_sensors.push_back(newSensor);
-            m_sensorSeries->dataProxy()->addItem(m_sensorModel->getNewSensorPosition(i));
-        }
-    else
-    {
-        for (unsigned i = curSensCount; i > newSensCount; --i)
-            m_sensors.pop_back();
-
-        proxy->removeItems(newSensCount, curSensCount - newSensCount);
-    }
-
-    updateSens(curSensCount);
-}
-
-void ScatterGraph::handleAntennaLenghtChanged(const double &newLenght)
-{
-    const double curAntennLenght = m_sensorModel->getLenght();
-    const double newAntennLenght = newLenght;
-
-    if (curAntennLenght == newAntennLenght)
-        return;
-
-    m_sensorModel->setAntennaLenght(newAntennLenght);
-
-    if (newAntennLenght > m_graph->axisX()->max() - 0.5f)
-        m_graph->axisX()->setRange(m_graph->axisX()->min(), newAntennLenght + 1);
-
-    if (newAntennLenght + 0.5f < m_graph->axisX()->max())
-        m_graph->axisX()->setRange(m_graph->axisX()->min(), newAntennLenght + 1);
-
-    updateSens();
+    auto strongRef = m_trueModel->getScatterArray().toStrongRef();
+    if (strongRef)
+        m_trueAntennaModelSeries->dataProxy()->resetArray(strongRef.data());
 }
 
 void ScatterGraph::handleSetInterpolationColor(const QColor &newColor)
 {
-    m_interpolationSeries->setBaseColor(newColor);
+    m_acousticSensorSeries->setBaseColor(newColor);
 }
 
 void ScatterGraph::handleSetInterpolationSize(const double &newValue)
 {
-    m_interpolationSeries->setItemSize(newValue);
+    m_acousticSensorSeries->setItemSize(newValue);
 }
 
 void ScatterGraph::handleSetSensorColor(const QColor &newColor)
 {
-    m_sensorSeries->setBaseColor(newColor);
+    m_positionSensorSeries->setBaseColor(newColor);
 }
 
 void ScatterGraph::handleSetSensorSize(const double &newValue)
 {
-    m_sensorSeries->setItemSize(newValue);
-}
-
-void ScatterGraph::handleSetEmulationState(const bool &state)
-{
-    for (const auto& s : m_sensors)
-        s->setTimerStatus(state);
-}
-
-void ScatterGraph::handleSetInterpolationCount(const quint32 &newValue)
-{
-    m_interpolationCount = newValue;
-    calculateInterpolation();
-}
-
-void ScatterGraph::handleSetMaxDeviation(const double &newMaxValue)
-{
-    m_sensorModel->setMaxDeviation(newMaxValue);
+    m_positionSensorSeries->setItemSize(newValue);
 }
 
 void ScatterGraph::handleSetAntennaVisibility(const bool &newState)
 {
-    qDebug() << "Antenna = " <<  newState;
+    m_trueAntennaModelSeries->setVisible(newState);
 }
 
 void ScatterGraph::handleSetSensorVisibility(const bool &newState)
 {
-    m_sensorSeries->setVisible(newState);
+    m_positionSensorSeries->setVisible(newState);
 }
 
 void ScatterGraph::handleSetInterpolationVisibility(const bool &newState)
 {
-    m_interpolationSeries->setVisible(newState);
+    m_acousticSensorSeries->setVisible(newState);
+}
+
+void ScatterGraph::handleSetTrueModelColor(const QColor &newColor)
+{
+    m_trueAntennaModelSeries->setBaseColor(newColor);
+}
+
+void ScatterGraph::handleSetTrueModelSize(const double &newValue)
+{
+    m_trueAntennaModelSeries->setItemSize(newValue);
 }

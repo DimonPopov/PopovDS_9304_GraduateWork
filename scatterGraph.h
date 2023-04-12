@@ -6,10 +6,10 @@
 #include <QScatterDataProxy>
 #include <QSlider>
 #include <QVector>
-#include <QPair>
 #include <QSharedPointer>
+#include <QScopedPointer>
 
-#include "sensor.h"
+#include "abstractpointcontainer.h"
 
 
 
@@ -17,36 +17,38 @@ class ScatterGraph : public QObject
 {
     Q_OBJECT
 public:
-    explicit ScatterGraph(Q3DScatter *surface, SensorSpace::SensorModel* model);
-    void calculateInterpolation();
-
+    explicit ScatterGraph(Q3DScatter* surface,
+                          QSharedPointer<PointContainerSpace::PositionSensors>,
+                          QSharedPointer<PointContainerSpace::AcousticSensors>,
+                          QSharedPointer<PointContainerSpace::TrueModel>);
 public slots:
-    void handleSetSensorPosition(const quint32& positionInArray, const QVector3D data);    
-    void handleSensorCountChanged(const quint32& newCount);
-    void handleAntennaLenghtChanged(const double& newLenght);
     void handleSetSensorColor(const QColor& newColor);
     void handleSetSensorSize(const double& newValue);
     void handleSetInterpolationColor(const QColor& newColor);
     void handleSetInterpolationSize(const double& newValue);
-    void handleSetEmulationState(const bool& state);
-    void handleSetInterpolationCount(const quint32& newValue);
-    void handleSetMaxDeviation(const double& newMaxValue);
     void handleSetAntennaVisibility(const bool& newState);
     void handleSetSensorVisibility(const bool& newState);
     void handleSetInterpolationVisibility(const bool& newState);
+    void handleSetTrueModelColor(const QColor& newColor);
+    void handleSetTrueModelSize(const double& newValue);
 
 private:
-    QSharedPointer<Q3DScatter> m_graph;
-    QSharedPointer<SensorSpace::SensorModel> m_sensorModel;
-    QVector<QSharedPointer<SensorSpace::Sensor>> m_sensors;
-    QScatter3DSeries *m_interpolationSeries;
-    QScatter3DSeries *m_sensorSeries;
-    QScatter3DSeries *m_antennaSeries;
-    quint32 m_interpolationCount;
+    QScopedPointer<Q3DScatter> m_graph;
+    QSharedPointer<PointContainerSpace::PositionSensors> m_positionSensors;
+    QSharedPointer<PointContainerSpace::AcousticSensors> m_acousticSensors;
+    QSharedPointer<PointContainerSpace::TrueModel> m_trueModel;
+    QScatter3DSeries *m_acousticSensorSeries;
+    QScatter3DSeries *m_positionSensorSeries;
+    QScatter3DSeries *m_trueAntennaModelSeries;
 
-    void setAxisXRange(float min, float max);
-    void setAxisZRange(float min, float max);
-    void updateSens(const quint32& newCount = 0);
+    void setAxisXRange(const double min, const double max);
+    void setAxisZRange(const double min, const double max);
+    void setAxisYRange(const double min, const double max);
+
+private slots:
+    void handleUpdatePositionSensors();
+    void handleUpdateAcousticSensors();
+    void handleUpdateTrueModel();
 };
 
 #endif // ScatterGraph_H

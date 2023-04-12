@@ -9,23 +9,29 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    abstractpointcontainer.cpp \
+    antennamodel.cpp \
     controllPanel.cpp \
+    interpolation.cpp \
     main.cpp \
     mainwindow.cpp \
-    scatterGraph.cpp \
-    sensor.cpp
+    scatterGraph.cpp
 
 HEADERS += \
+    abstractpointcontainer.h \
+    antennamodel.h \
     controllPanel.h \
+    interpolation.h \
     mainwindow.h \
     scatterGraph.h \
-    sensor.h \
     settingsDefine.h
 
 FORMS += \
     controllPanel.ui \
     mainWidget.ui \
     mainwindow.ui
+
+LIBS += -L/usr/lib -lfftw3
 
 #TRANSLATIONS += \
 #    :/tr/GraduateWork_ru_RU.ts
