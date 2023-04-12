@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>270</width>
-    <height>642</height>
+    <height>671</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,84 +15,80 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="modelGroup">
      <property name="title">
-      <string>Input data</string>
+      <string>Model</string>
      </property>
      <layout class="QFormLayout" name="formLayout_2">
       <item row="0" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>Antenna length:</string>
+         <string>Length:</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QDoubleSpinBox" name="antennaLengthSpin"/>
+       <widget class="QDoubleSpinBox" name="antennaLengthSpin">
+        <property name="minimum">
+         <double>1.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_3">
+       <widget class="QLabel" name="label_11">
         <property name="text">
-         <string>Position sensor count:</string>
+         <string>Amount:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QSpinBox" name="sensorCountSpin">
+       <widget class="QSpinBox" name="trueModelCountSpin">
         <property name="minimum">
-         <number>4</number>
+         <number>3</number>
         </property>
-        <property name="value">
-         <number>4</number>
+        <property name="maximum">
+         <number>10000</number>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_7">
+       <widget class="QLabel" name="label_9">
         <property name="text">
-         <string>Acoustic sensor count:</string>
+         <string>Size:</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QSpinBox" name="interpolationCountSpin">
+       <widget class="QDoubleSpinBox" name="trueModelPointSizeSpin">
+        <property name="minimum">
+         <double>0.010000000000000</double>
+        </property>
         <property name="maximum">
-         <number>10000</number>
+         <double>1.000000000000000</double>
         </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>Max. deviation:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QDoubleSpinBox" name="maximumDeviationSpin">
         <property name="singleStep">
-         <double>0.100000000000000</double>
+         <double>0.010000000000000</double>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="label_11">
+       <widget class="QLabel" name="label_10">
         <property name="text">
-         <string>True model count:</string>
+         <string>Color:</string>
         </property>
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QSpinBox" name="trueModelCountSpin">
-        <property name="maximum">
-         <number>10000</number>
+       <widget class="QComboBox" name="trueModelColorCombo">
+        <property name="placeholderText">
+         <string>Color</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0" colspan="2">
-       <widget class="QComboBox" name="interpolationCombo">
-        <property name="sizeAdjustPolicy">
-         <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+      <item row="4" column="0" colspan="2">
+       <widget class="QCheckBox" name="antennaVisibilityCheck">
+        <property name="text">
+         <string>Display model</string>
         </property>
        </widget>
       </item>
@@ -100,19 +96,36 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="positionSensorsGroup">
      <property name="title">
-      <string>Point setting</string>
+      <string>Position sensors</string>
      </property>
      <layout class="QFormLayout" name="formLayout">
       <item row="0" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Pos. sensor size:</string>
+         <string>Amount:</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
+       <widget class="QSpinBox" name="sensorCountSpin">
+        <property name="minimum">
+         <number>5</number>
+        </property>
+        <property name="value">
+         <number>5</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Size:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
        <widget class="QDoubleSpinBox" name="sensorPointSizeSpin">
         <property name="decimals">
          <number>2</number>
@@ -128,24 +141,82 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Pos. sensor color:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="sensorPointColorCombo"/>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Aco. sensor size:</string>
+         <string>Color:</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
+       <widget class="QComboBox" name="sensorPointColorCombo">
+        <property name="placeholderText">
+         <string>Color</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Noise:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="maximumDeviationSpin">
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QCheckBox" name="sensorsVisibilityCheck">
+        <property name="text">
+         <string>Display position sensors</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="QCheckBox" name="sensorEnd">
+        <property name="text">
+         <string>Sensor at the end</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="acousticSensorsGroup">
+     <property name="title">
+      <string>Acoustic sensors</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_3">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Amount:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="interpolationCountSpin">
+        <property name="minimum">
+         <number>3</number>
+        </property>
+        <property name="maximum">
+         <number>10000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Size:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
        <widget class="QDoubleSpinBox" name="interpolationPointSizeSpin">
         <property name="decimals">
          <number>2</number>
@@ -161,73 +232,34 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Aco. sensor color:</string>
+         <string>Color:</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="interpolationPointColorCombo"/>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_9">
-        <property name="text">
-         <string>True model size:</string>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="interpolationPointColorCombo">
+        <property name="placeholderText">
+         <string>Color</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_10">
-        <property name="text">
-         <string>True model color:</string>
+      <item row="3" column="0" colspan="2">
+       <widget class="QComboBox" name="interpolationCombo">
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+        </property>
+        <property name="placeholderText">
+         <string>Interpolation type</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="QComboBox" name="trueModelColorCombo"/>
-      </item>
-      <item row="4" column="1">
-       <widget class="QDoubleSpinBox" name="trueModelPointSizeSpin">
-        <property name="minimum">
-         <double>0.010000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>1.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.010000000000000</double>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox_3">
-     <property name="title">
-      <string>Visibility</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QCheckBox" name="antennaVisibilityCheck">
-        <property name="text">
-         <string>Antenna model</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="sensorsVisibilityCheck">
-        <property name="text">
-         <string>Position sensor</string>
-        </property>
-       </widget>
-      </item>
-      <item>
+      <item row="4" column="0" colspan="2">
        <widget class="QCheckBox" name="interpolationVisibilityCheck">
         <property name="text">
-         <string>Acoustic sensor</string>
+         <string>Display acoustic sensors</string>
         </property>
        </widget>
       </item>

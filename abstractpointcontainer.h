@@ -22,7 +22,7 @@ class AbstractPointContainer : public QObject
 public:
     explicit AbstractPointContainer(QSharedPointer<AntennaModelSpace::AntennaModel> model,
                                     QObject *parent = nullptr);
-    virtual ~AbstractPointContainer();
+    virtual ~AbstractPointContainer() {};
     QWeakPointer<QScatterDataArray> getScatterArray() const;
     QWeakPointer<AntennaModelSpace::AntennaModel> getAntennaModel() const;
     quint32 getScatterArraySize() const;
@@ -54,13 +54,16 @@ class PositionSensors : public AbstractPointContainer
 public:
     explicit PositionSensors(QSharedPointer<AntennaModelSpace::AntennaModel> model,
                              const quint32& amountPoints,
+                             const bool& sensorEnd,
                              QObject *parent = nullptr);
 protected:
     void updatePointPosition() override;
     QScopedPointer<QTimer> m_timer;
+    bool m_sensorEnd;
 
 public slots:
     void handleSetNoiseState(const bool& noise);
+    void handleSetSensorEnd(const bool& state);
 };
 
 

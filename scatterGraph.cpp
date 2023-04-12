@@ -32,15 +32,11 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface,
     m_graph->axisX()->setLabelFormat("%.2f");
     m_graph->axisZ()->setLabelFormat("%.2f");
     m_graph->axisX()->setRange(0.0f, 12.0f);
-    m_graph->axisY()->setRange(0.0f, 12.0f);
-    m_graph->axisZ()->setRange(0.0f, 12.0f);
+    m_graph->axisY()->setRange(0.0f, 7.0f);
+    m_graph->axisZ()->setRange(0.0f, 7.0f);
     m_graph->axisX()->setLabelAutoRotation(30);
     m_graph->axisY()->setLabelAutoRotation(90);
     m_graph->axisZ()->setLabelAutoRotation(30);
-
-    m_graph->axisX()->setAutoAdjustRange(true);
-    m_graph->axisY()->setAutoAdjustRange(true);
-    m_graph->axisZ()->setAutoAdjustRange(true);
 
     m_graph->axisX()->setTitle(QStringLiteral("X"));
     m_graph->axisY()->setTitle(QStringLiteral("Y"));
@@ -51,13 +47,13 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface,
     m_graph->axisZ()->setTitleVisible(true);
 
     connect(m_positionSensors.data(), &PositionSensors::sigContainerChanged,
-            this, &ScatterGraph::handleUpdatePositionSensors);
+            this, &ScatterGraph::handleUpdatePositionSensors, Qt::UniqueConnection);
 
     connect(m_acousticSensors.data(), &AcousticSensors::sigContainerChanged,
-            this, &ScatterGraph::handleUpdateAcousticSensors);
+            this, &ScatterGraph::handleUpdateAcousticSensors, Qt::UniqueConnection);
 
     connect(m_trueModel.data(), &TrueModel::sigContainerChanged,
-            this, &ScatterGraph::handleUpdateTrueModel);
+            this, &ScatterGraph::handleUpdateTrueModel, Qt::UniqueConnection);
 
     handleUpdatePositionSensors();
     handleUpdateAcousticSensors();

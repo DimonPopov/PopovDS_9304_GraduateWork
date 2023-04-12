@@ -14,11 +14,6 @@ PointContainerSpace::AbstractPointContainer::AbstractPointContainer(QSharedPoint
             this, &AbstractPointContainer::updatePointPosition);
 }
 
-PointContainerSpace::AbstractPointContainer::~AbstractPointContainer()
-{
-
-}
-
 QWeakPointer<QScatterDataArray> PointContainerSpace::AbstractPointContainer::getScatterArray() const
 {
     return m_scatterArray.toWeakRef();
@@ -53,9 +48,11 @@ void PointContainerSpace::AbstractPointContainer::setScatterArraySize(const quin
 
 PointContainerSpace::PositionSensors::PositionSensors(QSharedPointer<AntennaModel> model,
                                  const quint32 &amountPoints,
+                                 const bool& sensorEnd,
                                  QObject *parent)
     : AbstractPointContainer(model, parent),
-      m_timer(new QTimer)
+      m_timer(new QTimer),
+      m_sensorEnd(sensorEnd)
 {
     m_timer->setInterval(1'000);
 
@@ -68,7 +65,7 @@ PointContainerSpace::PositionSensors::PositionSensors(QSharedPointer<AntennaMode
 void PointContainerSpace::PositionSensors::updatePointPosition()
 {
     const quint32 size = m_scatterArray->size();
-    const double step = m_model->getLenght() / size;
+    const double step = m_model->getLenght() / (m_sensorEnd ? size - 1 : size);
 
     m_scatterArray->clear();
 
@@ -81,6 +78,12 @@ void PointContainerSpace::PositionSensors::updatePointPosition()
 void PointContainerSpace::PositionSensors::handleSetNoiseState(const bool &noise)
 {
     noise ? m_timer->start() : m_timer->stop();
+}
+
+void PointContainerSpace::PositionSensors::handleSetSensorEnd(const bool &state)
+{
+    m_sensorEnd = state;
+    updatePointPosition();
 }
 
 
@@ -106,7 +109,15 @@ void PointContainerSpace::AcousticSensors::setInterpolationType(const Interpolai
         return;
 
     m_type = newType;
-    updatePointPosition();
+
+//    if (newType == InterpolaionSpace::InterpolationType::CardinalCubicBSpline)
+//    {
+//        if (auto strongRef = m_positionSensors.toStrongRef())
+//            if (strongRef->getScatterArraySize() < 5)
+//                strongRef->setScatterArraySize(5);
+//    }
+//    else
+        updatePointPosition();
 }
 
 InterpolaionSpace::InterpolationType PointContainerSpace::AcousticSensors::getInterpolationType() const

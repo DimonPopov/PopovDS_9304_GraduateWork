@@ -50,11 +50,11 @@ MainWindow::MainWindow(QWidget *parent)
     m_controllPanel = new ControllPanel(this);
 
     QSharedPointer<AntennaModel> antennaModel(new AntennaModel(m_controllPanel->getAntennaLenght()));
-
     QSharedPointer<TrueModel> trueModel(new TrueModel(antennaModel,
                                                       m_controllPanel->getTrueModelCount()));
     QSharedPointer<PositionSensors> positionSensors(new PositionSensors(antennaModel,
-                                                                        m_controllPanel->getSensorCount()));
+                                                                        m_controllPanel->getSensorCount(),
+                                                                        m_controllPanel->getSensorEnd()));
     QSharedPointer<AcousticSensors> acousticSensors(new AcousticSensors(antennaModel,
                                                                         positionSensors,
                                                                         m_controllPanel->getInterpolationType(),
@@ -86,6 +86,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_controllPanel, &ControllPanel::sigEmulationButtonClicked,
             positionSensors.data(), &PositionSensors::handleSetNoiseState);
+
+    connect(m_controllPanel, &ControllPanel::sigSensorEndChanged,
+            positionSensors.data(), &PositionSensors::handleSetSensorEnd);
 
     connect(m_controllPanel, &ControllPanel::sigInterpolationTypeChanged,
             acousticSensors.data(), &AcousticSensors::setInterpolationType);
@@ -130,6 +133,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-//    delete m_graph;
+    delete m_graph;
 }
 

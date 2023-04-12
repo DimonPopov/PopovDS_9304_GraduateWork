@@ -1,7 +1,6 @@
 #include "antennamodel.h"
 
 
-
 AntennaModelSpace::AntennaModel::AntennaModel(const double &lenght, QObject *parent)
     : QObject(parent),
       m_lenght(lenght)

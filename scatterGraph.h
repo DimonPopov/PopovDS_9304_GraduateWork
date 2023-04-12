@@ -12,9 +12,7 @@
 #include "abstractpointcontainer.h"
 
 
-/**
- * @brief Класс-обертка для Q3DScatter.
- */
+
 class ScatterGraph : public QObject
 {
     Q_OBJECT
@@ -35,13 +33,13 @@ public slots:
     void handleSetTrueModelSize(const double& newValue);
 
 private:
-    QScopedPointer<Q3DScatter> m_graph;                             ///< График для отображеня.
+    QScopedPointer<Q3DScatter> m_graph;
     QSharedPointer<PointContainerSpace::PositionSensors> m_positionSensors;
     QSharedPointer<PointContainerSpace::AcousticSensors> m_acousticSensors;
     QSharedPointer<PointContainerSpace::TrueModel> m_trueModel;
-    QScatter3DSeries *m_acousticSensorSeries;                       ///< Набор востановленных координат акустических сенсоров.
-    QScatter3DSeries *m_positionSensorSeries;                       ///< Набор координат сенсоров местоположения.
-    QScatter3DSeries *m_trueAntennaModelSeries;                     ///< Набор координат истинной формы антены.
+    QScatter3DSeries *m_acousticSensorSeries;
+    QScatter3DSeries *m_positionSensorSeries;
+    QScatter3DSeries *m_trueAntennaModelSeries;
 
     void setAxisXRange(const double min, const double max);
     void setAxisZRange(const double min, const double max);

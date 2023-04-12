@@ -35,6 +35,7 @@ public:
     int getAntennaVisibility() const;
     int getSensorVisibility() const;
     int getInterpolationVisibility() const;
+    bool getSensorEnd() const;
 
 private:
     Ui::ControllPanel *ui;
@@ -57,6 +58,7 @@ signals:
     void sigTrueModelPointSizeChanged(const double& trueModelPointSize);
     void sigTrueModelCountChanged(const quint32& count);
     void sigInterpolationTypeChanged(const InterpolaionSpace::InterpolationType& type);
+    void sigSensorEndChanged(const bool& state);
 
 private slots:
     void handleSensorPointColorChanged(const int& index);

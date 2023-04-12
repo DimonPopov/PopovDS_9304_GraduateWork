@@ -36,7 +36,7 @@ ControllPanel::ControllPanel(QWidget *parent) :
 
     for (unsigned i = 0; i < Color::Count; ++i)
     {
-        auto color = colorToStr(static_cast<Color>(i));
+        const auto color = colorToStr(static_cast<Color>(i));
         ui->interpolationPointColorCombo->addItem(color, i);
         ui->sensorPointColorCombo->addItem(color, i);
         ui->trueModelColorCombo->addItem(color, i);
@@ -91,6 +91,9 @@ ControllPanel::ControllPanel(QWidget *parent) :
     connect(ui->sensorsVisibilityCheck, &QCheckBox::stateChanged,
             this, &ControllPanel::handleVisibilityCheckBoxsChanged);
 
+    connect(ui->sensorEnd, &QCheckBox::stateChanged,
+            this, &ControllPanel::sigSensorEndChanged);
+
     connect(ui->interpolationVisibilityCheck, &QCheckBox::stateChanged,
             this, &ControllPanel::handleVisibilityCheckBoxsChanged);
 
@@ -123,6 +126,7 @@ void ControllPanel::load()
         ui->trueModelPointSizeSpin->setValue(             m_settings->value(MODEL_POINT_SIZE,          BASIC_MODEL_POINT_SIZE).toDouble());
         ui->trueModelColorCombo->setCurrentIndex(         m_settings->value(MODEL_POINT_COLOR,         BASIC_MODEL_POINT_COLOR).toUInt());
         ui->interpolationCombo->setCurrentIndex(          m_settings->value(INTERPOLATION_TYPE,        BASIC_INTERPOLATION_TYPE).toUInt());
+        ui->sensorEnd->setChecked(                        m_settings->value(INTERPOLATION_SENSOR_END,  BASIC_INTERPOLATION_END).toBool());
         ui->maximumDeviationSpin->setValue(               m_settings->value(MAX_DEVIATION,             0.1f).toDouble());
     m_settings->endGroup();
 }
@@ -145,6 +149,7 @@ void ControllPanel::save()
         m_settings->setValue(MODEL_POINT_SIZE,          ui->trueModelPointSizeSpin->value());
         m_settings->setValue(MODEL_POINT_COLOR,         ui->trueModelColorCombo->currentData());
         m_settings->setValue(INTERPOLATION_TYPE,        ui->interpolationCombo->currentIndex());
+        m_settings->setValue(INTERPOLATION_SENSOR_END,  ui->sensorEnd->checkState());
     m_settings->endGroup();
 }
 
@@ -216,6 +221,11 @@ int ControllPanel::getSensorVisibility() const
 int ControllPanel::getInterpolationVisibility() const
 {
     return ui->interpolationVisibilityCheck->checkState();
+}
+
+bool ControllPanel::getSensorEnd() const
+{
+    return ui->sensorEnd->checkState();
 }
 
 void ControllPanel::handleSensorPointColorChanged(const int& index)

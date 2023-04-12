@@ -24,4 +24,5 @@ private:
     ScatterGraph* m_graph;
     ControllPanel* m_controllPanel;
 };
+
 #endif // MAINWINDOW_H
