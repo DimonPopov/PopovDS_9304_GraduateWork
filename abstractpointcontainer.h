@@ -23,14 +23,14 @@ public:
     explicit AbstractPointContainer(QSharedPointer<AntennaModelSpace::AntennaModel> model,
                                     QObject *parent = nullptr);
     virtual ~AbstractPointContainer() {};
-    QWeakPointer<QScatterDataArray> getScatterArray() const;
+    QScatterDataArray* getScatterArray() const;
     QWeakPointer<AntennaModelSpace::AntennaModel> getAntennaModel() const;
     quint32 getScatterArraySize() const;
     void setScatterArraySize(const quint32& newSize);
 protected:
     virtual void updatePointPosition() = 0;
     QSharedPointer<AntennaModelSpace::AntennaModel> m_model;
-    QSharedPointer<QScatterDataArray> m_scatterArray;
+    QScatterDataArray* m_scatterArray;
 signals:
     void sigContainerChanged();
 };

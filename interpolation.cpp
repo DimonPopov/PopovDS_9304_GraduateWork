@@ -317,7 +317,7 @@ static QList<QVector3D> Pchip(std::vector<double>& x,
 //}
 
 
-QList<QVector3D> InterpolaionSpace::calculateInterpolation(QSharedPointer<QScatterDataArray> scatterArray,
+QList<QVector3D> InterpolaionSpace::calculateInterpolation(QScatterDataArray* scatterArray,
                                                            const double& lenght,
                                                            const quint32& size,
                                                            const InterpolationType type)

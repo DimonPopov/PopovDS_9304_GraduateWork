@@ -14,9 +14,9 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface,
                            QSharedPointer<AcousticSensors> acousticSensors,
                            QSharedPointer<TrueModel> trueModel)
     : m_graph(surface),
-      m_positionSensors(positionSensors),
-      m_acousticSensors(acousticSensors),
-      m_trueModel(trueModel)
+    m_positionSensors(positionSensors),
+    m_acousticSensors(acousticSensors),
+    m_trueModel(trueModel)
 {
     // Инициализация сетки графика.
 
@@ -81,23 +81,17 @@ void ScatterGraph::setAxisYRange(const double min, const double max)
 
 void ScatterGraph::handleUpdatePositionSensors()
 {
-    auto strongRef = m_positionSensors->getScatterArray().toStrongRef();
-    if (strongRef)
-        m_positionSensorSeries->dataProxy()->resetArray(strongRef.data());
+    m_positionSensorSeries->dataProxy()->resetArray(m_positionSensors->getScatterArray());
 }
 
 void ScatterGraph::handleUpdateAcousticSensors()
 {
-    auto strongRef = m_acousticSensors->getScatterArray().toStrongRef();
-    if (strongRef)
-        m_acousticSensorSeries->dataProxy()->resetArray(strongRef.data());
+    m_acousticSensorSeries->dataProxy()->resetArray(m_acousticSensors->getScatterArray());
 }
 
 void ScatterGraph::handleUpdateTrueModel()
 {
-    auto strongRef = m_trueModel->getScatterArray().toStrongRef();
-    if (strongRef)
-        m_trueAntennaModelSeries->dataProxy()->resetArray(strongRef.data());
+    m_trueAntennaModelSeries->dataProxy()->resetArray(m_trueModel->getScatterArray());
 }
 
 void ScatterGraph::handleSetInterpolationColor(const QColor &newColor)

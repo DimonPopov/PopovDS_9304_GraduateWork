@@ -35,14 +35,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowTitle(tr("Surface"));
 
-    QSize screenSize = graph->screen()->size();
-    QWidget *container = QWidget::createWindowContainer(graph);
-
-    container->setMinimumSize(QSize(screenSize.width() / 2, screenSize.height() / 1.6));
-    container->setMaximumSize(screenSize);
-    container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    container->setFocusPolicy(Qt::StrongFocus);
-
     QWidget *widget = new QWidget;
     QHBoxLayout *hLayout = new QHBoxLayout(widget);
     QVBoxLayout *vLayout = new QVBoxLayout();
@@ -60,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
                                                                         m_controllPanel->getInterpolationType(),
                                                                         m_controllPanel->getInterpolationCount()));
 
-    m_graph = new ScatterGraph(graph, positionSensors, acousticSensors, trueModel);
+    m_graph = new ScatterGraph(graph, positionSensors, acousticSensors, trueModel);    
 
     m_graph->handleSetSensorSize(m_controllPanel->getSensorSize());
     m_graph->handleSetInterpolationSize(m_controllPanel->getInterpolationSize());
@@ -119,6 +111,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_controllPanel, &ControllPanel::sigInterpolationVisibilityChanged,
             m_graph, &ScatterGraph::handleSetInterpolationVisibility);
+
+    QSize screenSize = graph->screen()->size();
+    QWidget *container = QWidget::createWindowContainer(graph, m_graph);
+
+    container->setMinimumSize(QSize(screenSize.width() / 2, screenSize.height() / 1.6));
+    container->setMaximumSize(screenSize);
+    container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    container->setFocusPolicy(Qt::StrongFocus);
 
     hLayout->addWidget(container, 1);
     vLayout->addWidget(m_controllPanel);

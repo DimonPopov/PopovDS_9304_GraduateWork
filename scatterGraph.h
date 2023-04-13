@@ -13,7 +13,7 @@
 
 
 
-class ScatterGraph : public QObject
+class ScatterGraph : public QWidget
 {
     Q_OBJECT
 public:
@@ -33,7 +33,7 @@ public slots:
     void handleSetTrueModelSize(const double& newValue);
 
 private:
-    QScopedPointer<Q3DScatter> m_graph;
+    Q3DScatter* m_graph;
     QSharedPointer<PointContainerSpace::PositionSensors> m_positionSensors;
     QSharedPointer<PointContainerSpace::AcousticSensors> m_acousticSensors;
     QSharedPointer<PointContainerSpace::TrueModel> m_trueModel;

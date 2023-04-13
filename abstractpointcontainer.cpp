@@ -14,9 +14,9 @@ PointContainerSpace::AbstractPointContainer::AbstractPointContainer(QSharedPoint
             this, &AbstractPointContainer::updatePointPosition);
 }
 
-QWeakPointer<QScatterDataArray> PointContainerSpace::AbstractPointContainer::getScatterArray() const
+QScatterDataArray* PointContainerSpace::AbstractPointContainer::getScatterArray() const
 {
-    return m_scatterArray.toWeakRef();
+    return m_scatterArray;
 }
 
 QWeakPointer<AntennaModelSpace::AntennaModel> PointContainerSpace::AbstractPointContainer::getAntennaModel() const

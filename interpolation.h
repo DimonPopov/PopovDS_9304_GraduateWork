@@ -30,7 +30,7 @@ enum InterpolationType : quint32 {
 QString getStrFromType(const InterpolationType& type);
 
 
-QList<QVector3D> calculateInterpolation(QSharedPointer<QScatterDataArray> scatterArray,
+QList<QVector3D> calculateInterpolation(QScatterDataArray* scatterArray,
                                         const double& lenght,
                                         const quint32& size,
                                         const InterpolationType type = InterpolationType::BarycentricRational);
