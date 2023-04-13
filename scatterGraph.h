@@ -17,7 +17,7 @@ class ScatterGraph : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ScatterGraph(Q3DScatter* surface,
+    explicit ScatterGraph(Q3DScatter*,
                           QSharedPointer<PointContainerSpace::PositionSensors>,
                           QSharedPointer<PointContainerSpace::AcousticSensors>,
                           QSharedPointer<PointContainerSpace::TrueModel>);

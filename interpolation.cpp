@@ -43,15 +43,16 @@ static QList<QVector3D> barycentricRational(std::vector<double>& x,
 
 
 
-static QList<QVector3D> cardinalCubicBSpline(std::vector<double>& y,
+static QList<QVector3D> cardinalCubicBSpline(std::vector<double>& x,
+                                             std::vector<double>& y,
                                              std::vector<double>& z,
                                              const double& lenght,
                                              const quint32& size)
 {
     using namespace boost::math::interpolators;
 
-    auto interpolatorX = cardinal_cubic_b_spline<double>(y.begin(), y.end(), 0, lenght / y.size());
-    auto interpolatorZ = cardinal_cubic_b_spline<double>(z.begin(), z.end(), 0, lenght / z.size());
+    auto interpolatorX = cardinal_cubic_b_spline<double>(y.begin(), y.end(), 0, x[1]);
+    auto interpolatorZ = cardinal_cubic_b_spline<double>(z.begin(), z.end(), 0, x[1]);
 
     QList<QVector3D> result;
 
@@ -69,15 +70,16 @@ static QList<QVector3D> cardinalCubicBSpline(std::vector<double>& y,
 
 
 
-static QList<QVector3D> cardinalQuadraticBSpline(std::vector<double>& y,
+static QList<QVector3D> cardinalQuadraticBSpline(std::vector<double>& x,
+                                                 std::vector<double>& y,
                                                  std::vector<double>& z,
                                                  const double& lenght,
                                                  const quint32& size)
 {
     using namespace boost::math::interpolators;
 
-    auto interpolatorX = cardinal_quadratic_b_spline<double>(y, 0, lenght / y.size());
-    auto interpolatorZ = cardinal_quadratic_b_spline<double>(z, 0, lenght / z.size());
+    auto interpolatorX = cardinal_quadratic_b_spline<double>(y, 0, x[1]);
+    auto interpolatorZ = cardinal_quadratic_b_spline<double>(z, 0, x[1]);
 
     QList<QVector3D> result;
 
@@ -95,41 +97,16 @@ static QList<QVector3D> cardinalQuadraticBSpline(std::vector<double>& y,
 
 
 
-static QList<QVector3D> cardinalQuinticBSpline(std::vector<double>& y,
-                                               std::vector<double>& z,
-                                               const double& lenght,
-                                               const quint32& size)
-{
-    using namespace boost::math::interpolators;
-
-    auto interpolatorX = cardinal_quintic_b_spline<double>(y, 0, lenght / y.size());
-    auto interpolatorZ = cardinal_quintic_b_spline<double>(z, 0, lenght / z.size());
-
-    QList<QVector3D> result;
-
-    float step = lenght / size;
-
-    for (unsigned i = 0; i < size; ++i)
-    {
-        double Y = interpolatorX(i * step);
-        double Z = interpolatorZ(i * step);
-        result << QVector3D(i * step, Y, Z);
-    }
-
-    return result;
-}
-
-
-
-static QList<QVector3D> whittakerShannon(std::vector<double>& y,
+static QList<QVector3D> whittakerShannon(std::vector<double>& x,
+                                         std::vector<double>& y,
                                          std::vector<double>& z,
                                          const double& lenght,
                                          const quint32& size)
 {
     using namespace boost::math::interpolators;
 
-    auto interpolatorX = whittaker_shannon(std::move(y), 0, lenght / y.size());
-    auto interpolatorZ = whittaker_shannon(std::move(z), 0, lenght / z.size());
+    auto interpolatorX = whittaker_shannon(std::move(y), 0, x[1]);
+    auto interpolatorZ = whittaker_shannon(std::move(z), 0, x[1]);
 
     QList<QVector3D> result;
 
@@ -150,7 +127,6 @@ static QList<QVector3D> whittakerShannon(std::vector<double>& y,
 static QList<QVector3D> catmullRomSplines(std::vector<double>& x,
                                           std::vector<double>& y,
                                           std::vector<double>& z,
-                                          const double& lenght,
                                           const quint32& size)
 {
     using namespace boost::math;
@@ -175,6 +151,102 @@ static QList<QVector3D> catmullRomSplines(std::vector<double>& x,
     return result;
 }
 
+
+
+static QList<QVector3D> cubicHermite(std::vector<double>& x,
+                                     std::vector<double>& y,
+                                     std::vector<double>& z,
+                                     const quint32& size)
+{
+    using namespace boost::math::interpolators;
+
+    std::vector<double> dxdy1(x.size());
+    std::vector<double> dxdy2(x.size());
+    auto duple = x;
+
+    float step = x.back() / size;
+
+    auto interpolatorY = cubic_hermite(std::move(x), std::move(y), std::move(dxdy1));
+    auto interpolatorZ = cubic_hermite(std::move(duple), std::move(z), std::move(dxdy2));
+
+    QList<QVector3D> result;
+
+    for (unsigned i = 0; i < size; ++i)
+    {
+        const double Y = interpolatorY(i * step);
+        const double Z = interpolatorZ(i * step);
+        result << QVector3D(i * step, Y, Z);
+    }
+
+    return result;
+}
+
+
+
+static QList<QVector3D> modifiedAkima(std::vector<double>& x,
+                                      std::vector<double>& y,
+                                      std::vector<double>& z,
+                                      const quint32& size)
+{
+    using namespace boost::math::interpolators;
+
+    auto duplicate = x;;
+
+    float step = x.back() / size;
+
+    auto interpolatorY = makima(std::move(x), std::move(y));
+    auto interpolatorZ = makima(std::move(duplicate), std::move(z));
+
+    QList<QVector3D> result;
+
+    for (unsigned i = 0; i < size; ++i)
+    {
+        const double Y = interpolatorY(i * step);
+        const double Z = interpolatorZ(i * step);
+        result << QVector3D(i * step, Y, Z);
+    }
+
+    return result;
+}
+
+
+
+static QList<QVector3D> Pchip(std::vector<double>& x,
+                              std::vector<double>& y,
+                              std::vector<double>& z,
+                              const quint32& size)
+{
+    using namespace boost::math::interpolators;
+
+    auto duplicate = x;
+
+    float step = x.back() / size;
+
+    auto interpolatorY = pchip(std::move(x), std::move(y));
+    auto interpolatorZ = pchip(std::move(duplicate), std::move(z));
+
+    QList<QVector3D> result;
+
+    for (unsigned i = 0; i < size; ++i)
+    {
+        const double Y = interpolatorY(i * step);
+        const double Z = interpolatorZ(i * step);
+        result << QVector3D(i * step, Y, Z);
+    }
+
+    return result;
+}
+
+
+
+//static QList<QVector3D> quinticHermite(std::vector<double>& x,
+//                                       std::vector<double>& y,
+//                                       std::vector<double>& z,
+//                                       const double& lenght,
+//                                       const quint32& size)
+//{
+
+//}
 
 
 //static QList<QVector3D> bezierPolynomials(std::vector<double>& x,
@@ -232,89 +304,31 @@ static QList<QVector3D> catmullRomSplines(std::vector<double>& x,
 
 
 
-static QList<QVector3D> cubicHermite(std::vector<double>& x,
-                                     std::vector<double>& y,
-                                     std::vector<double>& z,
-                                     const quint32& size)
-{
-    using namespace boost::math::interpolators;
-    std::vector<double> dxdy1(x.size());
-    auto dxdy2 = dxdy1;
-    auto duple = x;
-
-    float step = x[x.size() - 1] / size;
-
-    auto interpolatorY = cubic_hermite(std::move(x), std::move(y), std::move(dxdy1));
-    auto interpolatorZ = cubic_hermite(std::move(duple), std::move(z), std::move(dxdy2));
-
-    QList<QVector3D> result;
-
-    for (unsigned i = 0; i < size; ++i)
-        result << QVector3D(i * step, interpolatorY(i * step), interpolatorZ(i * step));
-
-    return result;
-}
-
-
-
-static QList<QVector3D> modifiedAkima(std::vector<double>& x,
-                                      std::vector<double>& y,
-                                      std::vector<double>& z,
-                                      const double& lenght,
-                                      const quint32& size)
-{
-    using namespace boost::math::interpolators;
-
-    auto duplicate = x;
-
-    float step = x[x.size() - 1] / size;
-
-    auto interpolatorY = makima(std::move(x), std::move(y));
-    auto interpolatorZ = makima(std::move(duplicate), std::move(z));
-
-    QList<QVector3D> result;
-
-    for (unsigned i = 0; i < size; ++i)
-        result << QVector3D(i * step, interpolatorY(i * step), interpolatorZ(i * step));
-
-    return result;
-}
-
-
-
-static QList<QVector3D> Pchip(std::vector<double>& x,
-                              std::vector<double>& y,
-                              std::vector<double>& z,
-                              const double& lenght,
-                              const quint32& size)
-{
-    using namespace boost::math::interpolators;
-
-    auto duplicate = x;
-
-    float step = x[x.size() - 1] / size;
-
-    auto interpolatorY = pchip(std::move(x), std::move(y));
-    auto interpolatorZ = pchip(std::move(duplicate), std::move(z));
-
-    QList<QVector3D> result;
-
-    for (unsigned i = 0; i < size; ++i)
-        result << QVector3D(i * step, interpolatorY(i * step), interpolatorZ(i * step));
-
-    return result;
-}
-
-
-
-//static QList<QVector3D> quinticHermite(std::vector<double>& x,
-//                                       std::vector<double>& y,
-//                                       std::vector<double>& z,
-//                                       const double& lenght,
-//                                       const quint32& size)
+//static QList<QVector3D> cardinalQuinticBSpline(std::vector<double>& x,
+//                                               std::vector<double>& y,
+//                                               std::vector<double>& z,
+//                                               const double& lenght,
+//                                               const quint32& size)
 //{
+//    using namespace boost::math::interpolators;
 
+//    auto interpolatorX = cardinal_quintic_b_spline<double>(y, 0, x[1]);
+//    auto interpolatorZ = cardinal_quintic_b_spline<double>(z, 0, x[1]);
+
+//    QList<QVector3D> result;
+
+//    float step = lenght / size;
+
+//    for (unsigned i = 0; i < size; ++i)
+//    {
+//        double Y = interpolatorX(i * step);
+//        double Z = interpolatorZ(i * step);
+//        result << QVector3D(i * step, Y, Z);
+//    }
+
+//    return result;
 //}
+
 
 
 QList<QVector3D> InterpolaionSpace::calculateInterpolation(QScatterDataArray* scatterArray,
@@ -341,19 +355,19 @@ QList<QVector3D> InterpolaionSpace::calculateInterpolation(QScatterDataArray* sc
 
     switch (type)
     {
-        case InterpolationType::CardinalCubicBSpline:               return cardinalCubicBSpline(y, z, lenght, size);
-        case InterpolationType::CardinalQuadraticBSpline:           return cardinalQuadraticBSpline(y, z, lenght, size);
-//        case InterpolationType::CardinalQuinticBSpline:             return cardinalQuinticBSpline(y, z, lenght, size);      // Не работает.
-        case InterpolationType::WhittakerShannon:                   return whittakerShannon(y, z, lenght, size);
-        case InterpolationType::CatmullRomSplines:                  return catmullRomSplines(x, y, z, lenght, size);        // Странная реализация.
-//        case InterpolationType::BezierPolynomials:                  return bezierPolynomials(x, y, z, size);              // Расстояние сохраняется внутри реализации. Ломается при уменьшении сенсоров
-//        case InterpolationType::CardinalTrigonometric:              return cardinalTrigonometric(x, y, z, lenght, size);  // Получается замкнутая хрень.
-        case InterpolationType::CubicHermite:                       return cubicHermite(x, y, z, size);
-        case InterpolationType::ModifiedAkima:                      return modifiedAkima(x, y, z, lenght, size);
-        case InterpolationType::PCHIP:                              return Pchip(x, y, z, lenght, size);
-//        case InterpolationType::QuinticHermite:                     return quinticHermite(x, y, z, lenght, size);     // Чет с производными
+//        case InterpolationType::CardinalQuinticBSpline:             return cardinalQuinticBSpline(x, y, z, lenght, size);      // Не работает.
+//        case InterpolationType::BezierPolynomials:                  return bezierPolynomials(x, y, z, size);                   // Расстояние сохраняется внутри реализации.
+//        case InterpolationType::CardinalTrigonometric:              return cardinalTrigonometric(x, y, z, lenght, size);       // Получается замкнутая хрень.
+//        case InterpolationType::QuinticHermite:                     return quinticHermite(x, y, z, lenght, size);              // Чет с производными
 //        case InterpolationType::BilinearUniform:
 //        case InterpolationType::VectorValuedBarycentricRational:
+        case InterpolationType::CardinalCubicBSpline:               return cardinalCubicBSpline(x, y, z,lenght, size);
+        case InterpolationType::CardinalQuadraticBSpline:           return cardinalQuadraticBSpline(x, y, z, lenght, size);
+        case InterpolationType::WhittakerShannon:                   return whittakerShannon(x, y, z, lenght, size);
+        case InterpolationType::CatmullRomSplines:                  return catmullRomSplines(x, y, z, size);
+        case InterpolationType::CubicHermite:                       return cubicHermite(x, y, z, size);
+        case InterpolationType::ModifiedAkima:                      return modifiedAkima(x, y, z, size);
+        case InterpolationType::PCHIP:                              return Pchip(x, y, z, size);
         case InterpolationType::BarycentricRational:
         default:                                                    return barycentricRational(x, y, z, lenght, size);
     }
@@ -365,19 +379,19 @@ QString InterpolaionSpace::getStrFromType(const InterpolationType &type)
 {
     switch (type)
     {
-        case InterpolationType::CardinalCubicBSpline:               return QString("Cardinal Cubic B-Spline");
-        case InterpolationType::CardinalQuadraticBSpline:           return QString("Cardinal Quadratic B-Spline");
 //        case InterpolationType::CardinalQuinticBSpline:             return QString("Cardinal Quintic B-Spline");
-        case InterpolationType::WhittakerShannon:                   return QString("Whittaker Shannon");
-        case InterpolationType::CatmullRomSplines:                  return QString("Catmull Rom Splines");
 //        case InterpolationType::BezierPolynomials:                  return QString("Bezier Polynomials");
 //        case InterpolationType::CardinalTrigonometric:              return QString("Cardinal Trigonometric");
-        case InterpolationType::CubicHermite:                       return QString("Cubic Hermite");
-        case InterpolationType::ModifiedAkima:                      return QString("Modified Akima");
-        case InterpolationType::PCHIP:                              return QString("PCHIP");
 //        case InterpolationType::QuinticHermite:                     return QString("Quintic Hermite");
 //        case InterpolationType::BilinearUniform:                    return QString("Bilinear Uniform");
 //        case InterpolationType::VectorValuedBarycentricRational:    return QString("Vector Valued Barycentric Rational");
+        case InterpolationType::CardinalCubicBSpline:               return QString("Cardinal Cubic B-Spline");
+        case InterpolationType::CardinalQuadraticBSpline:           return QString("Cardinal Quadratic B-Spline");
+        case InterpolationType::WhittakerShannon:                   return QString("Whittaker Shannon");
+        case InterpolationType::CatmullRomSplines:                  return QString("Catmull Rom Splines");
+        case InterpolationType::CubicHermite:                       return QString("Cubic Hermite");
+        case InterpolationType::ModifiedAkima:                      return QString("Modified Akima");
+        case InterpolationType::PCHIP:                              return QString("PCHIP");
         case InterpolationType::BarycentricRational:                return QString("Barycentric Rational");
         default:                                                    return QString("");
     }
