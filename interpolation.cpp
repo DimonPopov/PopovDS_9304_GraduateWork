@@ -13,29 +13,16 @@
 #include "interpolation.h"
 
 
-
-static QList<QVector3D> barycentricRational(std::vector<double>& x,
-                                            std::vector<double>& y,
-                                            std::vector<double>& z,
-                                            const double& lenght,
-                                            const quint32& size)
+template <class T, class X>
+QList<QVector3D> getResult(T& _i1, X& _i2, const float& _step, const quint32& _size)
 {
-    using namespace boost::math::interpolators;
-
-    std::vector<double> duplicate = x;
-
-    auto interpolatorX = barycentric_rational<double>(std::move(x), std::move(y));
-    auto interpolatorZ = barycentric_rational<double>(std::move(duplicate), std::move(z));
-
-    float step = lenght / size;
-
     QList<QVector3D> result;
 
-    for (unsigned i = 0; i < size; ++i)
+    for (unsigned i = 0; i < _size; ++i)
     {
-        double Y = interpolatorX(i * step);
-        double Z = interpolatorZ(i * step);
-        result << QVector3D(i * step, Y, Z);
+        double Y = _i1(i * _step);
+        double Z = _i2(i * _step);
+        result << QVector3D(i * _step, Y, Z);
     }
 
     return result;
@@ -43,108 +30,14 @@ static QList<QVector3D> barycentricRational(std::vector<double>& x,
 
 
 
-static QList<QVector3D> cardinalCubicBSpline(std::vector<double>& x,
-                                             std::vector<double>& y,
-                                             std::vector<double>& z,
-                                             const double& lenght,
-                                             const quint32& size)
+template <class T>
+QList<QVector3D> getResult(T& _i1, const float& _step, const quint32& _size)
 {
-    using namespace boost::math::interpolators;
-
-    auto interpolatorX = cardinal_cubic_b_spline<double>(y.begin(), y.end(), 0, x[1]);
-    auto interpolatorZ = cardinal_cubic_b_spline<double>(z.begin(), z.end(), 0, x[1]);
-
     QList<QVector3D> result;
 
-    float step = lenght / size;
-
-    for (unsigned i = 0; i < size; ++i)
+    for (unsigned i = 0; i < _size; ++i)
     {
-        double Y = interpolatorX(i * step);
-        double Z = interpolatorZ(i * step);
-        result << QVector3D(i * step, Y, Z);
-    }
-
-    return result;
-}
-
-
-
-static QList<QVector3D> cardinalQuadraticBSpline(std::vector<double>& x,
-                                                 std::vector<double>& y,
-                                                 std::vector<double>& z,
-                                                 const double& lenght,
-                                                 const quint32& size)
-{
-    using namespace boost::math::interpolators;
-
-    auto interpolatorX = cardinal_quadratic_b_spline<double>(y, 0, x[1]);
-    auto interpolatorZ = cardinal_quadratic_b_spline<double>(z, 0, x[1]);
-
-    QList<QVector3D> result;
-
-    float step = lenght / size;
-
-    for (unsigned i = 0; i < size; ++i)
-    {
-        double Y = interpolatorX(i * step);
-        double Z = interpolatorZ(i * step);
-        result << QVector3D(i * step, Y, Z);
-    }
-
-    return result;
-}
-
-
-
-static QList<QVector3D> whittakerShannon(std::vector<double>& x,
-                                         std::vector<double>& y,
-                                         std::vector<double>& z,
-                                         const double& lenght,
-                                         const quint32& size)
-{
-    using namespace boost::math::interpolators;
-
-    auto interpolatorX = whittaker_shannon(std::move(y), 0, x[1]);
-    auto interpolatorZ = whittaker_shannon(std::move(z), 0, x[1]);
-
-    QList<QVector3D> result;
-
-    float step = lenght / size;
-
-    for (unsigned i = 0; i < size; ++i)
-    {
-        double Y = interpolatorX(i * step);
-        double Z = interpolatorZ(i * step);
-        result << QVector3D(i * step, Y, Z);
-    }
-
-    return result;
-}
-
-
-
-static QList<QVector3D> catmullRomSplines(std::vector<double>& x,
-                                          std::vector<double>& y,
-                                          std::vector<double>& z,
-                                          const quint32& size)
-{
-    using namespace boost::math;
-
-    std::vector<std::array<double, 3>> points;
-
-    for (unsigned i = 0; i < x.size(); ++i)
-        points.push_back({x[i], y[i], z[i]});
-
-    auto interpolator = catmull_rom<std::array<double, 3>>(std::move(points));
-
-    QList<QVector3D> result;
-
-    float step = interpolator.max_parameter() / size;
-
-    for (unsigned i = 0; i < size; ++i)
-    {
-        auto position = interpolator(i * step);
+        auto position = _i1(i * _step);
         result << QVector3D(position[0], position[1], position[2]);
     }
 
@@ -153,90 +46,17 @@ static QList<QVector3D> catmullRomSplines(std::vector<double>& x,
 
 
 
-static QList<QVector3D> cubicHermite(std::vector<double>& x,
-                                     std::vector<double>& y,
-                                     std::vector<double>& z,
-                                     const quint32& size)
+std::vector<std::array<double, 3>> packInVectorArray(std::vector<double>& x,
+                                                     std::vector<double>& y,
+                                                     std::vector<double>& z)
 {
-    using namespace boost::math::interpolators;
+    std::vector<std::array<double, 3>> points;
 
-    std::vector<double> dxdy1(x.size());
-    std::vector<double> dxdy2(x.size());
-    auto duple = x;
+    for (unsigned i = 0; i < x.size(); ++i)
+        points.push_back({x[i], y[i], z[i]});
 
-    float step = x.back() / size;
-
-    auto interpolatorY = cubic_hermite(std::move(x), std::move(y), std::move(dxdy1));
-    auto interpolatorZ = cubic_hermite(std::move(duple), std::move(z), std::move(dxdy2));
-
-    QList<QVector3D> result;
-
-    for (unsigned i = 0; i < size; ++i)
-    {
-        const double Y = interpolatorY(i * step);
-        const double Z = interpolatorZ(i * step);
-        result << QVector3D(i * step, Y, Z);
-    }
-
-    return result;
+    return points;
 }
-
-
-
-static QList<QVector3D> modifiedAkima(std::vector<double>& x,
-                                      std::vector<double>& y,
-                                      std::vector<double>& z,
-                                      const quint32& size)
-{
-    using namespace boost::math::interpolators;
-
-    auto duplicate = x;;
-
-    float step = x.back() / size;
-
-    auto interpolatorY = makima(std::move(x), std::move(y));
-    auto interpolatorZ = makima(std::move(duplicate), std::move(z));
-
-    QList<QVector3D> result;
-
-    for (unsigned i = 0; i < size; ++i)
-    {
-        const double Y = interpolatorY(i * step);
-        const double Z = interpolatorZ(i * step);
-        result << QVector3D(i * step, Y, Z);
-    }
-
-    return result;
-}
-
-
-
-static QList<QVector3D> Pchip(std::vector<double>& x,
-                              std::vector<double>& y,
-                              std::vector<double>& z,
-                              const quint32& size)
-{
-    using namespace boost::math::interpolators;
-
-    auto duplicate = x;
-
-    float step = x.back() / size;
-
-    auto interpolatorY = pchip(std::move(x), std::move(y));
-    auto interpolatorZ = pchip(std::move(duplicate), std::move(z));
-
-    QList<QVector3D> result;
-
-    for (unsigned i = 0; i < size; ++i)
-    {
-        const double Y = interpolatorY(i * step);
-        const double Z = interpolatorZ(i * step);
-        result << QVector3D(i * step, Y, Z);
-    }
-
-    return result;
-}
-
 
 
 //static QList<QVector3D> quinticHermite(std::vector<double>& x,
@@ -336,6 +156,9 @@ QList<QVector3D> InterpolaionSpace::calculateInterpolation(QScatterDataArray* sc
                                                            const quint32& size,
                                                            const InterpolationType type)
 {
+    using namespace boost::math::interpolators;
+    using namespace boost::math;
+
     const quint32 vectorSize = scatterArray->size();
 
     std::vector<double> x;
@@ -356,20 +179,87 @@ QList<QVector3D> InterpolaionSpace::calculateInterpolation(QScatterDataArray* sc
     switch (type)
     {
 //        case InterpolationType::CardinalQuinticBSpline:             return cardinalQuinticBSpline(x, y, z, lenght, size);      // Не работает.
-//        case InterpolationType::BezierPolynomials:                  return bezierPolynomials(x, y, z, size);                   // Расстояние сохраняется внутри реализации.
 //        case InterpolationType::CardinalTrigonometric:              return cardinalTrigonometric(x, y, z, lenght, size);       // Получается замкнутая хрень.
 //        case InterpolationType::QuinticHermite:                     return quinticHermite(x, y, z, lenght, size);              // Чет с производными
 //        case InterpolationType::BilinearUniform:
 //        case InterpolationType::VectorValuedBarycentricRational:
-        case InterpolationType::CardinalCubicBSpline:               return cardinalCubicBSpline(x, y, z,lenght, size);
-        case InterpolationType::CardinalQuadraticBSpline:           return cardinalQuadraticBSpline(x, y, z, lenght, size);
-        case InterpolationType::WhittakerShannon:                   return whittakerShannon(x, y, z, lenght, size);
-        case InterpolationType::CatmullRomSplines:                  return catmullRomSplines(x, y, z, size);
-        case InterpolationType::CubicHermite:                       return cubicHermite(x, y, z, size);
-        case InterpolationType::ModifiedAkima:                      return modifiedAkima(x, y, z, size);
-        case InterpolationType::PCHIP:                              return Pchip(x, y, z, size);
+        //
+//        case InterpolationType::BezierPolynomials:
+//    {
+//            std::vector<std::array<double, 3>> points;
+//            for (unsigned i = 0; i < x.size(); ++i)
+//                points.push_back({x[i], y[i], z[i]});
+
+//            auto interpolator = bezier_polynomial(std::move(points));
+//            float step = 1.0f / size;
+//            QList<QVector3D> result;
+
+//            for (unsigned i = 0; i < size; ++i)
+//            {
+//                auto position = interpolator(i * step);
+//                result << QVector3D(position[0], position[1], position[2]);
+//            }
+//            return result;
+
+//    }
+        case InterpolationType::CardinalCubicBSpline:
+        {
+            auto interpolatorY = cardinal_cubic_b_spline<double>(y.begin(), y.end(), 0, x[1]);
+            auto interpolatorZ = cardinal_cubic_b_spline<double>(z.begin(), z.end(), 0, x[1]);
+            return getResult(interpolatorY, interpolatorZ, lenght / size, size);
+        }
+        case InterpolationType::CardinalQuadraticBSpline:
+        {
+            auto interpolatorY = cardinal_quadratic_b_spline<double>(y, 0, x[1]);
+            auto interpolatorZ = cardinal_quadratic_b_spline<double>(z, 0, x[1]);
+            return getResult(interpolatorY, interpolatorZ, lenght / size, size);
+        }
+        case InterpolationType::WhittakerShannon:
+        {
+            auto interpolatorY = whittaker_shannon(std::move(y), 0, x[1]);
+            auto interpolatorZ = whittaker_shannon(std::move(z), 0, x[1]);
+            return getResult(interpolatorY, interpolatorZ, lenght / size, size);
+        }
+        case InterpolationType::CatmullRomSplines:
+        {
+            auto points = packInVectorArray(x, y, z);
+            auto interpolator = catmull_rom<std::array<double, 3>>(std::move(points));
+            return getResult(interpolator, interpolator.max_parameter() / size, size);
+        }
+        case InterpolationType::CubicHermite:
+        {
+            std::vector<double> dxdy1(x.size());
+            std::vector<double> dxdy2(x.size());
+            std::vector<double> duplicate = x;
+            const float step = x.back() / size;
+            auto interpolatorY = cubic_hermite(std::move(x),         std::move(y), std::move(dxdy1));
+            auto interpolatorZ = cubic_hermite(std::move(duplicate), std::move(z), std::move(dxdy2));
+            return getResult(interpolatorY, interpolatorZ, step, size);
+        }
+        case InterpolationType::ModifiedAkima:
+        {
+            std::vector<double> duplicate = x;
+            const float step = x.back() / size;
+            auto interpolatorY = makima(std::move(x),         std::move(y));
+            auto interpolatorZ = makima(std::move(duplicate), std::move(z));
+            return getResult(interpolatorY, interpolatorZ, step, size);
+        }
+        case InterpolationType::PCHIP:
+        {
+            std::vector<double> duplicate = x;
+            const float step = x.back() / size;
+            auto interpolatorY = pchip(std::move(x),         std::move(y));
+            auto interpolatorZ = pchip(std::move(duplicate), std::move(z));
+            return getResult(interpolatorY, interpolatorZ, step, size);
+        }
         case InterpolationType::BarycentricRational:
-        default:                                                    return barycentricRational(x, y, z, lenght, size);
+        {
+            std::vector<double> duplicate = x;
+            auto interpolatorY = barycentric_rational<double>(std::move(x),         std::move(y));
+            auto interpolatorZ = barycentric_rational<double>(std::move(duplicate), std::move(z));
+            return getResult(interpolatorY, interpolatorZ, lenght / size, size);
+        }
+        default:    return QList<QVector3D>();
     }
 }
 
