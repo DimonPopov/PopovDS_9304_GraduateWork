@@ -11,6 +11,11 @@ enum Color {
     Red,
     Green,
     Blue,
+    Gold,
+    Hotpink,
+    Orange,
+    Lime,
+    Salmon,
     Count
 };
 
@@ -20,6 +25,11 @@ QString colorToStr(const Color& color)
     {
         case Red:   return "red";
         case Green: return "green";
+        case Gold:  return "gold";
+        case Hotpink: return "hotpink";
+        case Orange: return "orange";
+        case Lime: return "lime";
+        case Salmon: return "salmon";
         case Blue:
         default:    return "blue";
     }
@@ -37,9 +47,12 @@ ControllPanel::ControllPanel(QWidget *parent) :
     for (unsigned i = 0; i < Color::Count; ++i)
     {
         const auto color = colorToStr(static_cast<Color>(i));
-        ui->interpolationPointColorCombo->addItem(color, i);
-        ui->sensorPointColorCombo->addItem(color, i);
-        ui->trueModelColorCombo->addItem(color, i);
+        QPixmap pixmap(10, 10);
+        pixmap.fill(QColor(color));
+        const QIcon icon(pixmap);
+        ui->interpolationPointColorCombo->addItem(icon, color, i);
+        ui->sensorPointColorCombo->addItem(icon, color, i);
+        ui->trueModelColorCombo->addItem(icon, color, i);
     }
 
     for (unsigned i = 0; i < InterpolaionSpace::InterpolationType::Count; ++i)
