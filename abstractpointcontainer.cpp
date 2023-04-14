@@ -131,13 +131,12 @@ void PointContainerSpace::AcousticSensors::updatePointPosition()
 
     m_scatterArray->clear();
 
-    auto strongRef = m_positionSensors.toStrongRef();
-    if (strongRef)
+    if (auto positionSensorStrongRef = m_positionSensors.toStrongRef())
     {
-        auto result = InterpolaionSpace::calculateInterpolation(strongRef->getScatterArray(), m_model->getLenght(), size, m_type);
-
-        for(const auto& p : result)
-            *m_scatterArray << p;
+        m_scatterArray->append(InterpolaionSpace::calculateInterpolation(positionSensorStrongRef->getScatterArray(),
+                                                                         m_model->getLenght(),
+                                                                         size,
+                                                                         m_type));
 
         emit sigContainerChanged();
     }

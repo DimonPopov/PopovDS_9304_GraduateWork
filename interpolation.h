@@ -27,13 +27,27 @@ enum InterpolationType : quint32 {
     Count
 };
 
+/**
+ * @brief Функция получения названия интерполяции.
+ * @param type - тип интерполяции.
+ * @return название интерполяции в формате QString.
+ */
 QString getStrFromType(const InterpolationType& type);
 
 
-QList<QVector3D> calculateInterpolation(QScatterDataArray* scatterArray,
-                                        const double& lenght,
-                                        const quint32& size,
-                                        const InterpolationType type = InterpolationType::BarycentricRational);
+
+/**
+ * @brief Функция интерполяции.
+ * @param scatterArray - координаты датчиков позиции.
+ * @param lenght - длинна модели антенны.
+ * @param size - количество акустических датчиков (точек интерполяции).
+ * @param type - тип интерполяции.
+ * @return координаты акустических датчиков в формате QScatterDataArray.
+ */
+QScatterDataArray calculateInterpolation(QScatterDataArray* scatterArray,
+                                         const double& lenght,
+                                         const quint32& size,
+                                         const InterpolationType type = InterpolationType::BarycentricRational);
 }
 
 
