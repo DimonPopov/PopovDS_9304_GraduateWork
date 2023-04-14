@@ -28,7 +28,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QDoubleSpinBox" name="antennaLengthSpin">
+       <widget class="QDoubleSpinBox" name="modelLengthSpin">
         <property name="minimum">
          <double>1.000000000000000</double>
         </property>
@@ -42,7 +42,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QSpinBox" name="trueModelCountSpin">
+       <widget class="QSpinBox" name="modelCountSpin">
         <property name="minimum">
          <number>3</number>
         </property>
@@ -59,7 +59,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="trueModelPointSizeSpin">
+       <widget class="QDoubleSpinBox" name="modelSizeSpin">
         <property name="minimum">
          <double>0.010000000000000</double>
         </property>
@@ -79,14 +79,14 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QComboBox" name="trueModelColorCombo">
+       <widget class="QComboBox" name="modelColorCombo">
         <property name="placeholderText">
          <string>Color</string>
         </property>
        </widget>
       </item>
       <item row="4" column="0" colspan="2">
-       <widget class="QCheckBox" name="antennaVisibilityCheck">
+       <widget class="QCheckBox" name="modelVisibilityCheck">
         <property name="text">
          <string>Display model</string>
         </property>
@@ -109,7 +109,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QSpinBox" name="sensorCountSpin">
+       <widget class="QSpinBox" name="positionSensorCountSpin">
         <property name="minimum">
          <number>5</number>
         </property>
@@ -126,7 +126,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="sensorPointSizeSpin">
+       <widget class="QDoubleSpinBox" name="positionSensorSizeSpin">
         <property name="decimals">
          <number>2</number>
         </property>
@@ -149,7 +149,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QComboBox" name="sensorPointColorCombo">
+       <widget class="QComboBox" name="positionSensorColorCombo">
         <property name="placeholderText">
          <string>Color</string>
         </property>
@@ -170,14 +170,14 @@
        </widget>
       </item>
       <item row="5" column="0" colspan="2">
-       <widget class="QCheckBox" name="sensorsVisibilityCheck">
+       <widget class="QCheckBox" name="positionSensorVisibilityCheck">
         <property name="text">
          <string>Display position sensors</string>
         </property>
        </widget>
       </item>
       <item row="4" column="0" colspan="2">
-       <widget class="QCheckBox" name="sensorEnd">
+       <widget class="QCheckBox" name="positionSensorEnd">
         <property name="text">
          <string>Sensor at the end</string>
         </property>
@@ -200,7 +200,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QSpinBox" name="interpolationCountSpin">
+       <widget class="QSpinBox" name="acousticSensorCountSpin">
         <property name="minimum">
          <number>3</number>
         </property>
@@ -217,7 +217,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="interpolationPointSizeSpin">
+       <widget class="QDoubleSpinBox" name="acousticSensorSizeSpin">
         <property name="decimals">
          <number>2</number>
         </property>
@@ -240,7 +240,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QComboBox" name="interpolationPointColorCombo">
+       <widget class="QComboBox" name="acousticSensorColorCombo">
         <property name="placeholderText">
          <string>Color</string>
         </property>
@@ -257,7 +257,7 @@
        </widget>
       </item>
       <item row="4" column="0" colspan="2">
-       <widget class="QCheckBox" name="interpolationVisibilityCheck">
+       <widget class="QCheckBox" name="acousticSensorVisibilityCheck">
         <property name="text">
          <string>Display acoustic sensors</string>
         </property>
