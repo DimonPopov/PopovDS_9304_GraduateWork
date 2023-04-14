@@ -63,7 +63,7 @@ protected:
     bool m_noiseState;
 
 public slots:
-    void handleSetNoiseState(const bool& state);
+    void handleSetNoiseState(const bool& noise);
     void handleSetSensorEnd(const bool& state);
 };
 
