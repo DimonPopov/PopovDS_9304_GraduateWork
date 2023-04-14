@@ -4,13 +4,8 @@
 #include "controllPanel.h"
 
 #include <QMessageBox>
-#include <QScreen>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QGroupBox>
-#include <QRadioButton>
-#include <QLabel>
-#include <QComboBox>
 
 
 

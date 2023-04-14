@@ -1,13 +1,11 @@
 #ifndef ScatterGraph_H
 #define ScatterGraph_H
 
+#include <QWidget>
 #include <Q3DScatter>
 #include <QScatter3DSeries>
 #include <QScatterDataProxy>
-#include <QSlider>
-#include <QVector>
 #include <QSharedPointer>
-#include <QScopedPointer>
 
 #include "abstractpointcontainer.h"
 
