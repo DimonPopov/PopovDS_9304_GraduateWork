@@ -2,7 +2,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - master
+      - I3
   
 env:
   SOURCE_DIR: ${{ github.workspace }}
