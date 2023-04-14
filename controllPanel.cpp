@@ -63,40 +63,37 @@ ControllPanel::ControllPanel(QWidget *parent) :
     ui->startStopButton->setCheckable(true);
 
     connect(ui->positionSensorCountSpin, &QSpinBox::valueChanged,
-            this, &ControllPanel::sigSensorCountChanged);
+            this, &ControllPanel::sigPositionSensorCountChanged);
 
     connect(ui->modelLengthSpin, &QDoubleSpinBox::valueChanged,
-            this, &ControllPanel::sigAntennaLenghtChanged);
+            this, &ControllPanel::sigModelLenghtChanged);
 
     connect(ui->acousticSensorColorCombo, &QComboBox::currentIndexChanged,
-            this, &ControllPanel::handleInterpolationPointColorChanged);
+            this, &ControllPanel::handleAcousticSensorColorChanged);
 
     connect(ui->positionSensorColorCombo, &QComboBox::currentIndexChanged,
-            this, &ControllPanel::handleSensorPointColorChanged);
+            this, &ControllPanel::handlePositionSensorColorChanged);
 
     connect(ui->modelCountSpin, &QSpinBox::valueChanged,
-            this, &ControllPanel::sigTrueModelCountChanged);
+            this, &ControllPanel::sigModelCountChanged);
 
     connect(ui->modelColorCombo, &QComboBox::currentIndexChanged,
-            this, &ControllPanel::handleTrueModelColorChanged);
+            this, &ControllPanel::handleModelColorChanged);
 
     connect(ui->modelSizeSpin, &QDoubleSpinBox::valueChanged,
-            this, &ControllPanel::sigTrueModelPointSizeChanged);
+            this, &ControllPanel::sigModelSizeChanged);
 
     connect(ui->positionSensorSizeSpin, &QDoubleSpinBox::valueChanged,
-            this, &ControllPanel::sigSensorPointSizeChanged);
+            this, &ControllPanel::sigPositionSensorSizeChanged);
 
     connect(ui->acousticSensorSizeSpin, &QDoubleSpinBox::valueChanged,
-            this, &ControllPanel::sigInterpolationPointSizeChanged);
+            this, &ControllPanel::sigAcousticSensorSizeChanged);
 
     connect(ui->startStopButton, &QPushButton::clicked,
             this, &ControllPanel::handleEmulationButtonChange);
 
     connect(ui->acousticSensorCountSpin, &QSpinBox::valueChanged,
-            this, &ControllPanel::sigInterpolationCountChanged);
-
-    connect(ui->maximumDeviationSpin, &QDoubleSpinBox::valueChanged,
-            this, &ControllPanel::sigMaxDeviationChanged);
+            this, &ControllPanel::sigAcousticSensorCountChanged);
 
     connect(ui->modelVisibilityCheck, &QCheckBox::stateChanged,
             this, &ControllPanel::handleVisibilityCheckBoxsChanged);
@@ -105,13 +102,22 @@ ControllPanel::ControllPanel(QWidget *parent) :
             this, &ControllPanel::handleVisibilityCheckBoxsChanged);
 
     connect(ui->positionSensorEnd, &QCheckBox::stateChanged,
-            this, &ControllPanel::sigSensorEndChanged);
+            this, &ControllPanel::sigPositionSensorEndChanged);
 
     connect(ui->acousticSensorVisibilityCheck, &QCheckBox::stateChanged,
             this, &ControllPanel::handleVisibilityCheckBoxsChanged);
 
     connect(ui->interpolationCombo, &QComboBox::currentIndexChanged,
             this, &ControllPanel::handleInterpolationTypeChanged);
+
+    connect(ui->maxNoiseX, &QDoubleSpinBox::valueChanged,
+            this, &ControllPanel::handleNoiseChanged);
+
+    connect(ui->maxNoiseY, &QDoubleSpinBox::valueChanged,
+            this, &ControllPanel::handleNoiseChanged);
+
+    connect(ui->maxNoiseZ, &QDoubleSpinBox::valueChanged,
+            this, &ControllPanel::handleNoiseChanged);
 }
 
 ControllPanel::~ControllPanel()
@@ -125,65 +131,69 @@ void ControllPanel::load()
     using namespace BasicSettingValues;
 
     m_settings->beginGroup(SETTING_FIRST_GROUP);
-    ui->modelLengthSpin->setValue(                m_settings->value(MODEL_LENGTH,               BASIC_MODEL_LENGHT).toDouble());
-    ui->modelCountSpin->setValue(                 m_settings->value(MODEL_COUNT,                BASIC_MODEL_COUNT).toUInt());
-    ui->modelColorCombo->setCurrentIndex(         m_settings->value(MODEL_COLOR,                BASIC_MODEL_COLOR).toUInt());
-    ui->modelSizeSpin->setValue(                  m_settings->value(MODEL_SIZE,                 BASIC_MODEL_SIZE).toDouble());
-    ui->modelVisibilityCheck->setChecked(         m_settings->value(MODEL_VISIBILITY,           BASIC_MODEL_VISIBILITY).toBool());
-    ui->positionSensorCountSpin->setValue(        m_settings->value(POSITION_SENSOR_COUNT,      BASIC_POSITION_SENSOR_COUNT).toUInt());
-    ui->positionSensorColorCombo->setCurrentIndex(m_settings->value(POSITION_SENSOR_COLOR,      BASIC_POSITION_SENSOR_COLOR).toUInt());
-    ui->positionSensorSizeSpin->setValue(         m_settings->value(POSITION_SENSOR_SIZE,       BASIC_POSITION_SENSOR_SIZE).toDouble());
-    ui->positionSensorVisibilityCheck->setChecked(m_settings->value(POSITION_SENSOR_VISIBILITY, BASIC_POSITION_SENSOR_VISIBILITY).toBool());
-    ui->positionSensorEnd->setChecked(            m_settings->value(POSITION_SENSOR_END,        BASIC_POSITION_SENSOR_END).toBool());
-    ui->acousticSensorCountSpin->setValue(        m_settings->value(ACOUSTIC_SENSOR_COUNT,      BASIC_ACOUSTIC_SENSOR_COUNT).toUInt());
-    ui->acousticSensorColorCombo->setCurrentIndex(m_settings->value(ACOUSTIC_SENSOR_COLOR,      BASIC_ACOUSTIC_SENSOR_COLOR).toUInt());
-    ui->acousticSensorSizeSpin->setValue(         m_settings->value(ACOUSTIC_SENSOR_SIZE,       BASIC_ACOUSTIC_SENSOR_SIZE).toDouble());
-    ui->acousticSensorVisibilityCheck->setChecked(m_settings->value(ACOUSTIC_SENSOR_VISIBILITY, BASIC_ACOUSTIC_SENSOR_VISIBILITY).toBool());
-        ui->interpolationCombo->setCurrentIndex(  m_settings->value(INTERPOLATION_TYPE,         BASIC_INTERPOLATION_TYPE).toUInt());
+        ui->modelLengthSpin->setValue(                m_settings->value(MODEL_LENGTH,               BASIC_MODEL_LENGHT).toDouble());
+        ui->modelCountSpin->setValue(                 m_settings->value(MODEL_COUNT,                BASIC_MODEL_COUNT).toUInt());
+        ui->modelColorCombo->setCurrentIndex(         m_settings->value(MODEL_COLOR,                BASIC_MODEL_COLOR).toUInt());
+        ui->modelSizeSpin->setValue(                  m_settings->value(MODEL_SIZE,                 BASIC_MODEL_SIZE).toDouble());
+        ui->modelVisibilityCheck->setChecked(         m_settings->value(MODEL_VISIBILITY,           BASIC_MODEL_VISIBILITY).toBool());
+        ui->positionSensorCountSpin->setValue(        m_settings->value(POSITION_SENSOR_COUNT,      BASIC_POSITION_SENSOR_COUNT).toUInt());
+        ui->positionSensorColorCombo->setCurrentIndex(m_settings->value(POSITION_SENSOR_COLOR,      BASIC_POSITION_SENSOR_COLOR).toUInt());
+        ui->positionSensorSizeSpin->setValue(         m_settings->value(POSITION_SENSOR_SIZE,       BASIC_POSITION_SENSOR_SIZE).toDouble());
+        ui->positionSensorVisibilityCheck->setChecked(m_settings->value(POSITION_SENSOR_VISIBILITY, BASIC_POSITION_SENSOR_VISIBILITY).toBool());
+        ui->positionSensorEnd->setChecked(            m_settings->value(POSITION_SENSOR_END,        BASIC_POSITION_SENSOR_END).toBool());
+        ui->acousticSensorCountSpin->setValue(        m_settings->value(ACOUSTIC_SENSOR_COUNT,      BASIC_ACOUSTIC_SENSOR_COUNT).toUInt());
+        ui->acousticSensorColorCombo->setCurrentIndex(m_settings->value(ACOUSTIC_SENSOR_COLOR,      BASIC_ACOUSTIC_SENSOR_COLOR).toUInt());
+        ui->acousticSensorSizeSpin->setValue(         m_settings->value(ACOUSTIC_SENSOR_SIZE,       BASIC_ACOUSTIC_SENSOR_SIZE).toDouble());
+        ui->acousticSensorVisibilityCheck->setChecked(m_settings->value(ACOUSTIC_SENSOR_VISIBILITY, BASIC_ACOUSTIC_SENSOR_VISIBILITY).toBool());
+        ui->interpolationCombo->setCurrentIndex(      m_settings->value(INTERPOLATION_TYPE,         BASIC_INTERPOLATION_TYPE).toUInt());
 
-        ui->maximumDeviationSpin->setValue(               m_settings->value(MAX_DEVIATION,             0.1f).toDouble());
+        ui->maxNoiseX->setValue(                      m_settings->value(MAX_NOISE_X,                BASIC_MAX_NOISE_X).toDouble());
+        ui->maxNoiseY->setValue(                      m_settings->value(MAX_NOISE_Y,                BASIC_MAX_NOISE_Y).toDouble());
+        ui->maxNoiseZ->setValue(                      m_settings->value(MAX_NOISE_Z,                BASIC_MAX_NOISE_Z).toDouble());
     m_settings->endGroup();
 }
 
 void ControllPanel::save()
 {
     m_settings->beginGroup(SETTING_FIRST_GROUP);
-    m_settings->setValue(MODEL_LENGTH,               ui->modelLengthSpin->value());
-    m_settings->setValue(MODEL_COUNT,                ui->modelCountSpin->value());
-    m_settings->setValue(MODEL_COLOR,                ui->modelColorCombo->currentData());
-    m_settings->setValue(MODEL_SIZE,                 ui->modelSizeSpin->value());
-    m_settings->setValue(MODEL_VISIBILITY,           ui->modelVisibilityCheck->checkState());
-    m_settings->setValue(POSITION_SENSOR_COUNT,      ui->positionSensorCountSpin->value());
-    m_settings->setValue(POSITION_SENSOR_COLOR,      ui->positionSensorColorCombo->currentData());
-    m_settings->setValue(POSITION_SENSOR_SIZE,       ui->positionSensorSizeSpin->value());
-    m_settings->setValue(POSITION_SENSOR_VISIBILITY, ui->positionSensorVisibilityCheck->checkState());
-    m_settings->setValue(POSITION_SENSOR_END,        ui->positionSensorEnd->checkState());
-    m_settings->setValue(ACOUSTIC_SENSOR_COUNT,      ui->acousticSensorCountSpin->value());
-    m_settings->setValue(ACOUSTIC_SENSOR_COLOR,      ui->acousticSensorColorCombo->currentData());
-    m_settings->setValue(ACOUSTIC_SENSOR_SIZE,       ui->acousticSensorSizeSpin->value());
-    m_settings->setValue(ACOUSTIC_SENSOR_VISIBILITY, ui->acousticSensorVisibilityCheck->checkState());
+        m_settings->setValue(MODEL_LENGTH,               ui->modelLengthSpin->value());
+        m_settings->setValue(MODEL_COUNT,                ui->modelCountSpin->value());
+        m_settings->setValue(MODEL_COLOR,                ui->modelColorCombo->currentData());
+        m_settings->setValue(MODEL_SIZE,                 ui->modelSizeSpin->value());
+        m_settings->setValue(MODEL_VISIBILITY,           ui->modelVisibilityCheck->checkState());
+        m_settings->setValue(POSITION_SENSOR_COUNT,      ui->positionSensorCountSpin->value());
+        m_settings->setValue(POSITION_SENSOR_COLOR,      ui->positionSensorColorCombo->currentData());
+        m_settings->setValue(POSITION_SENSOR_SIZE,       ui->positionSensorSizeSpin->value());
+        m_settings->setValue(POSITION_SENSOR_VISIBILITY, ui->positionSensorVisibilityCheck->checkState());
+        m_settings->setValue(POSITION_SENSOR_END,        ui->positionSensorEnd->checkState());
+        m_settings->setValue(ACOUSTIC_SENSOR_COUNT,      ui->acousticSensorCountSpin->value());
+        m_settings->setValue(ACOUSTIC_SENSOR_COLOR,      ui->acousticSensorColorCombo->currentData());
+        m_settings->setValue(ACOUSTIC_SENSOR_SIZE,       ui->acousticSensorSizeSpin->value());
+        m_settings->setValue(ACOUSTIC_SENSOR_VISIBILITY, ui->acousticSensorVisibilityCheck->checkState());
         m_settings->setValue(INTERPOLATION_TYPE,         ui->interpolationCombo->currentIndex());
 
-        m_settings->setValue(MAX_DEVIATION,              ui->maximumDeviationSpin->value());
+        m_settings->setValue(MAX_NOISE_X,                ui->maxNoiseX->value());
+        m_settings->setValue(MAX_NOISE_Y,                ui->maxNoiseY->value());
+        m_settings->setValue(MAX_NOISE_Z,                ui->maxNoiseZ->value());
     m_settings->endGroup();
 }
 
-double ControllPanel::getAntennaLenght() const
+double ControllPanel::getModelLenght() const
 {
     return ui->modelLengthSpin->value();
 }
 
-quint32 ControllPanel::getSensorCount() const
+quint32 ControllPanel::getPositionSensorCount() const
 {
     return ui->positionSensorCountSpin->value();
 }
 
-quint32 ControllPanel::getInterpolationCount() const
+quint32 ControllPanel::getAcousticSensorCount() const
 {
     return ui->acousticSensorCountSpin->value();
 }
 
-quint32 ControllPanel::getTrueModelCount() const
+quint32 ControllPanel::getModelCount() const
 {
     return ui->modelCountSpin->value();
 }
@@ -193,75 +203,82 @@ InterpolaionSpace::InterpolationType ControllPanel::getInterpolationType() const
     return static_cast<InterpolaionSpace::InterpolationType>(ui->interpolationCombo->currentData().toUInt());
 }
 
-double ControllPanel::getSensorSize() const
+double ControllPanel::getPositionSensorSize() const
 {
     return ui->positionSensorSizeSpin->value();
 }
 
-double ControllPanel::getInterpolationSize() const
+double ControllPanel::getAcousticSensorSize() const
 {
     return ui->acousticSensorSizeSpin->value();
 }
 
-double ControllPanel::getTrueModelSize() const
+double ControllPanel::getModelSize() const
 {
     return ui->modelSizeSpin->value();
 }
 
-QColor ControllPanel::getSensorColor() const
+QColor ControllPanel::getPositionSensorColor() const
 {
     return QColor(ui->positionSensorColorCombo->currentText());
 }
 
-QColor ControllPanel::getInterpolationColor() const
+QColor ControllPanel::getAcousticSensorColor() const
 {
     return QColor(ui->acousticSensorColorCombo->currentText());
 }
 
-QColor ControllPanel::getTrueModelColor() const
+QColor ControllPanel::getModelColor() const
 {
     return QColor(ui->modelColorCombo->currentText());
 }
 
-int ControllPanel::getAntennaVisibility() const
+int ControllPanel::getModelVisibility() const
 {
     return ui->modelVisibilityCheck->checkState();
 }
 
-int ControllPanel::getSensorVisibility() const
+int ControllPanel::getPositionSensorVisibility() const
 {
     return ui->positionSensorVisibilityCheck->checkState();
 }
 
-int ControllPanel::getInterpolationVisibility() const
+int ControllPanel::getAcousticSensorVisibility() const
 {
     return ui->acousticSensorVisibilityCheck->checkState();
 }
 
-bool ControllPanel::getSensorEnd() const
+QVector3D ControllPanel::getMaxNoise() const
+{
+    return QVector3D(ui->maxNoiseX->value() / 2,
+                     ui->maxNoiseY->value() / 2,
+                     ui->maxNoiseZ->value() / 2);
+}
+
+bool ControllPanel::getPositionSensorEnd() const
 {
     return ui->positionSensorEnd->checkState();
 }
 
-void ControllPanel::handleSensorPointColorChanged(const int& index)
+void ControllPanel::handlePositionSensorColorChanged(const int& index)
 {
     Q_UNUSED(index);
     const QColor newColor = QColor(ui->positionSensorColorCombo->currentText());
-    emit sigSensorPointColorChanged(newColor);
+    emit sigPositionSensorColorChanged(newColor);
 }
 
-void ControllPanel::handleInterpolationPointColorChanged(const int& index)
+void ControllPanel::handleAcousticSensorColorChanged(const int& index)
 {
     Q_UNUSED(index);
     const QColor newColor = QColor(ui->acousticSensorColorCombo->currentText());
-    emit sigInterpolationPointColorChanged(newColor);
+    emit sigAcousticSensorColorChanged(newColor);
 }
 
-void ControllPanel::handleTrueModelColorChanged(const int &index)
+void ControllPanel::handleModelColorChanged(const int &index)
 {
     Q_UNUSED(index);
     const QColor newColor = QColor(ui->modelColorCombo->currentText());
-    emit sigTrueModelPointColorChanged(newColor);
+    emit sigModelColorChanged(newColor);
 }
 
 void ControllPanel::handleEmulationButtonChange(const bool& checked)
@@ -270,16 +287,24 @@ void ControllPanel::handleEmulationButtonChange(const bool& checked)
     emit sigEmulationButtonClicked(checked);
 }
 
+void ControllPanel::handleNoiseChanged(const double &value)
+{
+    Q_UNUSED(value);
+    emit sigMaxNoiseChanged(QVector3D(ui->maxNoiseX->value() / 2,
+                                      ui->maxNoiseY->value() / 2,
+                                      ui->maxNoiseZ->value() / 2));
+}
+
 void ControllPanel::handleVisibilityCheckBoxsChanged(const bool &checkState)
 {
     const QString senderName = sender()->objectName();
 
     if (ui->modelVisibilityCheck->objectName() == senderName)
-        emit sigAntennaVisibilityChanged(checkState);
+        emit sigModelVisibilityChanged(checkState);
     if (ui->positionSensorVisibilityCheck->objectName() == senderName)
-        emit sigSensorVisibilityChanged(checkState);
+        emit sigPositionSensorVisibilityChanged(checkState);
     if (ui->acousticSensorVisibilityCheck->objectName() == senderName)
-        emit sigInterpolationVisibilityChanged(checkState);
+        emit sigAcousticSensorVisibilityChanged(checkState);
 }
 
 void ControllPanel::handleInterpolationTypeChanged(const int &index)

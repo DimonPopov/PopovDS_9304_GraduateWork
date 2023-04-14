@@ -26,7 +26,7 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface,
 
     m_graph->axisX()->setLabelFormat("%.2f");
     m_graph->axisZ()->setLabelFormat("%.2f");
-    m_graph->axisX()->setRange(0.0f, 12.0f);
+    m_graph->axisX()->setRange(-1.0f, 12.0f);
     m_graph->axisY()->setRange(0.0f, 7.0f);
     m_graph->axisZ()->setRange(0.0f, 7.0f);
     m_graph->axisX()->setLabelAutoRotation(30);
@@ -89,37 +89,37 @@ void ScatterGraph::handleUpdateTrueModel()
     m_trueAntennaModelSeries->dataProxy()->resetArray(m_trueModel->getScatterArray());
 }
 
-void ScatterGraph::handleSetInterpolationColor(const QColor &newColor)
+void ScatterGraph::handleSetAcousticSensorColor(const QColor &newColor)
 {
     m_acousticSensorSeries->setBaseColor(newColor);
 }
 
-void ScatterGraph::handleSetInterpolationSize(const double &newValue)
+void ScatterGraph::handleSetAcousticSensorSize(const double &newValue)
 {
     m_acousticSensorSeries->setItemSize(newValue);
 }
 
-void ScatterGraph::handleSetSensorColor(const QColor &newColor)
+void ScatterGraph::handleSetPositionSensorColor(const QColor &newColor)
 {
     m_positionSensorSeries->setBaseColor(newColor);
 }
 
-void ScatterGraph::handleSetSensorSize(const double &newValue)
+void ScatterGraph::handleSetPositionSensorSize(const double &newValue)
 {
     m_positionSensorSeries->setItemSize(newValue);
 }
 
-void ScatterGraph::handleSetAntennaVisibility(const bool &newState)
+void ScatterGraph::handleSetTrueModelVisibility(const bool &newState)
 {
     m_trueAntennaModelSeries->setVisible(newState);
 }
 
-void ScatterGraph::handleSetSensorVisibility(const bool &newState)
+void ScatterGraph::handleSetPositionSensorVisibility(const bool &newState)
 {
     m_positionSensorSeries->setVisible(newState);
 }
 
-void ScatterGraph::handleSetInterpolationVisibility(const bool &newState)
+void ScatterGraph::handleSetAcousticSensorVisibility(const bool &newState)
 {
     m_acousticSensorSeries->setVisible(newState);
 }

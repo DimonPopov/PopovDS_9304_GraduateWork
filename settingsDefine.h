@@ -18,7 +18,9 @@
 #define ACOUSTIC_SENSOR_VISIBILITY ("AcousticSensorVisibility")
 #define INTERPOLATION_TYPE         ("InterpolarionType")
 
-#define MAX_DEVIATION              ("MaxDeviation")
+#define MAX_NOISE_X                ("maxNoiseX")
+#define MAX_NOISE_Y                ("maxNoiseY")
+#define MAX_NOISE_Z                ("maxNoiseZ")
 
 
 
@@ -39,6 +41,10 @@ namespace BasicSettingValues {
     constexpr double BASIC_ACOUSTIC_SENSOR_SIZE       = 0.05;
     constexpr bool   BASIC_ACOUSTIC_SENSOR_VISIBILITY = true;
     constexpr int    BASIC_INTERPOLATION_TYPE         = 0;
+
+    constexpr double BASIC_MAX_NOISE_X                = 0.0;
+    constexpr double BASIC_MAX_NOISE_Y                = 0.0;
+    constexpr double BASIC_MAX_NOISE_Z                = 0.0;
 }
 
 #endif // SETTINGSDEFINE_H

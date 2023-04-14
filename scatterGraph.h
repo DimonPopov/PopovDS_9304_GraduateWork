@@ -20,13 +20,13 @@ public:
                           QSharedPointer<PointContainerSpace::AcousticSensors>,
                           QSharedPointer<PointContainerSpace::TrueModel>);
 public slots:
-    void handleSetSensorColor(const QColor& newColor);
-    void handleSetSensorSize(const double& newValue);
-    void handleSetInterpolationColor(const QColor& newColor);
-    void handleSetInterpolationSize(const double& newValue);
-    void handleSetAntennaVisibility(const bool& newState);
-    void handleSetSensorVisibility(const bool& newState);
-    void handleSetInterpolationVisibility(const bool& newState);
+    void handleSetPositionSensorColor(const QColor& newColor);
+    void handleSetPositionSensorSize(const double& newValue);
+    void handleSetPositionSensorVisibility(const bool& newState);
+    void handleSetAcousticSensorColor(const QColor& newColor);
+    void handleSetAcousticSensorSize(const double& newValue);
+    void handleSetAcousticSensorVisibility(const bool& newState);
+    void handleSetTrueModelVisibility(const bool& newState);
     void handleSetTrueModelColor(const QColor& newColor);
     void handleSetTrueModelSize(const double& newValue);
 

@@ -60,9 +60,10 @@ protected:
     void updatePointPosition() override;
     QScopedPointer<QTimer> m_timer;
     bool m_sensorEnd;
+    bool m_noiseState;
 
 public slots:
-    void handleSetNoiseState(const bool& noise);
+    void handleSetNoiseState(const bool& state);
     void handleSetSensorEnd(const bool& state);
 };
 

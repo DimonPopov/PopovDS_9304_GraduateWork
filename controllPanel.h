@@ -21,52 +21,54 @@ public:
     ~ControllPanel();
     void load();
     void save();
-    double getAntennaLenght() const;
-    double getSensorSize() const;
-    double getInterpolationSize() const;
-    double getTrueModelSize() const;
-    quint32 getSensorCount() const;
-    quint32 getInterpolationCount() const;
-    quint32 getTrueModelCount() const;
+    quint32 getModelCount() const;
+    double getModelLenght() const;
+    double getModelSize() const;
+    QColor getModelColor() const;
+    int getModelVisibility() const;
+    quint32 getPositionSensorCount() const;
+    double getPositionSensorSize() const;
+    QColor getPositionSensorColor() const;
+    bool getPositionSensorEnd() const;
+    int getPositionSensorVisibility() const;
+    quint32 getAcousticSensorCount() const;
+    double getAcousticSensorSize() const;
+    QColor getAcousticSensorColor() const;
+    int getAcousticSensorVisibility() const;
+    QVector3D getMaxNoise() const;
     InterpolaionSpace::InterpolationType getInterpolationType() const;
-    QColor getSensorColor() const;
-    QColor getInterpolationColor() const;
-    QColor getTrueModelColor() const;
-    int getAntennaVisibility() const;
-    int getSensorVisibility() const;
-    int getInterpolationVisibility() const;
-    bool getSensorEnd() const;
 
 private:
     Ui::ControllPanel *ui;
     QSettings* m_settings;
 
 signals:
-    void sigSensorCountChanged(const quint32& count);
-    void sigAntennaLenghtChanged(const double& lenght);
-    void sigSensorPointColorChanged(const QColor& color);
-    void sigSensorPointSizeChanged(const double& sensorPointSize);
-    void sigInterpolationPointColorChanged(const QColor& color);
-    void sigInterpolationPointSizeChanged(const double& interpolationPointSize);
-    void sigEmulationButtonClicked(const bool& state);
-    void sigInterpolationCountChanged(const quint32& count);
-    void sigMaxDeviationChanged(const double& value);
-    void sigAntennaVisibilityChanged(const bool& state);
-    void sigSensorVisibilityChanged(const bool& state);
-    void sigInterpolationVisibilityChanged(const bool& state);
-    void sigTrueModelPointColorChanged(const QColor& color);
-    void sigTrueModelPointSizeChanged(const double& trueModelPointSize);
-    void sigTrueModelCountChanged(const quint32& count);
+    void sigModelCountChanged(const quint32& count);
+    void sigModelLenghtChanged(const double& lenght);
+    void sigModelVisibilityChanged(const bool& state);
+    void sigModelColorChanged(const QColor& color);
+    void sigModelSizeChanged(const double& trueModelPointSize);
+    void sigPositionSensorCountChanged(const quint32& count);
+    void sigPositionSensorColorChanged(const QColor& color);
+    void sigPositionSensorSizeChanged(const double& sensorPointSize);
+    void sigPositionSensorVisibilityChanged(const bool& state);
+    void sigPositionSensorEndChanged(const bool& state);
+    void sigAcousticSensorCountChanged(const quint32& count);
+    void sigAcousticSensorColorChanged(const QColor& color);
+    void sigAcousticSensorSizeChanged(const double& interpolationPointSize);
     void sigInterpolationTypeChanged(const InterpolaionSpace::InterpolationType& type);
-    void sigSensorEndChanged(const bool& state);
+    void sigAcousticSensorVisibilityChanged(const bool& state);
+    void sigEmulationButtonClicked(const bool& state);
+    void sigMaxNoiseChanged(const QVector3D& noise);
 
 private slots:
-    void handleSensorPointColorChanged(const int& index);
-    void handleInterpolationPointColorChanged(const int& index);
-    void handleTrueModelColorChanged(const int& index);
-    void handleEmulationButtonChange(const bool& checked);
+    void handlePositionSensorColorChanged(const int& index);
+    void handleAcousticSensorColorChanged(const int& index);
+    void handleModelColorChanged(const int& index);
     void handleVisibilityCheckBoxsChanged(const bool& checkState);
     void handleInterpolationTypeChanged(const int& index);
+    void handleEmulationButtonChange(const bool& checked);
+    void handleNoiseChanged(const double& value);
 };
 
 #endif // CONTROLLPANEL_H
