@@ -1,7 +1,8 @@
 #include <random>
 
 #include "antennamodel.h"
-#include <QDebug>
+
+
 
 AntennaModelSpace::AntennaModel::AntennaModel(const double &lenght,
                                               const QVector3D& maxNoice,

@@ -11,7 +11,7 @@
 
 
 
-class ScatterGraph : public QObject
+class ScatterGraph : public QWidget
 {
     Q_OBJECT
 public:

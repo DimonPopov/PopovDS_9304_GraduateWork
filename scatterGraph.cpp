@@ -1,8 +1,5 @@
 #include "scatterGraph.h"
 
-#include <QValue3DAxis>
-#include <Q3DTheme>
-
 
 
 using namespace PointContainerSpace;
