@@ -62,6 +62,12 @@ ControllPanel::ControllPanel(QWidget *parent) :
 
     ui->startStopButton->setCheckable(true);
 
+    connect(ui->intervalModelUpdateSpin, &QDoubleSpinBox::valueChanged,
+            this, &ControllPanel::sigIntervalModelChanged);
+
+    connect(ui->stepModelUpdateSpin, &QDoubleSpinBox::valueChanged,
+            this, &ControllPanel::sigStepModelChanged);
+
     connect(ui->positionSensorCountSpin, &QSpinBox::valueChanged,
             this, &ControllPanel::sigPositionSensorCountChanged);
 
@@ -231,6 +237,16 @@ QColor ControllPanel::getAcousticSensorColor() const
 QColor ControllPanel::getModelColor() const
 {
     return QColor(ui->modelColorCombo->currentText());
+}
+
+double ControllPanel::getModelInterval() const
+{
+    return ui->intervalModelUpdateSpin->value();
+}
+
+double ControllPanel::getModelStep() const
+{
+    return ui->stepModelUpdateSpin->value();
 }
 
 int ControllPanel::getModelVisibility() const

@@ -4,13 +4,34 @@
 
 
 
-AntennaModelSpace::AntennaModel::AntennaModel(const double &lenght,
+AntennaModelSpace::AntennaModel::AntennaModel(const double& lenght,
+                                              const double& offset,
+                                              const double& step,
+                                              const double& interval,
                                               const QVector3D& maxNoice,
                                               QObject *parent)
     : QObject(parent),
-      m_lenght(lenght),
-      m_noise(16)
+    m_lenght(lenght),
+    m_offset(offset),
+    m_step(step),
+    m_timer(new QTimer),
+    m_noise(16)
 {
+    m_timer->setInterval(interval * 1'000);
+
+    connect(m_timer.data(), &QTimer::timeout,
+            this, [&](){
+                    static double _step = 0.0;
+                    if (_step > 2 * M_PI)
+                        _step = 0;
+                    else
+                        _step += m_step;
+
+                    m_offset = _step;
+
+                    emit sigLenghtChanged(m_lenght);
+});
+
     if (!maxNoice.isNull())
         handleMaxNoiseChanged(maxNoice);
 }
@@ -20,23 +41,34 @@ double AntennaModelSpace::AntennaModel::getLenght() const
     return m_lenght;
 }
 
-void AntennaModelSpace::AntennaModel::setLenght(double newLenght)
+double AntennaModelSpace::AntennaModel::getOffest() const
+{
+    return m_offset;
+}
+
+void AntennaModelSpace::AntennaModel::setLenght(const double& newLenght)
 {
     m_lenght = newLenght;
     emit sigLenghtChanged(m_lenght);
 }
 
+void AntennaModelSpace::AntennaModel::setOffest(const double& offset)
+{
+    m_offset = offset;
+}
+
 QVector3D AntennaModelSpace::AntennaModel::getNewPointPosition(const double &step,
                                                                const quint32 &pointNumber,
-                                                               const bool& needNoise) const
+                                                               const NoiseType& type) const
 {
     double x = step * pointNumber;
+    if (m_timer->isActive()) x += m_offset;
     double y = 3 + sin(2 * x + 0.5f);
     double z = 2 + x * 0.3f;
 
     static int v = 0;
 
-    if (needNoise)
+    if (type == NoiseType::Position)
     {
         x += m_noise[v].x();
         y += m_noise[v].y();
@@ -45,6 +77,26 @@ QVector3D AntennaModelSpace::AntennaModel::getNewPointPosition(const double &ste
     }
 
     return QVector3D(x, y, z);
+}
+
+double AntennaModelSpace::AntennaModel::getInterval() const
+{
+    return m_timer->interval();
+}
+
+void AntennaModelSpace::AntennaModel::setInterval(const double &newInterval)
+{
+    m_timer->setInterval(newInterval * 1'000);
+}
+
+double AntennaModelSpace::AntennaModel::getStep() const
+{
+    return m_step;
+}
+
+void AntennaModelSpace::AntennaModel::setStep(const double &newStep)
+{
+    m_step = newStep;
 }
 
 void AntennaModelSpace::AntennaModel::handleMaxNoiseChanged(const QVector3D &maxNoise)
@@ -57,3 +109,9 @@ void AntennaModelSpace::AntennaModel::handleMaxNoiseChanged(const QVector3D &max
     for (unsigned i = 0; i < m_noise.size() - 1; ++i)
         m_noise[i] = QVector3D(forX(rnd), forY(rnd), forZ(rnd));
 }
+
+void AntennaModelSpace::AntennaModel::handleStartEmulate(const bool &state)
+{
+    state ? m_timer->start() : m_timer->stop();
+}
+

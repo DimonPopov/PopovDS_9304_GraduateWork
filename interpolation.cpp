@@ -21,21 +21,24 @@
  * @param _result - цель заполнения.
  * @param _step - шаг между точками интерполяции.
  * @param _size - количество точек интерполяции.
+ * @param _offset - смещение от нуля.
  */
 template <class T, class X>
 void fillResult(T& _i1,
                 X& _i2,
                 QScatterDataArray& _result,
                 const float& _step,
-                const quint32& _size)
+                const quint32& _size,
+                const float& _offset = 0.0)
 {
     _result.clear();
 
     for (unsigned i = 0; i < _size; ++i)
     {
-        double Y = _i1(i * _step);
-        double Z = _i2(i * _step);
-        _result << QVector3D(i * _step, Y, Z);
+        const double position = i * _step + _offset;
+        const double Y = _i1(position);
+        const double Z = _i2(position);
+        _result << QVector3D(position, Y, Z);
     }
 }
 
@@ -47,18 +50,20 @@ void fillResult(T& _i1,
  * @param _result - цель заполнения.
  * @param _step - шаг между точками интерполяции.
  * @param _size - количество точек интерполяции.
+ * @param _offset - смещение от нуля.
  */
 template <class T>
 void fillResult(T& _i1,
                 QScatterDataArray& _result,
                 const float& _step,
-                const quint32& _size)
+                const quint32& _size,
+                const float& _offset = 0.0)
 {
     _result.clear();
 
     for (unsigned i = 0; i < _size; ++i)
     {
-        auto position = _i1(i * _step);
+        auto position = _i1(i * _step + _offset);
         _result << QVector3D(position[0], position[1], position[2]);
     }
 }
@@ -205,6 +210,11 @@ QScatterDataArray InterpolaionSpace::calculateInterpolation(QScatterDataArray* s
 
     static QScatterDataArray result;
 
+    std::vector<double> duplicate = x;
+    const double step  = x[1] - x.front();
+    const double start = x.front();
+    const double len = (x.back() - x.front()) / size;
+
     switch (type)
     {
 //        case InterpolationType::CardinalQuinticBSpline:             return cardinalQuinticBSpline(x, y, z, lenght, size);      // Не работает.
@@ -221,67 +231,66 @@ QScatterDataArray InterpolaionSpace::calculateInterpolation(QScatterDataArray* s
 //    }
         case InterpolationType::CardinalCubicBSpline:
         {
-            auto interpolatorY = cardinal_cubic_b_spline<double>(y.begin(), y.end(), 0, x[1]);
-            auto interpolatorZ = cardinal_cubic_b_spline<double>(z.begin(), z.end(), 0, x[1]);
-            fillResult(interpolatorY, interpolatorZ, result, lenght / size, size);
+            auto interpolatorY = cardinal_cubic_b_spline<double>(y.begin(), y.end(), start, step);
+            auto interpolatorZ = cardinal_cubic_b_spline<double>(z.begin(), z.end(), start, step);
+            fillResult(interpolatorY, interpolatorZ, result, lenght / size, size, start);
             break;
         }
         case InterpolationType::CardinalQuadraticBSpline:
         {
-            auto interpolatorY = cardinal_quadratic_b_spline<double>(y, 0, x[1]);
-            auto interpolatorZ = cardinal_quadratic_b_spline<double>(z, 0, x[1]);
-            fillResult(interpolatorY, interpolatorZ, result, lenght / size, size);
+            auto interpolatorY = cardinal_quadratic_b_spline<double>(y, start, step);
+            auto interpolatorZ = cardinal_quadratic_b_spline<double>(z, start, step);
+            fillResult(interpolatorY, interpolatorZ, result, lenght / size, size, start);
             break;
         }
         case InterpolationType::WhittakerShannon:
         {
-            auto interpolatorY = whittaker_shannon(std::move(y), 0, x[1]);
-            auto interpolatorZ = whittaker_shannon(std::move(z), 0, x[1]);
-            fillResult(interpolatorY, interpolatorZ, result, lenght / size, size);
+            auto interpolatorY = whittaker_shannon(std::move(y), start, step);
+            auto interpolatorZ = whittaker_shannon(std::move(z), start, step);
+            fillResult(interpolatorY, interpolatorZ, result, lenght / size, size, start);
             break;
         }
-        case InterpolationType::CatmullRomSplines:
-        {
-            auto points = packInVectorArray(x, y, z);
-            auto interpolator = catmull_rom<std::array<double, 3>>(std::move(points));
-            fillResult(interpolator, result, interpolator.max_parameter() / size, size);
-            break;
-        }
+//        case InterpolationType::CatmullRomSplines:
+//        {
+//            auto points = packInVectorArray(x, y, z);
+//            auto interpolator = catmull_rom<std::array<double, 3>>(std::move(points));
+//            const double f = interpolator.max_parameter();
+//            const double g = x.front();
+//            qDebug () << f << g;
+//            fillResult(interpolator, result, (interpolator.max_parameter() - start) / size, size, start);
+//            break;
+//        }
         case InterpolationType::CubicHermite:
         {
             std::vector<double> dxdy1(x.size());
             std::vector<double> dxdy2(x.size());
             std::vector<double> duplicate = x;
-            const float step = x.back() / size;
             auto interpolatorY = cubic_hermite(std::move(x),         std::move(y), std::move(dxdy1));
             auto interpolatorZ = cubic_hermite(std::move(duplicate), std::move(z), std::move(dxdy2));
-            fillResult(interpolatorY, interpolatorZ, result, step, size);
+            fillResult(interpolatorY, interpolatorZ, result, len, size, start);
             break;
         }
         case InterpolationType::ModifiedAkima:
         {
             std::vector<double> duplicate = x;
-            const float step = x.back() / size;
             auto interpolatorY = makima(std::move(x),         std::move(y));
             auto interpolatorZ = makima(std::move(duplicate), std::move(z));
-            fillResult(interpolatorY, interpolatorZ, result, step, size);
+            fillResult(interpolatorY, interpolatorZ, result, len, size, start);
             break;
         }
         case InterpolationType::PCHIP:
         {
             std::vector<double> duplicate = x;
-            const float step = x.back() / size;
             auto interpolatorY = pchip(std::move(x),         std::move(y));
             auto interpolatorZ = pchip(std::move(duplicate), std::move(z));
-            fillResult(interpolatorY, interpolatorZ, result, step, size);
+            fillResult(interpolatorY, interpolatorZ, result, len, size, start);
             break;
         }
         case InterpolationType::BarycentricRational:
         {
-            std::vector<double> duplicate = x;
             auto interpolatorY = barycentric_rational<double>(std::move(x),         std::move(y));
             auto interpolatorZ = barycentric_rational<double>(std::move(duplicate), std::move(z));
-            fillResult(interpolatorY, interpolatorZ, result, lenght / size, size);
+            fillResult(interpolatorY, interpolatorZ, result, lenght / size, size, start);
             break;
         }
         default:
@@ -306,7 +315,7 @@ QString InterpolaionSpace::getStrFromType(const InterpolationType &type)
         case InterpolationType::CardinalCubicBSpline:               return QString("Cardinal Cubic B-Spline");
         case InterpolationType::CardinalQuadraticBSpline:           return QString("Cardinal Quadratic B-Spline");
         case InterpolationType::WhittakerShannon:                   return QString("Whittaker Shannon");
-        case InterpolationType::CatmullRomSplines:                  return QString("Catmull Rom Splines");
+//        case InterpolationType::CatmullRomSplines:                  return QString("Catmull Rom Splines");
         case InterpolationType::CubicHermite:                       return QString("Cubic Hermite");
         case InterpolationType::ModifiedAkima:                      return QString("Modified Akima");
         case InterpolationType::PCHIP:                              return QString("PCHIP");

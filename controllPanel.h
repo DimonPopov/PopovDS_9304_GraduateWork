@@ -25,6 +25,8 @@ public:
     double getModelLenght() const;
     double getModelSize() const;
     QColor getModelColor() const;
+    double getModelInterval() const;
+    double getModelStep() const;
     int getModelVisibility() const;
     quint32 getPositionSensorCount() const;
     double getPositionSensorSize() const;
@@ -60,6 +62,8 @@ signals:
     void sigAcousticSensorVisibilityChanged(const bool& state);
     void sigEmulationButtonClicked(const bool& state);
     void sigMaxNoiseChanged(const QVector3D& noise);
+    void sigIntervalModelChanged(const double& interval);
+    void sigStepModelChanged(const double& step);
 
 private slots:
     void handlePositionSensorColorChanged(const int& index);

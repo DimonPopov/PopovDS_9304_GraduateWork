@@ -24,11 +24,21 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface,
     m_trueAntennaModelSeries = new QScatter3DSeries(new QScatterDataProxy);
     m_positionSensorSeries   = new QScatter3DSeries(new QScatterDataProxy);
 
-    m_graph->axisX()->setLabelFormat("%.2f");
-    m_graph->axisZ()->setLabelFormat("%.2f");
-    m_graph->axisX()->setRange(-1.0f, 12.0f);
+//    m_acousticSensorSeries->setItemLabelVisible(false);
+//    m_trueAntennaModelSeries->setItemLabelVisible(false);
+//    m_positionSensorSeries->setItemLabelVisible(false);
+
+    m_graph->axisX()->setLabelFormat("");
+    m_graph->axisY()->setLabelFormat("");
+    m_graph->axisZ()->setLabelFormat("");
+
+    m_graph->axisX()->setAutoAdjustRange(true);
+    m_graph->axisZ()->setAutoAdjustRange(true);
+
+//    m_graph->axisX()->setRange(-1.0f, 20.0f);
     m_graph->axisY()->setRange(0.0f, 7.0f);
-    m_graph->axisZ()->setRange(0.0f, 7.0f);
+//    m_graph->axisZ()->setRange(0.0f, 17.0f);
+
     m_graph->axisX()->setLabelAutoRotation(30);
     m_graph->axisY()->setLabelAutoRotation(90);
     m_graph->axisZ()->setLabelAutoRotation(30);

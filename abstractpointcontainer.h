@@ -31,6 +31,7 @@ protected:
     virtual void updatePointPosition() = 0;
     QSharedPointer<AntennaModelSpace::AntennaModel> m_model;
     QScatterDataArray* m_scatterArray;
+
 signals:
     void sigContainerChanged();
 };
@@ -58,12 +59,9 @@ public:
                              QObject *parent = nullptr);
 protected:
     void updatePointPosition() override;
-    QScopedPointer<QTimer> m_timer;
     bool m_sensorEnd;
-    bool m_noiseState;
 
 public slots:
-    void handleSetNoiseState(const bool& noise);
     void handleSetSensorEnd(const bool& state);
 };
 

@@ -7,8 +7,8 @@ using namespace AntennaModelSpace;
 PointContainerSpace::AbstractPointContainer::AbstractPointContainer(QSharedPointer<AntennaModel> model,
                                                                     QObject *parent)
     : QObject(parent),
-      m_model(model),
-      m_scatterArray(new QScatterDataArray)
+    m_model(model),
+    m_scatterArray(new QScatterDataArray)
 {
     connect(model.data(), &AntennaModel::sigLenghtChanged,
             this, &AbstractPointContainer::updatePointPosition);
@@ -51,15 +51,8 @@ PointContainerSpace::PositionSensors::PositionSensors(QSharedPointer<AntennaMode
                                  const bool& sensorEnd,
                                  QObject *parent)
     : AbstractPointContainer(model, parent),
-      m_timer(new QTimer),
-      m_sensorEnd(sensorEnd),
-      m_noiseState(false)
+      m_sensorEnd(sensorEnd)
 {
-    m_timer->setInterval(1'000);
-
-    connect(m_timer.data(), &QTimer::timeout,
-            this, &PositionSensors::updatePointPosition);
-
     setScatterArraySize(amountPoints);
 }
 
@@ -71,24 +64,9 @@ void PointContainerSpace::PositionSensors::updatePointPosition()
     m_scatterArray->clear();
 
     for (unsigned i = 0; i < size; ++i)
-        *m_scatterArray << m_model->getNewPointPosition(step, i, i == 0 ? false : m_noiseState);
+        *m_scatterArray << m_model->getNewPointPosition(step, i, NoiseType::Nope);
 
     emit sigContainerChanged();
-}
-
-void PointContainerSpace::PositionSensors::handleSetNoiseState(const bool &noise)
-{
-    if (noise)
-    {
-        m_timer->start();
-        m_noiseState = true;
-    }
-    else
-    {
-        m_timer->stop();
-        m_noiseState = false;
-        updatePointPosition();
-    }
 }
 
 void PointContainerSpace::PositionSensors::handleSetSensorEnd(const bool &state)

@@ -20,7 +20,7 @@ enum InterpolationType : quint32 {
     CardinalCubicBSpline,            ///< Кардинальная кубическая интерполяция B-сплайна
     CardinalQuadraticBSpline,        ///< Кардинально-квадратичная B-сплайновая интерполяция
     WhittakerShannon,                ///< Интерполяция Уиттакера-Шеннона
-    CatmullRomSplines,               ///< Сплайны Кэтмулла-Рома
+//    CatmullRomSplines,               ///< Сплайны Кэтмулла-Рома
     CubicHermite,                    ///< Кубическая интерполяция Эрмита
     ModifiedAkima,                   ///< Модифицированная интерполяция Akima
     PCHIP,                           ///< Интерполяция PCHIP

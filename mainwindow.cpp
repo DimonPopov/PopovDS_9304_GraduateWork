@@ -37,6 +37,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_controllPanel = new ControllPanel(this);
 
     QSharedPointer<AntennaModel> antennaModel(new AntennaModel(m_controllPanel->getModelLenght(),
+                                                               0,
+                                                               m_controllPanel->getModelStep(),
+                                                               m_controllPanel->getModelInterval(),
                                                                m_controllPanel->getMaxNoise()));
     QSharedPointer<TrueModel> trueModel(new TrueModel(antennaModel,
                                                       m_controllPanel->getModelCount()));
@@ -72,9 +75,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_controllPanel, &ControllPanel::sigModelLenghtChanged,
             antennaModel.data(), &AntennaModel::setLenght);
 
-    connect(m_controllPanel, &ControllPanel::sigEmulationButtonClicked,
-            positionSensors.data(), &PositionSensors::handleSetNoiseState);
-
     connect(m_controllPanel, &ControllPanel::sigPositionSensorEndChanged,
             positionSensors.data(), &PositionSensors::handleSetSensorEnd);
 
@@ -83,6 +83,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_controllPanel, &ControllPanel::sigMaxNoiseChanged,
             antennaModel.data(), &AntennaModel::handleMaxNoiseChanged);
+
+    connect(m_controllPanel, &ControllPanel::sigEmulationButtonClicked,
+            antennaModel.data(), &AntennaModel::handleStartEmulate);
+
+    connect(m_controllPanel, &ControllPanel::sigIntervalModelChanged,
+            antennaModel.data(), &AntennaModel::setInterval);
+
+    connect(m_controllPanel, &ControllPanel::sigStepModelChanged,
+            antennaModel.data(), &AntennaModel::setStep);
 
     connect(m_controllPanel, &ControllPanel::sigModelSizeChanged,
             m_graph, &ScatterGraph::handleSetTrueModelSize);
