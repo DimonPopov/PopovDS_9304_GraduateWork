@@ -9,12 +9,6 @@
 
 namespace AntennaModelSpace {
 
-enum class NoiseType
-{
-    Nope = -1,
-    Model,
-    Position
-};
 
 class AntennaModel : public QObject
 {
@@ -35,8 +29,7 @@ public:
     void setStep(const double& newStep);
     void setInterval(const double& newInterval);
     QVector3D getNewPointPosition(const double& step,
-                                  const quint32& pointNumber,
-                                  const NoiseType& type = NoiseType::Nope) const;
+                                  const quint32& pointNumber) const;
 
 
 private:

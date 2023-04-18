@@ -64,7 +64,7 @@ void PointContainerSpace::PositionSensors::updatePointPosition()
     m_scatterArray->clear();
 
     for (unsigned i = 0; i < size; ++i)
-        *m_scatterArray << m_model->getNewPointPosition(step, i, NoiseType::Nope);
+        *m_scatterArray << m_model->getNewPointPosition(step, i);
 
     emit sigContainerChanged();
 }
