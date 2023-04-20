@@ -62,6 +62,9 @@ ControllPanel::ControllPanel(QWidget *parent) :
 
     ui->startStopButton->setCheckable(true);
 
+    connect(ui->noiseBox, &QGroupBox::clicked,
+            this, &ControllPanel::sigNoiseChanged);
+
     connect(ui->intervalModelUpdateSpin, &QDoubleSpinBox::valueChanged,
             this, &ControllPanel::sigIntervalModelChanged);
 
@@ -274,6 +277,11 @@ QVector3D ControllPanel::getMaxNoise() const
 bool ControllPanel::getPositionSensorEnd() const
 {
     return ui->positionSensorEnd->checkState();
+}
+
+bool ControllPanel::getPositionSensorNoise() const
+{
+    return ui->noiseBox->isChecked();
 }
 
 void ControllPanel::handlePositionSensorColorChanged(const int& index)

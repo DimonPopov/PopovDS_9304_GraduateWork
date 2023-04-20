@@ -32,6 +32,7 @@ public:
     double getPositionSensorSize() const;
     QColor getPositionSensorColor() const;
     bool getPositionSensorEnd() const;
+    bool getPositionSensorNoise() const;
     int getPositionSensorVisibility() const;
     quint32 getAcousticSensorCount() const;
     double getAcousticSensorSize() const;
@@ -64,6 +65,7 @@ signals:
     void sigMaxNoiseChanged(const QVector3D& noise);
     void sigIntervalModelChanged(const double& interval);
     void sigStepModelChanged(const double& step);
+    void sigNoiseChanged(const bool& noise);
 
 private slots:
     void handlePositionSensorColorChanged(const int& index);

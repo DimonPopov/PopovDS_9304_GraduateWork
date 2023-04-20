@@ -56,13 +56,16 @@ public:
     explicit PositionSensors(QSharedPointer<AntennaModelSpace::AntennaModel> model,
                              const quint32& amountPoints,
                              const bool& sensorEnd,
+                             const bool& noiseNeed,
                              QObject *parent = nullptr);
 protected:
     void updatePointPosition() override;
     bool m_sensorEnd;
+    bool m_needNoise;
 
 public slots:
     void handleSetSensorEnd(const bool& state);
+    void handleSetNeedNoise(const bool& state);
 };
 
 

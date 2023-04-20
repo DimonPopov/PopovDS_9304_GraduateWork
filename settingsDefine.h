@@ -22,6 +22,9 @@
 #define MAX_NOISE_Y                ("maxNoiseY")
 #define MAX_NOISE_Z                ("maxNoiseZ")
 
+#define MODEL_INTERVAL             ("ModelInterval")
+#define MODEL_STEP                 ("ModelStep")
+
 
 
 
@@ -45,6 +48,9 @@ namespace BasicSettingValues {
     constexpr double BASIC_MAX_NOISE_X                = 0.0;
     constexpr double BASIC_MAX_NOISE_Y                = 0.0;
     constexpr double BASIC_MAX_NOISE_Z                = 0.0;
+
+    constexpr double BASIC_MODEL_INTERVAL             = 0.1;
+    constexpr double BASIC_MODEL_STEP                 = 0.1;
 }
 
 #endif // SETTINGSDEFINE_H

@@ -43,7 +43,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideRight</enum>
@@ -278,6 +278,12 @@
     <widget class="QGroupBox" name="noiseBox">
      <property name="title">
       <string>Noise</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
      </property>
      <layout class="QFormLayout" name="formLayout_5">
       <item row="0" column="0">

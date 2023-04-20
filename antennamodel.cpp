@@ -15,7 +15,7 @@ AntennaModelSpace::AntennaModel::AntennaModel(const double& lenght,
     m_offset(offset),
     m_step(step),
     m_timer(new QTimer),
-    m_noise(16)
+    m_noise(lenght / step)
 {
     m_timer->setInterval(interval * 1'000);
 
@@ -58,21 +58,22 @@ void AntennaModelSpace::AntennaModel::setOffest(const double& offset)
 }
 
 QVector3D AntennaModelSpace::AntennaModel::getNewPointPosition(const double &step,
-                                                               const quint32 &pointNumber) const
+                                                               const quint32 &pointNumber,
+                                                               const bool& positionNoise) const
 {
     double x = step * pointNumber + m_offset;
-    double y = 3 + sin(2 * x + 0.5f);
+    double y = 3 + sin(x);
     double z = 2 + x * 0.3f;
 
-//    static int v = 0;
+    static int v = 0;
 
-//    if (type == NoiseType::Position)
-//    {
-//        x += m_noise[v].x();
-//        y += m_noise[v].y();
-//        z += m_noise[v].z();
-//        v == m_noise.size() - 1 ? v = 0 : ++v;
-//    }
+    if (positionNoise)
+    {
+        x += m_noise[v].x();
+        y += m_noise[v].y();
+        z += m_noise[v].z();
+        v == m_noise.size() - 1 ? v = 0 : ++v;
+    }
 
     return QVector3D(x, y, z);
 }

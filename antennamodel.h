@@ -29,7 +29,8 @@ public:
     void setStep(const double& newStep);
     void setInterval(const double& newInterval);
     QVector3D getNewPointPosition(const double& step,
-                                  const quint32& pointNumber) const;
+                                  const quint32& pointNumber,
+                                  const bool& positionNoise = false) const;
 
 
 private:

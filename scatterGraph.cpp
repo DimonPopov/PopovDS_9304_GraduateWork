@@ -24,9 +24,9 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface,
     m_trueAntennaModelSeries = new QScatter3DSeries(new QScatterDataProxy);
     m_positionSensorSeries   = new QScatter3DSeries(new QScatterDataProxy);
 
-//    m_acousticSensorSeries->setItemLabelVisible(false);
-//    m_trueAntennaModelSeries->setItemLabelVisible(false);
-//    m_positionSensorSeries->setItemLabelVisible(false);
+    m_acousticSensorSeries->setItemLabelVisible(false);
+    m_trueAntennaModelSeries->setItemLabelVisible(false);
+    m_positionSensorSeries->setItemLabelVisible(false);
 
     m_graph->axisX()->setLabelFormat("");
     m_graph->axisY()->setLabelFormat("");

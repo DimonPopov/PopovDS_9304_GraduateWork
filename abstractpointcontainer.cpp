@@ -49,9 +49,11 @@ void PointContainerSpace::AbstractPointContainer::setScatterArraySize(const quin
 PointContainerSpace::PositionSensors::PositionSensors(QSharedPointer<AntennaModel> model,
                                  const quint32 &amountPoints,
                                  const bool& sensorEnd,
+                                 const bool& noiseNeed,
                                  QObject *parent)
     : AbstractPointContainer(model, parent),
-      m_sensorEnd(sensorEnd)
+    m_sensorEnd(sensorEnd),
+    m_needNoise(noiseNeed)
 {
     setScatterArraySize(amountPoints);
 }
@@ -64,7 +66,7 @@ void PointContainerSpace::PositionSensors::updatePointPosition()
     m_scatterArray->clear();
 
     for (unsigned i = 0; i < size; ++i)
-        *m_scatterArray << m_model->getNewPointPosition(step, i);
+        *m_scatterArray << m_model->getNewPointPosition(step, i, m_needNoise ? true : false);
 
     emit sigContainerChanged();
 }
@@ -72,6 +74,12 @@ void PointContainerSpace::PositionSensors::updatePointPosition()
 void PointContainerSpace::PositionSensors::handleSetSensorEnd(const bool &state)
 {
     m_sensorEnd = state;
+    updatePointPosition();
+}
+
+void PointContainerSpace::PositionSensors::handleSetNeedNoise(const bool &state)
+{
+    m_needNoise = state;
     updatePointPosition();
 }
 

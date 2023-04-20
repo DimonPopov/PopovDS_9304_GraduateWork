@@ -45,7 +45,8 @@ MainWindow::MainWindow(QWidget *parent)
                                                       m_controllPanel->getModelCount()));
     QSharedPointer<PositionSensors> positionSensors(new PositionSensors(antennaModel,
                                                                         m_controllPanel->getPositionSensorCount(),
-                                                                        m_controllPanel->getPositionSensorEnd()));
+                                                                        m_controllPanel->getPositionSensorEnd(),
+                                                                        m_controllPanel->getPositionSensorNoise()));
     QSharedPointer<AcousticSensors> acousticSensors(new AcousticSensors(antennaModel,
                                                                         positionSensors,
                                                                         m_controllPanel->getInterpolationType(),
@@ -77,6 +78,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_controllPanel, &ControllPanel::sigPositionSensorEndChanged,
             positionSensors.data(), &PositionSensors::handleSetSensorEnd);
+
+    connect(m_controllPanel, &ControllPanel::sigNoiseChanged,
+            positionSensors.data(), &PositionSensors::handleSetNeedNoise);
 
     connect(m_controllPanel, &ControllPanel::sigInterpolationTypeChanged,
             acousticSensors.data(), &AcousticSensors::setInterpolationType);
