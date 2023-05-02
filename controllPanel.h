@@ -39,6 +39,7 @@ public:
     QColor getAcousticSensorColor() const;
     int getAcousticSensorVisibility() const;
     QVector3D getMaxNoise() const;
+    QPair<double, double> getModel() const;
     InterpolaionSpace::InterpolationType getInterpolationType() const;
 
 private:
@@ -66,6 +67,10 @@ signals:
     void sigIntervalModelChanged(const double& interval);
     void sigStepModelChanged(const double& step);
     void sigNoiseChanged(const bool& noise);
+    void sigModelChanged(const QPair<double, double>);
+
+public slots:
+    void handleUpdateInterpolationTime(const quint32& time);
 
 private slots:
     void handlePositionSensorColorChanged(const int& index);
@@ -75,6 +80,10 @@ private slots:
     void handleInterpolationTypeChanged(const int& index);
     void handleEmulationButtonChange(const bool& checked);
     void handleNoiseChanged(const double& value);
+    void handleMaxValueNoiseChange();
+    //void handleOpenModelSettingsDialog();
+    void handleOpenFileDialog();
+    void handleModelChanged(const int& index);
 };
 
 #endif // CONTROLLPANEL_H

@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+//#include <QLocale>
+//#include <QTranslator>
 
 class ControllPanel;
 class ScatterGraph;

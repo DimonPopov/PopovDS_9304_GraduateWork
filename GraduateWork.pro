@@ -12,6 +12,7 @@ SOURCES += \
     abstractpointcontainer.cpp \
     antennamodel.cpp \
     controllPanel.cpp \
+    errorcomplexityhandler.cpp \
     interpolation.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -21,6 +22,7 @@ HEADERS += \
     abstractpointcontainer.h \
     antennamodel.h \
     controllPanel.h \
+    errorcomplexityhandler.h \
     interpolation.h \
     mainwindow.h \
     scatterGraph.h \

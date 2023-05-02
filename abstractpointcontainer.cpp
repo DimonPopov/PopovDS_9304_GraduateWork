@@ -66,7 +66,7 @@ void PointContainerSpace::PositionSensors::updatePointPosition()
     m_scatterArray->clear();
 
     for (unsigned i = 0; i < size; ++i)
-        *m_scatterArray << m_model->getNewPointPosition(step, i, m_needNoise ? true : false);
+        *m_scatterArray << m_model->getNewPointPosition(step * i, m_needNoise ? true : false);
 
     emit sigContainerChanged();
 }
@@ -91,9 +91,13 @@ PointContainerSpace::AcousticSensors::AcousticSensors(QSharedPointer<AntennaMode
                                  const quint32 &amountPoints,
                                  QObject *parent)
     : AbstractPointContainer(model, parent),
-      m_positionSensors(positionSensors),
-      m_type(type)
+    m_сompare(new ErrorComplexityHandler),
+    m_positionSensors(positionSensors),
+    m_type(type)
 {
+    disconnect(model.data(), &AntennaModel::sigLenghtChanged,
+               this, &AcousticSensors::updatePointPosition);
+
     connect(positionSensors.data(), &PositionSensors::sigContainerChanged,
             this, &AcousticSensors::updatePointPosition);
 
@@ -114,7 +118,12 @@ void PointContainerSpace::AcousticSensors::setInterpolationType(const Interpolai
 //                strongRef->setScatterArraySize(5);
 //    }
 //    else
-        updatePointPosition();
+    updatePointPosition();
+}
+
+quint32 PointContainerSpace::AcousticSensors::getInterpolationTime() const
+{
+        return m_сompare->getTime();
 }
 
 InterpolaionSpace::InterpolationType PointContainerSpace::AcousticSensors::getInterpolationType() const
@@ -130,10 +139,12 @@ void PointContainerSpace::AcousticSensors::updatePointPosition()
 
     if (auto positionSensorStrongRef = m_positionSensors.toStrongRef())
     {
+        m_сompare->startTimer();
         m_scatterArray->append(InterpolaionSpace::calculateInterpolation(positionSensorStrongRef->getScatterArray(),
                                                                          m_model->getLenght(),
                                                                          size,
                                                                          m_type));
+        m_сompare->stopTimer();
 
         emit sigContainerChanged();
     }
@@ -155,7 +166,7 @@ void PointContainerSpace::TrueModel::updatePointPosition()
     m_scatterArray->clear();
 
     for (unsigned i = 0; i < size; ++i)
-        *m_scatterArray << m_model->getNewPointPosition(step, i);
+        *m_scatterArray << m_model->getNewPointPosition(step * i);
 
     emit sigContainerChanged();
 }

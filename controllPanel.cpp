@@ -1,8 +1,11 @@
 #include <QSettings>
+#include <QFileDialog>
+#include <QDialog>
 
 #include "controllPanel.h"
 #include "ui_controllPanel.h"
 #include "settingsDefine.h"
+//#include "modelsettingsdialog.h"
 
 
 
@@ -35,6 +38,24 @@ QString colorToStr(const Color& color)
     }
 }
 
+enum Model {
+    First,
+    Second,
+    Third,
+    ModelCount
+};
+
+QString modelToStr(const Model& model)
+{
+    switch (model)
+    {
+    case First:    return "2 + sin(x)";
+    case Second:   return "3 + sin(x) * 0.4";
+    case Third:    return "2 + sin(x) * 1.5";
+
+    default:    return "";
+    }
+}
 
 
 ControllPanel::ControllPanel(QWidget *parent) :
@@ -58,9 +79,22 @@ ControllPanel::ControllPanel(QWidget *parent) :
     for (unsigned i = 0; i < InterpolaionSpace::InterpolationType::Count; ++i)
         ui->interpolationCombo->addItem(InterpolaionSpace::getStrFromType(static_cast<InterpolaionSpace::InterpolationType>(i)), i);
 
+    for (unsigned i = 0; i < ModelCount; ++i)
+        ui->modelCombo->addItem(modelToStr(static_cast<Model>(i)), i);
+
     load();
 
     ui->startStopButton->setCheckable(true);
+    handleMaxValueNoiseChange();
+
+    connect(ui->openFile, &QPushButton::clicked,
+            this, &ControllPanel::handleOpenFileDialog);
+
+//    connect(ui->modelSettingsButton, &QPushButton::clicked,
+//            this, &ControllPanel::handleOpenModelSettingsDialog);
+
+    connect(ui->modelCombo, &QComboBox::currentIndexChanged,
+            this, &ControllPanel::handleModelChanged);
 
     connect(ui->noiseBox, &QGroupBox::clicked,
             this, &ControllPanel::sigNoiseChanged);
@@ -70,6 +104,12 @@ ControllPanel::ControllPanel(QWidget *parent) :
 
     connect(ui->stepModelUpdateSpin, &QDoubleSpinBox::valueChanged,
             this, &ControllPanel::sigStepModelChanged);
+
+    connect(ui->positionSensorCountSpin, &QSpinBox::valueChanged,
+            this, &ControllPanel::handleMaxValueNoiseChange);
+
+    connect(ui->modelLengthSpin, &QDoubleSpinBox::valueChanged,
+            this, &ControllPanel::handleMaxValueNoiseChange);
 
     connect(ui->positionSensorCountSpin, &QSpinBox::valueChanged,
             this, &ControllPanel::sigPositionSensorCountChanged);
@@ -145,6 +185,8 @@ void ControllPanel::load()
         ui->modelColorCombo->setCurrentIndex(         m_settings->value(MODEL_COLOR,                BASIC_MODEL_COLOR).toUInt());
         ui->modelSizeSpin->setValue(                  m_settings->value(MODEL_SIZE,                 BASIC_MODEL_SIZE).toDouble());
         ui->modelVisibilityCheck->setChecked(         m_settings->value(MODEL_VISIBILITY,           BASIC_MODEL_VISIBILITY).toBool());
+        ui->intervalModelUpdateSpin->setValue(        m_settings->value(MODEL_INTERVAL,             BASIC_MODEL_INTERVAL).toDouble());
+        ui->stepModelUpdateSpin->setValue(            m_settings->value(MODEL_STEP,                 BASIC_MODEL_STEP).toDouble());
         ui->positionSensorCountSpin->setValue(        m_settings->value(POSITION_SENSOR_COUNT,      BASIC_POSITION_SENSOR_COUNT).toUInt());
         ui->positionSensorColorCombo->setCurrentIndex(m_settings->value(POSITION_SENSOR_COLOR,      BASIC_POSITION_SENSOR_COLOR).toUInt());
         ui->positionSensorSizeSpin->setValue(         m_settings->value(POSITION_SENSOR_SIZE,       BASIC_POSITION_SENSOR_SIZE).toDouble());
@@ -155,7 +197,6 @@ void ControllPanel::load()
         ui->acousticSensorSizeSpin->setValue(         m_settings->value(ACOUSTIC_SENSOR_SIZE,       BASIC_ACOUSTIC_SENSOR_SIZE).toDouble());
         ui->acousticSensorVisibilityCheck->setChecked(m_settings->value(ACOUSTIC_SENSOR_VISIBILITY, BASIC_ACOUSTIC_SENSOR_VISIBILITY).toBool());
         ui->interpolationCombo->setCurrentIndex(      m_settings->value(INTERPOLATION_TYPE,         BASIC_INTERPOLATION_TYPE).toUInt());
-
         ui->maxNoiseX->setValue(                      m_settings->value(MAX_NOISE_X,                BASIC_MAX_NOISE_X).toDouble());
         ui->maxNoiseY->setValue(                      m_settings->value(MAX_NOISE_Y,                BASIC_MAX_NOISE_Y).toDouble());
         ui->maxNoiseZ->setValue(                      m_settings->value(MAX_NOISE_Z,                BASIC_MAX_NOISE_Z).toDouble());
@@ -170,6 +211,8 @@ void ControllPanel::save()
         m_settings->setValue(MODEL_COLOR,                ui->modelColorCombo->currentData());
         m_settings->setValue(MODEL_SIZE,                 ui->modelSizeSpin->value());
         m_settings->setValue(MODEL_VISIBILITY,           ui->modelVisibilityCheck->checkState());
+        m_settings->setValue(MODEL_INTERVAL,             ui->intervalModelUpdateSpin->value());
+        m_settings->setValue(MODEL_STEP,                 ui->stepModelUpdateSpin->value());
         m_settings->setValue(POSITION_SENSOR_COUNT,      ui->positionSensorCountSpin->value());
         m_settings->setValue(POSITION_SENSOR_COLOR,      ui->positionSensorColorCombo->currentData());
         m_settings->setValue(POSITION_SENSOR_SIZE,       ui->positionSensorSizeSpin->value());
@@ -180,7 +223,6 @@ void ControllPanel::save()
         m_settings->setValue(ACOUSTIC_SENSOR_SIZE,       ui->acousticSensorSizeSpin->value());
         m_settings->setValue(ACOUSTIC_SENSOR_VISIBILITY, ui->acousticSensorVisibilityCheck->checkState());
         m_settings->setValue(INTERPOLATION_TYPE,         ui->interpolationCombo->currentIndex());
-
         m_settings->setValue(MAX_NOISE_X,                ui->maxNoiseX->value());
         m_settings->setValue(MAX_NOISE_Y,                ui->maxNoiseY->value());
         m_settings->setValue(MAX_NOISE_Z,                ui->maxNoiseZ->value());
@@ -210,6 +252,42 @@ quint32 ControllPanel::getModelCount() const
 InterpolaionSpace::InterpolationType ControllPanel::getInterpolationType() const
 {
     return static_cast<InterpolaionSpace::InterpolationType>(ui->interpolationCombo->currentData().toUInt());
+}
+
+void ControllPanel::handleUpdateInterpolationTime(const quint32 &time)
+{
+    ui->interpolationTimeSpin->setValue(time);
+}
+
+void ControllPanel::handleMaxValueNoiseChange()
+{
+    ui->maxNoiseX->setMaximum((ui->modelLengthSpin->value() / ui->positionSensorCountSpin->value()) / 2);
+}
+
+//void ControllPanel::handleOpenModelSettingsDialog()
+//{
+//    ModelSettingsDialog dialog;
+//    dialog.exec();
+//}
+
+void ControllPanel::handleOpenFileDialog()
+{
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setViewMode(QFileDialog::Detail);
+    dialog.exec();
+}
+
+void ControllPanel::handleModelChanged(const int& index)
+{
+    Q_UNUSED(index);
+    auto text = ui->modelCombo->currentText();
+    if (text == modelToStr(First))
+        emit sigModelChanged({2, 1});
+    else if (text == modelToStr(Second))
+        emit sigModelChanged({3, 0.4});
+    else if (text == modelToStr(Third))
+        emit sigModelChanged({2, 1.5});
 }
 
 double ControllPanel::getPositionSensorSize() const
@@ -269,9 +347,22 @@ int ControllPanel::getAcousticSensorVisibility() const
 
 QVector3D ControllPanel::getMaxNoise() const
 {
-    return QVector3D(ui->maxNoiseX->value() / 2,
-                     ui->maxNoiseY->value() / 2,
-                     ui->maxNoiseZ->value() / 2);
+    return QVector3D(ui->maxNoiseX->value(),
+                     ui->maxNoiseY->value(),
+                     ui->maxNoiseZ->value());
+}
+
+QPair<double, double> ControllPanel::getModel() const
+{
+    auto text = ui->modelCombo->currentText();
+    if (text == modelToStr(First))
+        return {2, 1};
+    else if (text == modelToStr(Second))
+        return {3, 0.4};
+    else if (text == modelToStr(Third))
+        return {4, 0.7};
+
+    return {2, 1};
 }
 
 bool ControllPanel::getPositionSensorEnd() const

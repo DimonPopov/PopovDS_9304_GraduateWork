@@ -9,6 +9,7 @@
 
 #include "antennamodel.h"
 #include "interpolation.h"
+#include "errorcomplexityhandler.h"
 
 
 
@@ -79,9 +80,11 @@ public:
                              const quint32& amountPoints,
                              QObject *parent = nullptr);
     void setInterpolationType(const InterpolaionSpace::InterpolationType& newType);
+    quint32 getInterpolationTime() const;
     InterpolaionSpace::InterpolationType getInterpolationType() const;
 protected:
     void updatePointPosition() override;
+    QScopedPointer<ErrorComplexityHandler> m_сompare;
     QWeakPointer<PositionSensors> m_positionSensors;
     InterpolaionSpace::InterpolationType m_type;
 };

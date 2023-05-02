@@ -43,10 +43,14 @@ private:
     void setAxisZRange(const double min, const double max);
     void setAxisYRange(const double min, const double max);
 
+signals:
+    void sigInterpolationTimeUpdate(const quint32& time);
+
 private slots:
     void handleUpdatePositionSensors();
     void handleUpdateAcousticSensors();
     void handleUpdateTrueModel();
+    void handleSelectItemChanged(const int& index);
 };
 
 #endif // ScatterGraph_H

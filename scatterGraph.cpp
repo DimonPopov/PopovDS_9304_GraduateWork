@@ -24,7 +24,7 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface,
     m_trueAntennaModelSeries = new QScatter3DSeries(new QScatterDataProxy);
     m_positionSensorSeries   = new QScatter3DSeries(new QScatterDataProxy);
 
-    m_acousticSensorSeries->setItemLabelVisible(false);
+    m_acousticSensorSeries->setItemLabelVisible(true);
     m_trueAntennaModelSeries->setItemLabelVisible(false);
     m_positionSensorSeries->setItemLabelVisible(false);
 
@@ -32,11 +32,10 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface,
     m_graph->axisY()->setLabelFormat("");
     m_graph->axisZ()->setLabelFormat("");
 
-    m_graph->axisX()->setAutoAdjustRange(true);
-    m_graph->axisZ()->setAutoAdjustRange(true);
+//    m_graph->axisX()->setAutoAdjustRange(true);
+//    m_graph->axisZ()->setAutoAdjustRange(true);
 
-//    m_graph->axisX()->setRange(-1.0f, 20.0f);
-    m_graph->axisY()->setRange(0.0f, 7.0f);
+    m_graph->axisY()->setRange(-1.0f, 7.0f);
 //    m_graph->axisZ()->setRange(0.0f, 17.0f);
 
     m_graph->axisX()->setLabelAutoRotation(30);
@@ -50,6 +49,12 @@ ScatterGraph::ScatterGraph(Q3DScatter *surface,
     m_graph->axisX()->setTitleVisible(true);
     m_graph->axisY()->setTitleVisible(true);
     m_graph->axisZ()->setTitleVisible(true);
+
+    connect(m_acousticSensorSeries, &QScatter3DSeries::selectedItemChanged,
+            this, &ScatterGraph::handleSelectItemChanged, Qt::UniqueConnection);
+
+    connect(m_acousticSensors.data(), &AcousticSensors::sigContainerChanged,
+            this, [&](){ handleSelectItemChanged(m_acousticSensorSeries->selectedItem()); });
 
     connect(m_positionSensors.data(), &PositionSensors::sigContainerChanged,
             this, &ScatterGraph::handleUpdatePositionSensors, Qt::UniqueConnection);
@@ -92,11 +97,31 @@ void ScatterGraph::handleUpdatePositionSensors()
 void ScatterGraph::handleUpdateAcousticSensors()
 {
     m_acousticSensorSeries->dataProxy()->resetArray(m_acousticSensors->getScatterArray());
+    emit sigInterpolationTimeUpdate(m_acousticSensors->getInterpolationTime());
 }
 
 void ScatterGraph::handleUpdateTrueModel()
 {
     m_trueAntennaModelSeries->dataProxy()->resetArray(m_trueModel->getScatterArray());
+    QVector3D P = m_trueAntennaModelSeries->dataProxy()->itemAt(0)->position();
+    QVector3D T = m_trueAntennaModelSeries->dataProxy()->itemAt(m_trueAntennaModelSeries->dataProxy()->array()->size() - 1)->position();
+    setAxisXRange(P.x() - 1, T.x() + 1);
+    setAxisZRange(P.z() - 1, T.z() + 1);
+}
+
+void ScatterGraph::handleSelectItemChanged(const int& index)
+{
+    if (index == -1)
+        return;
+
+    if (auto strongRef = m_acousticSensors->getAntennaModel().toStrongRef())
+    {
+        QVector3D P = m_acousticSensorSeries->dataProxy()->itemAt(index)->position();
+        QVector3D T = strongRef->getPosition(P.x());
+        m_acousticSensorSeries->setItemLabelFormat(QString::number(abs(P.x() - T.x()), 'f', 3) + ", " +
+                                                   QString::number(abs(P.y() - T.y()), 'f', 3) + ", " +
+                                                   QString::number(abs(P.z() - T.z()), 'f', 3));
+    }
 }
 
 void ScatterGraph::handleSetAcousticSensorColor(const QColor &newColor)

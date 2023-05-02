@@ -18,6 +18,16 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    //    QTranslator translator;
+    //    const QStringList uiLanguages = QLocale::system().uiLanguages();
+    //    for (const QString &locale : uiLanguages) {
+    //        const QString baseName = "GraduateWork_" + QLocale(locale).name();
+    //        if (translator.load(":/i18n/" + baseName)) {
+    //            a.installTranslator(&translator);
+    //            break;
+    //        }
+    //    }
+
     Q3DScatter *graph = new Q3DScatter;
 
     if (!graph->hasContext())
@@ -40,19 +50,23 @@ MainWindow::MainWindow(QWidget *parent)
                                                                0,
                                                                m_controllPanel->getModelStep(),
                                                                m_controllPanel->getModelInterval(),
+                                                               m_controllPanel->getModel(),
                                                                m_controllPanel->getMaxNoise()));
+
     QSharedPointer<TrueModel> trueModel(new TrueModel(antennaModel,
                                                       m_controllPanel->getModelCount()));
+
     QSharedPointer<PositionSensors> positionSensors(new PositionSensors(antennaModel,
                                                                         m_controllPanel->getPositionSensorCount(),
                                                                         m_controllPanel->getPositionSensorEnd(),
                                                                         m_controllPanel->getPositionSensorNoise()));
+
     QSharedPointer<AcousticSensors> acousticSensors(new AcousticSensors(antennaModel,
                                                                         positionSensors,
                                                                         m_controllPanel->getInterpolationType(),
                                                                         m_controllPanel->getAcousticSensorCount()));
 
-    m_graph = new ScatterGraph(graph, positionSensors, acousticSensors, trueModel);    
+    m_graph = new ScatterGraph(graph, positionSensors, acousticSensors, trueModel);
 
     m_graph->handleSetPositionSensorSize(m_controllPanel->getPositionSensorSize());
     m_graph->handleSetPositionSensorColor(m_controllPanel->getPositionSensorColor());
@@ -63,6 +77,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_graph->handleSetTrueModelColor(m_controllPanel->getModelColor());
     m_graph->handleSetTrueModelSize(m_controllPanel->getModelSize());
     m_graph->handleSetTrueModelVisibility(m_controllPanel->getModelVisibility());
+
+    m_controllPanel->handleUpdateInterpolationTime(acousticSensors->getInterpolationTime());
 
     connect(m_controllPanel, &ControllPanel::sigPositionSensorCountChanged,
             positionSensors.data(), &PositionSensors::setScatterArraySize);
@@ -97,6 +113,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_controllPanel, &ControllPanel::sigStepModelChanged,
             antennaModel.data(), &AntennaModel::setStep);
 
+    connect(m_controllPanel, &ControllPanel::sigModelChanged,
+            antennaModel.data(), &AntennaModel::handleCoefChanged);
+
     connect(m_controllPanel, &ControllPanel::sigModelSizeChanged,
             m_graph, &ScatterGraph::handleSetTrueModelSize);
 
@@ -123,6 +142,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_controllPanel, &ControllPanel::sigAcousticSensorVisibilityChanged,
             m_graph, &ScatterGraph::handleSetAcousticSensorVisibility);
+
+    connect(m_graph, &ScatterGraph::sigInterpolationTimeUpdate,
+            m_controllPanel, &ControllPanel::handleUpdateInterpolationTime);
 
     QSize screenSize = graph->screen()->size();
     QWidget *container = QWidget::createWindowContainer(graph, m_graph);

@@ -8,6 +8,7 @@ AntennaModelSpace::AntennaModel::AntennaModel(const double& lenght,
                                               const double& offset,
                                               const double& step,
                                               const double& interval,
+                                              const QPair<double, double>& model,
                                               const QVector3D& maxNoice,
                                               QObject *parent)
     : QObject(parent),
@@ -15,7 +16,8 @@ AntennaModelSpace::AntennaModel::AntennaModel(const double& lenght,
     m_offset(offset),
     m_step(step),
     m_timer(new QTimer),
-    m_noise(lenght / step)
+    m_noise(lenght / step),
+    m_coef(model)
 {
     m_timer->setInterval(interval * 1'000);
 
@@ -57,25 +59,40 @@ void AntennaModelSpace::AntennaModel::setOffest(const double& offset)
     m_offset = offset;
 }
 
-QVector3D AntennaModelSpace::AntennaModel::getNewPointPosition(const double &step,
-                                                               const quint32 &pointNumber,
+QVector3D AntennaModelSpace::AntennaModel::getNewPointPosition(const double &x,
                                                                const bool& positionNoise) const
 {
-    double x = step * pointNumber + m_offset;
-    double y = 3 + sin(x);
-    double z = 2 + x * 0.3f;
+    double _x = x + m_offset;
+    double _y = getY(_x);
+    double _z = getZ(_x);
 
     static int v = 0;
 
     if (positionNoise)
     {
-        x += m_noise[v].x();
-        y += m_noise[v].y();
-        z += m_noise[v].z();
+        _x += m_noise[v].x();
+        _y += m_noise[v].y();
+        _z += m_noise[v].z();
         v == m_noise.size() - 1 ? v = 0 : ++v;
     }
 
-    return QVector3D(x, y, z);
+    return QVector3D(_x, _y, _z);
+}
+
+QVector3D AntennaModelSpace::AntennaModel::getPosition(const double &x) const
+{
+    double _x = x;
+    return QVector3D(_x, getY(_x), getZ(_x));
+}
+
+double AntennaModelSpace::AntennaModel::getY(const double &x) const
+{
+    return m_coef.first + sin(x) * m_coef.second;
+}
+
+double AntennaModelSpace::AntennaModel::getZ(const double &x) const
+{
+    return 2 + x * 0.3f;
 }
 
 double AntennaModelSpace::AntennaModel::getInterval() const
@@ -112,5 +129,11 @@ void AntennaModelSpace::AntennaModel::handleMaxNoiseChanged(const QVector3D &max
 void AntennaModelSpace::AntennaModel::handleStartEmulate(const bool &state)
 {
     state ? m_timer->start() : m_timer->stop();
+}
+
+void AntennaModelSpace::AntennaModel::handleCoefChanged(const QPair<double, double> &coef)
+{
+    m_coef = coef;
+    emit sigLenghtChanged(m_lenght);
 }
 
