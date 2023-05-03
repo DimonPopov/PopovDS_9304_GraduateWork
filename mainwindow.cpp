@@ -18,16 +18,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    //    QTranslator translator;
-    //    const QStringList uiLanguages = QLocale::system().uiLanguages();
-    //    for (const QString &locale : uiLanguages) {
-    //        const QString baseName = "GraduateWork_" + QLocale(locale).name();
-    //        if (translator.load(":/i18n/" + baseName)) {
-    //            a.installTranslator(&translator);
-    //            break;
-    //        }
-    //    }
-
     Q3DScatter *graph = new Q3DScatter;
 
     if (!graph->hasContext())
@@ -145,6 +135,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_graph, &ScatterGraph::sigInterpolationTimeUpdate,
             m_controllPanel, &ControllPanel::handleUpdateInterpolationTime);
+
+    connect(m_controllPanel, &ControllPanel::sigDisplayOptionChanged,
+            m_graph, &ScatterGraph::handleSetDisplayOption);
 
     QSize screenSize = graph->screen()->size();
     QWidget *container = QWidget::createWindowContainer(graph, m_graph);

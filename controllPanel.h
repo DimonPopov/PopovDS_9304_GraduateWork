@@ -67,7 +67,8 @@ signals:
     void sigIntervalModelChanged(const double& interval);
     void sigStepModelChanged(const double& step);
     void sigNoiseChanged(const bool& noise);
-    void sigModelChanged(const QPair<double, double>);
+    void sigModelChanged(const QPair<double, double> coef);
+    void sigDisplayOptionChanged(const bool& option);
 
 public slots:
     void handleUpdateInterpolationTime(const quint32& time);
@@ -84,6 +85,7 @@ private slots:
     //void handleOpenModelSettingsDialog();
     void handleOpenFileDialog();
     void handleModelChanged(const int& index);
+    void handleLanguageChanged(const bool& checked);
 };
 
 #endif // CONTROLLPANEL_H

@@ -1,7 +1,4 @@
 <RCC>
-    <qresource prefix="/tr">
-        <file>GraduateWork_ru_RU.ts</file>
-    </qresource>
     <qresource prefix="/img">
         <file>images/united-kingdom.png</file>
         <file>images/russia.png</file>

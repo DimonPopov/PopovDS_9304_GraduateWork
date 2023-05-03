@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>248</width>
-    <height>722</height>
+    <width>263</width>
+    <height>674</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <layout class="QFormLayout" name="formLayout_3">
    <item row="0" column="0">
-    <widget class="QLabel" name="label_8">
+    <widget class="QLabel" name="LenghtLabel">
      <property name="text">
       <string>Length:</string>
      </property>
@@ -29,7 +29,7 @@
     </widget>
    </item>
    <item row="2" column="0" colspan="2">
-    <widget class="QLabel" name="label_16">
+    <widget class="QLabel" name="PointSettingsLabel">
      <property name="text">
       <string>Point settings:</string>
      </property>
@@ -53,7 +53,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideRight</enum>
@@ -64,13 +64,13 @@
      <property name="movable">
       <bool>true</bool>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tabModel">
       <attribute name="title">
        <string>Model</string>
       </attribute>
       <layout class="QFormLayout" name="formLayout_4">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_11">
+        <widget class="QLabel" name="AmountLabel">
          <property name="text">
           <string>Amount:</string>
          </property>
@@ -87,7 +87,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_9">
+        <widget class="QLabel" name="SizeLabel">
          <property name="text">
           <string>Size:</string>
          </property>
@@ -107,7 +107,7 @@
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QLabel" name="label_10">
+        <widget class="QLabel" name="ColorLabel">
          <property name="text">
           <string>Color:</string>
          </property>
@@ -129,13 +129,13 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="tabPosition">
       <attribute name="title">
        <string>Position</string>
       </attribute>
       <layout class="QFormLayout" name="formLayout_2">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="AmountLabel_3">
          <property name="text">
           <string>Amount:</string>
          </property>
@@ -152,7 +152,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="SizeLabel_3">
          <property name="text">
           <string>Size:</string>
          </property>
@@ -175,7 +175,7 @@
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QLabel" name="label_4">
+        <widget class="QLabel" name="ColorLabel_3">
          <property name="text">
           <string>Color:</string>
          </property>
@@ -204,13 +204,13 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="tabAcoustic">
       <attribute name="title">
        <string>Acoustic</string>
       </attribute>
       <layout class="QFormLayout" name="formLayout">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_7">
+        <widget class="QLabel" name="AmountLabel_2">
          <property name="text">
           <string>Amount:</string>
          </property>
@@ -227,7 +227,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="SizeLabel_2">
          <property name="text">
           <string>Size:</string>
          </property>
@@ -250,7 +250,7 @@
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QLabel" name="label_5">
+        <widget class="QLabel" name="ColorLabel_2">
          <property name="text">
           <string>Color:</string>
          </property>
@@ -287,7 +287,7 @@
      </property>
      <layout class="QFormLayout" name="formLayout_5">
       <item row="0" column="0">
-       <widget class="QLabel" name="label_12">
+       <widget class="QLabel" name="MaxXLabel">
         <property name="text">
          <string>Max X:</string>
         </property>
@@ -304,7 +304,7 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_13">
+       <widget class="QLabel" name="MaxYLabel">
         <property name="text">
          <string>Max Y:</string>
         </property>
@@ -321,7 +321,7 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_14">
+       <widget class="QLabel" name="MaxZLabel">
         <property name="text">
          <string>Max Z:</string>
         </property>
@@ -351,7 +351,7 @@
     </widget>
    </item>
    <item row="6" column="0">
-    <widget class="QLabel" name="label_17">
+    <widget class="QLabel" name="TimeLabel">
      <property name="text">
       <string>Time:</string>
      </property>
@@ -372,7 +372,7 @@
       <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
      <property name="suffix">
-      <string> mSec</string>
+      <string> microSec</string>
      </property>
      <property name="prefix">
       <string/>
@@ -382,7 +382,7 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="0" colspan="2">
+   <item row="9" column="0" colspan="2">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -395,7 +395,7 @@
      </property>
     </spacer>
    </item>
-   <item row="8" column="0" colspan="2">
+   <item row="10" column="0" colspan="2">
     <widget class="Line" name="line">
      <property name="minimumSize">
       <size>
@@ -408,17 +408,17 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="0">
-    <widget class="QLabel" name="label_6">
+   <item row="11" column="0">
+    <widget class="QLabel" name="IntervalLabel">
      <property name="text">
       <string>Interval:</string>
      </property>
     </widget>
    </item>
-   <item row="9" column="1">
+   <item row="11" column="1">
     <widget class="QDoubleSpinBox" name="intervalModelUpdateSpin">
      <property name="suffix">
-      <string> sec</string>
+      <string> Sec</string>
      </property>
      <property name="minimum">
       <double>0.100000000000000</double>
@@ -428,14 +428,14 @@
      </property>
     </widget>
    </item>
-   <item row="10" column="0">
-    <widget class="QLabel" name="label_15">
+   <item row="12" column="0">
+    <widget class="QLabel" name="StepLabel">
      <property name="text">
       <string>Step:</string>
      </property>
     </widget>
    </item>
-   <item row="10" column="1">
+   <item row="12" column="1">
     <widget class="QDoubleSpinBox" name="stepModelUpdateSpin">
      <property name="minimum">
       <double>0.100000000000000</double>
@@ -445,10 +445,10 @@
      </property>
     </widget>
    </item>
-   <item row="11" column="0">
+   <item row="13" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="openFile">
+      <widget class="QPushButton" name="openFileButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
          <horstretch>0</horstretch>
@@ -474,7 +474,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="languageSet">
+      <widget class="QPushButton" name="languageSetButton">
        <property name="maximumSize">
         <size>
          <width>26</width>
@@ -501,7 +501,7 @@
      </item>
     </layout>
    </item>
-   <item row="11" column="1">
+   <item row="13" column="1">
     <widget class="QPushButton" name="startStopButton">
      <property name="text">
       <string>Start</string>
@@ -509,7 +509,7 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="label_18">
+    <widget class="QLabel" name="ModelLabel">
      <property name="text">
       <string>Model:</string>
      </property>
@@ -517,6 +517,43 @@
    </item>
    <item row="1" column="1">
     <widget class="QComboBox" name="modelCombo"/>
+   </item>
+   <item row="7" column="1">
+    <widget class="QRadioButton" name="truePositionRadio">
+     <property name="text">
+      <string>True position</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <widget class="QRadioButton" name="absDeviationRadio">
+     <property name="text">
+      <string>Abs deviation</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="DisplayLabel">
+     <property name="text">
+      <string>Display</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="OptionLabel">
+     <property name="text">
+      <string>option:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

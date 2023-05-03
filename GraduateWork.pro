@@ -35,9 +35,6 @@ FORMS += \
 
 LIBS += -L/usr/lib -lfftw3
 
-#TRANSLATIONS += \
-#    :/tr/GraduateWork_ru_RU.ts
-
 CONFIG += lrelease
 CONFIG += embed_translations
 

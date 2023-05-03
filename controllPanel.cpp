@@ -1,6 +1,5 @@
 #include <QSettings>
 #include <QFileDialog>
-#include <QDialog>
 
 #include "controllPanel.h"
 #include "ui_controllPanel.h"
@@ -26,15 +25,15 @@ QString colorToStr(const Color& color)
 {
     switch (color)
     {
-        case Red:     return "red";
-        case Green:   return "green";
-        case Gold:    return "gold";
-        case Hotpink: return "hotpink";
-        case Orange:  return "orange";
-        case Lime:    return "lime";
-        case Salmon:  return "salmon";
+        case Red:     return QObject::tr("red");
+        case Green:   return QObject::tr("green");
+        case Gold:    return QObject::tr("gold");
+        case Hotpink: return QObject::tr("hotpink");
+        case Orange:  return QObject::tr("orange");
+        case Lime:    return QObject::tr("lime");
+        case Salmon:  return QObject::tr("salmon");
         case Blue:
-        default:    return "blue";
+        default:    return QObject::tr("blue");
     }
 }
 
@@ -51,7 +50,7 @@ QString modelToStr(const Model& model)
     {
     case First:    return "2 + sin(x)";
     case Second:   return "3 + sin(x) * 0.4";
-    case Third:    return "2 + sin(x) * 1.5";
+    case Third:    return "2 + sin(x) * 3";
 
     default:    return "";
     }
@@ -85,13 +84,14 @@ ControllPanel::ControllPanel(QWidget *parent) :
     load();
 
     ui->startStopButton->setCheckable(true);
+    ui->languageSetButton->setCheckable(true);
     handleMaxValueNoiseChange();
 
-    connect(ui->openFile, &QPushButton::clicked,
+    connect(ui->openFileButton, &QPushButton::clicked,
             this, &ControllPanel::handleOpenFileDialog);
 
-//    connect(ui->modelSettingsButton, &QPushButton::clicked,
-//            this, &ControllPanel::handleOpenModelSettingsDialog);
+    connect(ui->languageSetButton, &QPushButton::clicked,
+            this, &ControllPanel::handleLanguageChanged);
 
     connect(ui->modelCombo, &QComboBox::currentIndexChanged,
             this, &ControllPanel::handleModelChanged);
@@ -167,6 +167,9 @@ ControllPanel::ControllPanel(QWidget *parent) :
 
     connect(ui->maxNoiseZ, &QDoubleSpinBox::valueChanged,
             this, &ControllPanel::handleNoiseChanged);
+
+    connect(ui->truePositionRadio, &QRadioButton::toggled,
+            this, &ControllPanel::sigDisplayOptionChanged);
 }
 
 ControllPanel::~ControllPanel()
@@ -287,7 +290,91 @@ void ControllPanel::handleModelChanged(const int& index)
     else if (text == modelToStr(Second))
         emit sigModelChanged({3, 0.4});
     else if (text == modelToStr(Third))
-        emit sigModelChanged({2, 1.5});
+        emit sigModelChanged({2, 3});
+}
+
+void ControllPanel::handleLanguageChanged(const bool& checked)
+{
+    if (checked)
+    {
+        ui->languageSetButton->setIcon(QIcon(":/img/images/russia.png"));
+        ui->LenghtLabel->setText("Длина:");
+        ui->ModelLabel->setText("Модель:");
+        ui->PointSettingsLabel->setText("Настройки точек:");
+        ui->pointsSettingTab->setTabText(0, "Модель");
+        ui->pointsSettingTab->setTabText(1, "Известные");
+        ui->pointsSettingTab->setTabText(2, "Востановл.");
+        ui->pointsSettingTab->setTabToolTip(0, "Модель");
+        ui->pointsSettingTab->setTabToolTip(1, "Известные точки");
+        ui->pointsSettingTab->setTabToolTip(2, "Востановленные точки");
+        ui->AmountLabel->setText("Кол-во:");
+        ui->AmountLabel_2->setText("Кол-во:");
+        ui->AmountLabel_3->setText("Кол-во:");
+        ui->SizeLabel->setText("Размер:");
+        ui->SizeLabel_2->setText("Размер:");
+        ui->SizeLabel_3->setText("Размер:");
+        ui->ColorLabel->setText("Цвет:");
+        ui->ColorLabel_2->setText("Цвет:");
+        ui->ColorLabel_3->setText("Цвет:");
+        ui->modelVisibilityCheck->setText("Отображать");
+        ui->acousticSensorVisibilityCheck->setText("Отображать");
+        ui->positionSensorVisibilityCheck->setText("Отображать");
+        ui->positionSensorEnd->setText("Датчик в конце");
+        ui->noiseBox->setTitle("Шумы");
+        ui->MaxXLabel->setText("Макс. X: ");
+        ui->MaxYLabel->setText("Макс. Y: ");
+        ui->MaxZLabel->setText("Макс. Z: ");
+        ui->TimeLabel->setText("Время:");
+        ui->truePositionRadio->setText("Истинная поз.");
+        ui->absDeviationRadio->setText("Модуль откл.");
+        ui->DisplayLabel->setText("Парам.");
+        ui->OptionLabel->setText("отобр.:");
+        ui->interpolationTimeSpin->setSuffix(" микроСек");
+        ui->IntervalLabel->setText("Интер.:");
+        ui->intervalModelUpdateSpin->setSuffix(" Сек");
+        ui->StepLabel->setText("Шаг:");
+        ui->startStopButton->setText(ui->startStopButton->isChecked() ? "Стоп" : "Старт");
+    }
+    else
+    {
+        ui->languageSetButton->setIcon(QIcon(":/img/images/united-kingdom.png"));
+        ui->LenghtLabel->setText("Length:");
+        ui->ModelLabel->setText("Model:");
+        ui->PointSettingsLabel->setText("Point settings:");
+        ui->pointsSettingTab->setTabText(0, "Model");
+        ui->pointsSettingTab->setTabText(1, "Position");
+        ui->pointsSettingTab->setTabText(2, "Acoustic");
+        ui->pointsSettingTab->setTabToolTip(0, "Model");
+        ui->pointsSettingTab->setTabToolTip(1, "Position");
+        ui->pointsSettingTab->setTabToolTip(2, "Acoustic");
+        ui->AmountLabel->setText("Amount:");
+        ui->AmountLabel_2->setText("Amount:");
+        ui->AmountLabel_3->setText("Amount:");
+        ui->SizeLabel->setText("Size:");
+        ui->SizeLabel_2->setText("Size:");
+        ui->SizeLabel_3->setText("Size:");
+        ui->ColorLabel->setText("Color:");
+        ui->ColorLabel_2->setText("Color:");
+        ui->ColorLabel_3->setText("Color:");
+        ui->modelVisibilityCheck->setText("Display model");
+        ui->acousticSensorVisibilityCheck->setText("Display acoustic sensors");
+        ui->positionSensorVisibilityCheck->setText("Display position sensors");
+        ui->positionSensorEnd->setText("Sensor at the end");
+        ui->noiseBox->setTitle("Noise");
+        ui->MaxXLabel->setText("Max X: ");
+        ui->MaxYLabel->setText("Max Y: ");
+        ui->MaxZLabel->setText("Max Z: ");
+        ui->TimeLabel->setText("Time:");
+        ui->truePositionRadio->setText("True position");
+        ui->absDeviationRadio->setText("Abs deviation");
+        ui->DisplayLabel->setText("Display");
+        ui->OptionLabel->setText("option:");
+        ui->interpolationTimeSpin->setSuffix(" microSec");
+        ui->IntervalLabel->setText("Interval:");
+        ui->intervalModelUpdateSpin->setSuffix(" Sec");
+        ui->StepLabel->setText("Step:");
+        ui->startStopButton->setText(ui->startStopButton->isChecked() ? "Stop" : "Start");
+    }
 }
 
 double ControllPanel::getPositionSensorSize() const
@@ -398,7 +485,11 @@ void ControllPanel::handleModelColorChanged(const int &index)
 
 void ControllPanel::handleEmulationButtonChange(const bool& checked)
 {
-    checked ? ui->startStopButton->setText(tr("Stop")) : ui->startStopButton->setText(tr("Start"));
+    bool check = ui->languageSetButton->isChecked();
+    if (check)
+        checked ? ui->startStopButton->setText("Стоп") : ui->startStopButton->setText("Старт");
+    else
+        checked ? ui->startStopButton->setText("Stop") : ui->startStopButton->setText("Start");
     emit sigEmulationButtonClicked(checked);
 }
 

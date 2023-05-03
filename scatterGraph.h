@@ -29,6 +29,7 @@ public slots:
     void handleSetTrueModelVisibility(const bool& newState);
     void handleSetTrueModelColor(const QColor& newColor);
     void handleSetTrueModelSize(const double& newValue);
+    void handleSetDisplayOption(const bool& option);
 
 private:
     Q3DScatter* m_graph;
@@ -38,7 +39,9 @@ private:
     QScatter3DSeries *m_acousticSensorSeries;
     QScatter3DSeries *m_positionSensorSeries;
     QScatter3DSeries *m_trueAntennaModelSeries;
+    bool showTruePosition;
 
+    void setAllAxisRange();
     void setAxisXRange(const double min, const double max);
     void setAxisZRange(const double min, const double max);
     void setAxisYRange(const double min, const double max);
@@ -50,7 +53,9 @@ private slots:
     void handleUpdatePositionSensors();
     void handleUpdateAcousticSensors();
     void handleUpdateTrueModel();
-    void handleSelectItemChanged(const int& index);
+    void handleShowModelItem(const int& index);
+    void handleShowPositionItem(const int& index);
+    void handleShowAcousticlItem(const int& index);
 };
 
 #endif // ScatterGraph_H
