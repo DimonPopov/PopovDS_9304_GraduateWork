@@ -33,7 +33,7 @@ FORMS += \
     mainWidget.ui \
     mainwindow.ui
 
-LIBS += -L/usr/lib -lfftw3
+INCLUDEPATH += C:\Users\User\Downloads\boost_1_82_0\boost_1_82_0
 
 CONFIG += lrelease
 CONFIG += embed_translations
